@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Node Starter</title>
+    <!-- load local stylesheet (css) -->
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- loading jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Submit a form</h1>
+
+    <p>
+        <%= data.customer %>
+        <%= data.phone %>
+        <%= data.addr %>
+        <%= data.size %>
+        <%= data.due %>
+        <%= data.instructions %>
+    </p>
+
+
+<h2>GET</h2>
+
+<form class="example"
+      id="pizza-form"
+      method="GET"
+      action="<%=action%>">
+  <p><label>Customer name: <input name="customer" value="<%= data.customer %>"></label></p>
+  <p><label>Telephone: <input type=tel name="phone" value="<%= data.phone %>"></label></p>
+  <p><label>E-mail address: <input type=email name="addr" value="<%= data.addr %>"></label></p>
+  <p><label>Size:
+      <select name="size">
+        <option value="">choose size</option>
+
+        <% if( data.size == "small" ) { %>
+        <option value="small" selected>small (10-inch)</option>
+        <% } else { %>
+        <option value="small">small (10-inch)</option>
+        <% } %>
+
+        <% if( data.size == "medium" ) { %>
+        <option value="medium" selected>medium (12-inch)</option>
+        <% } else { %>
+        <option value="medium">medium (12-inch)</option>
+        <% } %>
+
+        <% if( data.size == "large" ) { %>
+        <option value="large" selected>large (14-inch)</option>
+        <% } else { %>
+        <option value="large">large (14-inch)</option>
+        <% } %>
+      </select>
+    </label></p>
+  <p><label>Preferred delivery time:
+      <input name="due" type=time min="11:00" max="21:00" step="900" value="<%= data.due %>">
+  </label></p>
+  <p><label>Delivery instructions:
+      <textarea rows="3" cols="30" name="instructions"><%= data.instructions %></textarea>
+  </label></p>
+  <p><button type="submit">Submit order</button></p>
+</form>
+
+<h2>POST</h2>
+
+<form class="example"
+      id="pizza-form"
+      method="POST"
+      action="<%=action%>">
+  <p><label>Customer name: <input name="customer" value="<%= data.customer %>"></label></p>
+  <p><label>Telephone: <input type=tel name="phone" value="<%= data.phone %>"></label></p>
+  <p><label>E-mail address: <input type=email name="addr" value="<%= data.addr %>"></label></p>
+  <p><label>Size:
+      <select name="size">
+        <option value="">choose size</option>
+
+        <% if( data.size == "small" ) { %>
+        <option value="small" selected>small (10-inch)</option>
+        <% } else { %>
+        <option value="small">small (10-inch)</option>
+        <% } %>
+
+        <% if( data.size == "medium" ) { %>
+        <option value="medium" selected>medium (12-inch)</option>
+        <% } else { %>
+        <option value="medium">medium (12-inch)</option>
+        <% } %>
+
+        <% if( data.size == "large" ) { %>
+        <option value="large" selected>large (14-inch)</option>
+        <% } else { %>
+        <option value="large">large (14-inch)</option>
+        <% } %>
+      </select>
+    </label></p>
+  <p><label>Preferred delivery time:
+      <input name="due" type=time min="11:00" max="21:00" step="900" value="<%= data.due %>">
+  </label></p>
+  <p><label>Delivery instructions:
+      <textarea rows="3" cols="30" name="instructions"><%= data.instructions %></textarea>
+  </label></p>
+  <p><button type="submit">Submit order</button></p>
+</form>
+
+    <!-- load local js -->
+    <script src="/main.js"></script>
+</body>
+</html>

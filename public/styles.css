@@ -2,8 +2,8 @@
 @import url('https://fonts.googleapis.com/css?family=Fredoka');
 
 body {
-  background-color: #f0f2f5; /* Light grey background for the body */
-  font-family: 'Fredoka', sans-serif; /* Updated font family */
+  background-color: #f0f2f5;
+  font-family: 'Fredoka', sans-serif;
 }
 
 main {
@@ -12,58 +12,58 @@ main {
 }
 
 .navigation {
-  background-color: #d7f9ff; /* Light blue from your color scheme */
+  background-color: #d7f9ff;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px; /* Increased padding to make navbar taller */
+  padding: 10px 20px;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 1000;
-  height: 60px; /* Increased height */
+  height: 60px;
 }
 
 .navigation .logo a {
-  color: #0e1c36; /* Dark blue for text */
+  color: #0e1c36;
   font-size: 24px;
   text-decoration: none;
 }
 
 .navigation-search-container {
-  flex: 2; /* Adjusted flex to allocate more space to the center */
+  flex: 1;
   display: flex;
-  justify-content: center; /* Centering search bar */
+  justify-content: center;
   align-items: center;
 }
 
 .search-field {
   border: 1px solid #ccc;
   border-radius: 20px;
-  font-size: 16px; /* Slightly larger font size */
+  font-size: 16px;
   padding: 8px 15px;
-  width: 60%; /* Adjusted width for better control */
+  width: 60%;
 }
 
 .fa-search {
   position: absolute;
-  left: 10px; /* Adjusted position to inside the input */
+  left: 10px;
 }
 
 .navigation-links {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Align links to the right */
-  flex: 1; /* Adjusted flex */
+  justify-content: flex-end;
+  flex: 1;
 }
 
 .navigation-links a {
-  color: #0e1c36; /* Dark blue for links */
+  color: #0e1c36;
   text-decoration: none;
-  margin: 0 10px; /* Adjusted space between links */
+  margin: 0 10px;
   font-size: 18px;
-  padding: 10px; /* Padding for better touch */
+  padding: 10px;
 }
 
 .notification-bubble {
@@ -76,4 +76,26 @@ main {
   position: absolute;
   top: -10px;
   right: -10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navigation-links, .navigation-search-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .search-field {
+    width: 80%; /* Larger width on smaller screens */
+  }
+
+  .navigation-links a {
+    margin: 5px 0; /* Stack links vertically with reduced margin */
+  }
+
+  .navigation {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
 }

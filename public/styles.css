@@ -7,7 +7,7 @@ body {
 }
 
 main {
-  margin-top: 100px; /* Adjusted to avoid overlap with the fixed navbar */
+  margin-top: 100px; 
   text-align: center;
 }
 
@@ -86,11 +86,11 @@ main {
   }
 
   .search-field {
-    width: 80%; /* Larger width on smaller screens */
+    width: 80%; 
   }
 
   .navigation-links a {
-    margin: 5px 0; /* Stack links vertically with reduced margin */
+    margin: 5px 0; 
   }
 
   .navigation {

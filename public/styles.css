@@ -104,3 +104,13 @@ main {
     padding: 10px;
   }
 }
+
+/* footer */
+.footer {
+  color: #565656;
+  font-family: verdana;
+  font-size: 12px;
+  padding-bottom: 30px;
+  padding-top: 60px;
+  text-align: center;
+}

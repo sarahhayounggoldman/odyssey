@@ -39,6 +39,7 @@ app.use(flash());
 
 
 app.use(serveStatic('public'));
+//app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 const mongoUri = cs304.getMongoUri();

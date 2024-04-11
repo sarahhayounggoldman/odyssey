@@ -1,3 +1,79 @@
-h1 {
-  color: purple;
+/* Navigation Bar Styles */
+@import url('https://fonts.googleapis.com/css?family=Fredoka');
+
+body {
+  background-color: #f0f2f5; /* Light grey background for the body */
+  font-family: 'Fredoka', sans-serif; /* Updated font family */
+}
+
+main {
+  margin-top: 100px; /* Adjusted to avoid overlap with the fixed navbar */
+  text-align: center;
+}
+
+.navigation {
+  background-color: #d7f9ff; /* Light blue from your color scheme */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px; /* Increased padding to make navbar taller */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 60px; /* Increased height */
+}
+
+.navigation .logo a {
+  color: #0e1c36; /* Dark blue for text */
+  font-size: 24px;
+  text-decoration: none;
+}
+
+.navigation-search-container {
+  flex: 2; /* Adjusted flex to allocate more space to the center */
+  display: flex;
+  justify-content: center; /* Centering search bar */
+  align-items: center;
+}
+
+.search-field {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 16px; /* Slightly larger font size */
+  padding: 8px 15px;
+  width: 60%; /* Adjusted width for better control */
+}
+
+.fa-search {
+  position: absolute;
+  left: 10px; /* Adjusted position to inside the input */
+}
+
+.navigation-links {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align links to the right */
+  flex: 1; /* Adjusted flex */
+}
+
+.navigation-links a {
+  color: #0e1c36; /* Dark blue for links */
+  text-decoration: none;
+  margin: 0 10px; /* Adjusted space between links */
+  font-size: 18px;
+  padding: 10px; /* Padding for better touch */
+}
+
+.notification-bubble {
+  background-color: #ed4956;
+  border-radius: 10px;
+  color: white;
+  display: block;
+  font-size: 12px;
+  padding: 2px 5px;
+  position: absolute;
+  top: -10px;
+  right: -10px;
 }

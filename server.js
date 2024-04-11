@@ -114,11 +114,48 @@ app.post('/form/', (req, res) => {
     return res.render('form.ejs', {action: '/form/', data: req.body });
 });
 
-app.get('/staffList/', async (req, res) => {
-    const db = await Connection.open(mongoUri, WMDB);
-    let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-    console.log('len', all.length, 'first', all[0]);
-    return res.render('list.ejs', {listDescription: 'all staff', list: all});
+app.get('/explore', async (req, res) => {
+    // const db = await Connection.open(mongoUri, WMDB);
+    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
+    // console.log('len', all.length, 'first', all[0]);
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    return res.render('explore.ejs', {uid, visits});
+});
+
+app.get('/followers', async (req, res) => {
+    // const db = await Connection.open(mongoUri, WMDB);
+    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
+    // console.log('len', all.length, 'first', all[0]);
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    return res.render('followers.ejs', {uid, visits});
+});
+
+app.get('/saved', async (req, res) => {
+    // const db = await Connection.open(mongoUri, WMDB);
+    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
+    // console.log('len', all.length, 'first', all[0]);
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    return res.render('saved.ejs', {uid, visits});
+});
+
+app.get('/profile', async (req, res) => {
+    // const db = await Connection.open(mongoUri, WMDB);
+    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
+    // console.log('len', all.length, 'first', all[0]);
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    return res.render('profile.ejs', {uid, visits});
 });
 
 // ================================================================

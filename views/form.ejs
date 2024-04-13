@@ -15,9 +15,10 @@
 
   <p>
     <%= data.country %>
-      <%= data.budget %>
-        <%= data.travelType %>
-          <%= data.caption %>
+    <%= data.city %>
+    <%= data.budget %>
+    <%= data.travelType %>
+    <%= data.caption %>
   </p>
 
 
@@ -365,6 +366,7 @@
 <p>
    <label>Country:
      <select name="country">
+      <option value="">select country</option>
        <% countryList.forEach(country => { %>
         <% if( data.country=="solo" ) { %>
           <option value="<%= country %>" selected><%= country %></option>
@@ -376,59 +378,102 @@
    </label>
 </p>
 
+<p><label> City:
+<textarea rows="1" cols="40" name="city"><%= data.city %></textarea>
+</label></p>
 
-    <p><label>What was your budget for this trip?
-        <select name="budget">
-          <option value="">choose budget</option>
+<p><label> Categories:
+  <div>
+    <input type="checkbox" id="food" name="food" food />
+    <label for="food">food</label>
+  </div>
 
-          <% if( data.budget=="low" ) { %>
-            <option value="low" selected>low</option>
-            <% } else { %>
-              <option value="low">low</option>
-              <% } %>
+  <div>
+    <input type="checkbox" id="culture" name="culture" />
+    <label for="culture">culture</label>
+  </div>
 
-                <% if( data.budget=="medium" ) { %>
-                  <option value="medium" selected>medium</option>
-                  <% } else { %>
-                    <option value="medium">medium</option>
-                    <% } %>
+  <div>
+    <input type="checkbox" id="art" name="art" />
+    <label for="art">art</label>
+  </div>
 
-                      <% if( data.budget=="high" ) { %>
-                        <option value="high" selected>high</option>
-                        <% } else { %>
-                          <option value="high">high</option>
-                          <% } %>
-        </select>
-      </label></p>
+  <div>
+    <input type="checkbox" id="nature" name="nature" />
+    <label for="nature">nature</label>
+  </div>
 
-    <p><label>Did you travel solo or with a friend?
-        <select name="travelType">
-          <option value="">select solo or group</option>
+  <div>
+    <input type="checkbox" id="history" name="history" />
+    <label for="history">history</label>
+  </div>
 
-          <% if( data.travelType=="solo" ) { %>
-            <option value="solo" selected>solo</option>
-            <% } else { %>
-              <option value="solo">solo</option>
-              <% } %>
+  <div>
+    <input type="checkbox" id="other" name="other" />
+    <label for="other">other</label>
+  </div>
 
-                <% if( data.travelType=="group" ) { %>
-                  <option value="group" selected>group</option>
-                  <% } else { %>
-                    <option value="group">group</option>
-                    <% } %>
-        </select>
-      </label></p>
+</label></p>
 
-    <p><label>Caption:
-        <textarea rows="5" cols="50" name="caption"><%= data.caption %></textarea>
-      </label></p>
+<p><label>What was your budget for this trip?
+    <select name="budget">
+      <option value="">choose budget</option>
 
-    <p><button type="submit">Post</button></p>
-  </form>
+      <% if( data.budget=="low" ) { %>
+        <option value="low" selected>low</option>
+        <% } else { %>
+          <option value="low">low</option>
+          <% } %>
 
+            <% if( data.budget=="medium" ) { %>
+              <option value="medium" selected>medium</option>
+              <% } else { %>
+                <option value="medium">medium</option>
+                <% } %>
+
+                  <% if( data.budget=="high" ) { %>
+                    <option value="high" selected>high</option>
+                    <% } else { %>
+                      <option value="high">high</option>
+                      <% } %>
+    </select>
+</label></p>
+
+  <p><label>Did you travel solo or with a friend?
+      <select name="travelType">
+        <option value="">select solo or group</option>
+
+        <% if( data.travelType=="solo" ) { %>
+          <option value="solo" selected>solo</option>
+          <% } else { %>
+            <option value="solo">solo</option>
+            <% } %>
+
+              <% if( data.travelType=="group" ) { %>
+                <option value="group" selected>group</option>
+                <% } else { %>
+                  <option value="group">group</option>
+                  <% } %>
+      </select>
+</label></p>
+
+<p><label> Rate your experience on a scale from 1 (worst) to 5 (best):
+  <label><input type="radio" name="experience" value="1">1 </label>
+  <label><input type="radio" name="experience" value="2">2</label>
+  <label><input type="radio" name="experience" value="3">3</label>
+  <label><input type="radio" name="experience" value="4">4</label>
+  <label><input type="radio" name="experience" value="5">5</label>
+</label></p>
+
+<p><label>Caption:
+      <textarea rows="5" cols="50" name="caption"><%= data.caption %></textarea>
+</label></p>
+
+  <p><button type="submit">Post</button></p>
+</form>
 
   <!-- load local js -->
-  <script src="/main.js"></script>
+<script src="/main.js"></script>
 </body>
 
 </html>

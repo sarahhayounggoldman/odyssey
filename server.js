@@ -58,12 +58,55 @@ app.use(cookieSession({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+//NEED TO DEBUG
+//multer for file upload
+app.use('/uploads', serveStatic('uploads'));
+
+function timeString(dateObj) {
+    if( !dateObj) {
+        dateObj = new Date();
+    }
+    // convert val to two-digit string
+    d2 = (val) => val < 10 ? '0'+val : ''+val;
+    let hh = d2(dateObj.getHours())
+    let mm = d2(dateObj.getMinutes())
+    let ss = d2(dateObj.getSeconds())
+    return hh+mm+ss
+}
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+        let parts = file.originalname.split('.');
+        let ext = parts[parts.length-1];
+        let hhmmss = timeString();
+        cb(null, file.fieldname + '-' + hhmmss + '.' + ext);
+    }
+  })
+
+console.log('Multer configured successfully'); 
+
+//middleware
+  var upload = multer({ storage: storage,
+    limits: {fileSize: 1_000_000_000 }});
+
+//TBA: where to send it
+
+// app.post("/upload", upload.array("files"), uploadFiles);
+// function uploadFiles(req, res) {
+//     console.log(req.body);
+// }
+
+
+
 // ================================================================
 // custom routes here
 
 const DB = process.env.USER;
 const ODYSSEY_USERS = 'odyssey_users';
-const ODYSSEY_POSTS = 'odyssey_users';
+const ODYSSEY_POSTS = 'odyssey_posts';
 
 // main page. This shows the use of session cookies
 app.get('/', (req, res) => {
@@ -164,69 +207,105 @@ app.get('/profile', async (req, res) => {
     return res.render('profile.ejs', {uid, visits});
 });
 
-//NEED TO DEBUG
-//multer for file upload
-app.use('/uploads', serveStatic('uploads'));
+// //multer for file upload
+// app.use('/uploads', serveStatic('uploads'));
 
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'uploads')
-    },
-    filename: function (req, file, cb) {
-        let parts = file.originalname.split('.');
-        let ext = parts[parts.length-1];
-        let hhmmss = timeString();
-        cb(null, file.fieldname + '-' + hhmmss + '.' + ext);
-    }
-  })
-
-//middleware
-  var upload = multer({ storage: storage,
-    limits: {fileSize: 1_000_000 }});
-
-//TBA: where to send it
-
-// app.post("/upload", upload.array("files"), uploadFiles);
-// function uploadFiles(req, res) {
-//     console.log(req.body);
+// function timeString(dateObj) {
+//     if( !dateObj) {
+//         dateObj = new Date();
+//     }
+//     // convert val to two-digit string
+//     d2 = (val) => val < 10 ? '0'+val : ''+val;
+//     let hh = d2(dateObj.getHours())
+//     let mm = d2(dateObj.getMinutes())
+//     let ss = d2(dateObj.getSeconds())
+//     return hh+mm+ss
 // }
 
+// var storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//       cb(null, 'uploads')
+//     },
+//     filename: function (req, file, cb) {
+//         let parts = file.originalname.split('.');
+//         let ext = parts[parts.length-1];
+//         let hhmmss = timeString();
+//         cb(null, file.fieldname + '-' + hhmmss + '.' + ext);
+//     }
+//   })
 
+// console.log('Multer configured successfully'); 
+
+// //middleware
+//   var upload = multer({ storage: storage,
+//     limits: {fileSize: 1_000_000_000 }});
 
 // POSTING A POST! We want to 1) add it to the database and 2) have it show up on the Explore and Profile pages of the user.
 //Starting with just Explore first!
 
+// app.post('/explore', upload.array('files'), async (req, res) => {
+
+//     try {
+//       const formData = req.body;
+//       const db = await Connection.open(mongoUri, DB);
+  
+//       const result = await db.collection(ODYSSEY_POSTS).insertOne({
+//         authorID: formData.authorID,
+//         timestamp: new Date(),
+//         location: {
+//           country: formData.country,
+//           city: formData.city,
+//         },
+//         categories: formData.categories,
+//         budget: formData.budget,
+//         travelType: formData.travelType,
+//         rating: formData.rating,
+//         content: {
+//           text: formData.caption,
+//           images: req.files.map(file => file.path)
+//         },
+//       });   
+
+//       return res.redirect(`/explore`);
+
+//     } //try
+//     catch(error) {
+//         // res.status(500).send("server error");
+//         console.error('Error uploading files:', error);
+//         return res.status(500).send("Server error: " + error.message);
+//     }
+// });
+
 app.post('/explore', upload.array('files'), async (req, res) => {
-
     try {
+        console.log('GOT HERE');
+        console.log('Received form submission:', req.body);
+        console.log('Uploaded files:', req.files);
 
-    
-      const formData = req.body;
+        const formData = req.body;
+        const db = await Connection.open(mongoUri, DB);
   
-      const db = await Connection.open(mongoUri, DB);
-  
-      const result = await db.collection(ODYSSEY_POSTS).insertOne({
-        authorID: formData.authorID,
-        timestamp: new Date(),
-        location: {
-          country: formData.country,
-          city: formData.city,
-        },
-        categories: formData.categories,
-        budget: formData.budget,
-        travelType: formData.travelType,
-        rating: formData.rating,
-        content: {
-          text: formData.caption,
-          images: req.files.map(file => file.path)
-        },
-      });   
+        const result = await db.collection(ODYSSEY_POSTS).insertOne({
+            authorID: formData.authorID,
+            timestamp: new Date(),
+            location: {
+                country: formData.country,
+                city: formData.city,
+            },
+            categories: formData.categories,
+            // categories: Array.isArray(formData.categories) ? formData.categories : [formData.categories],
 
-      return res.redirect(`/explore`);
+            budget: formData.budget,
+            travelType: formData.travelType,
+            rating: formData.rating,
+            content: {
+                text: formData.caption,
+                images: req.files.map(file => file.path)
+            },
+        });   
 
-    } //try
-    catch {
-        // res.status(500).send("server error");
+        return res.redirect(`/explore`);
+    } catch (error) {
         console.error('Error uploading files:', error);
         return res.status(500).send("Server error: " + error.message);
     }

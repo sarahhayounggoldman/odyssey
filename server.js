@@ -226,8 +226,9 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 
     } //try
     catch {
-        res.status(500).send("server error");
+        // res.status(500).send("server error");
         console.error('Error uploading files:', error);
+        return res.status(500).send("Server error: " + error.message);
     }
 });
 

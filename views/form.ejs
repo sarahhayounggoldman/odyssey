@@ -287,23 +287,38 @@
   <p><label>Telephone: <input type=tel name="phone" value="<%= data.phone %>"></label></p>
   <p><label>E-mail address: <input type=email name="addr" value="<%= data.addr %>"></label></p> -->
 
-<p>
+<!-- <p>
    <label>Country:
      <select name="country">
       <option value="">select country</option>
        <% countryList.forEach(country => { %>
         <% if( data.country=="solo" ) { %>
-          <option value="<%= country %>" selected><%= country %></option>
+          <option id="country" value="<%= country %>" selected><%= country %></option>
           <% } else { %>
             <option value="<%= country %>"><%= country %></option>
             <% } %>
        <% }); %>
      </select>
    </label>
+</p> -->
+
+<p>
+  <label>Country:
+    <select name="country">
+     <option value="">select country</option>
+      <% countryList.forEach(country => { %>
+       <% if( data.country == country ) { %> <!-- Check if data.country matches the current country -->
+         <option value="<%= country %>" selected><%= country %></option>
+       <% } else { %>
+         <option value="<%= country %>"><%= country %></option>
+       <% } %>
+      <% }); %>
+    </select>
+  </label>
 </p>
 
 <p><label> City:
-<textarea rows="1" cols="40" name="city"><%= data.city %></textarea>
+<textarea rows="1" cols="40" name="city" id="city"><%= data.city %></textarea>
 </label></p>
 
 <p>
@@ -389,12 +404,26 @@
   <label><input type="radio" name="rating" value="5">5</label>
 </label></p> -->
 
-<p>
+<!-- <p>
   <label> Rate your experience on a scale from 1 (worst) to 5 (best):</label>
   <select name="rating">
     <option value="">select rating</option>
     <% for (let i = 1; i <= 5; i++) { %>
       <% if (data.rating && data.rating == i.toString()) { %>
+        <option id = "rating" value="<%= i %>" selected><%= i %></option>
+      <% } else { %>
+        <option value="<%= i %>"><%= i %></option>
+      <% } %>
+    <% } %>
+  </select>
+</p> -->
+
+<p>
+  <label> Rate your experience on a scale from 1 (worst) to 5 (best):</label>
+  <select name="rating">
+    <option value="">select rating</option>
+    <% for (let i = 1; i <= 5; i++) { %>
+      <% if (data.rating && data.rating === i.toString()) { %>
         <option value="<%= i %>" selected><%= i %></option>
       <% } else { %>
         <option value="<%= i %>"><%= i %></option>
@@ -404,7 +433,7 @@
 </p>
 
 <p><label>
-  <div class="input-group">
+  <div class="input-group">lo
     <label for='files'>Upload images:</label>
     <input id='files' type="file" accept="image/*" name="files" multiple>
   </div>
@@ -412,7 +441,7 @@
 
 
 <p><label>Caption:
-      <textarea rows="5" cols="50" name="caption"><%= data.caption %></textarea>
+      <textarea rows="5" cols="50" name="caption" id="caption"><%= data.caption %></textarea>
 </label></p>
 
   <p><button type="submit">Post</button></p>

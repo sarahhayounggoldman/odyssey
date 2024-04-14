@@ -16,8 +16,15 @@
   <p>
     <%= data.country %>
     <%= data.city %>
+    <!-- <%= data.categories %> -->
+    <% if (data.categories && data.categories.length > 0) { %>
+      <% data.categories.forEach(function(category) { %>
+        <%= category %>
+      <% }) %>
+    <% } %>
     <%= data.budget %>
     <%= data.travelType %>
+    <%= data.rating %>
     <%= data.caption %>
   </p>
 
@@ -275,7 +282,7 @@
   ];
 %>
 
-  <form id="post-form" method="POST" action="<%=action%>" enctype='multipart/form-data'>
+  <form id="post-form" method="POST" action="/explore" enctype='multipart/form-data'>
     <!-- <p><label>Customer name: <input name="customer" value="<%= data.customer %>"></label></p>
   <p><label>Telephone: <input type=tel name="phone" value="<%= data.phone %>"></label></p>
   <p><label>E-mail address: <input type=email name="addr" value="<%= data.addr %>"></label></p> -->
@@ -299,38 +306,38 @@
 <textarea rows="1" cols="40" name="city"><%= data.city %></textarea>
 </label></p>
 
-<p><label> Categories:
+<p>
+  <label> Categories:</label>
   <div>
-    <input type="checkbox" id="food" name="food" food />
+    <input type="checkbox" id="food" name="categories" value="food" <% if (data.categories && data.categories.includes("food")) { %> checked <% } %> />
     <label for="food">food</label>
   </div>
 
   <div>
-    <input type="checkbox" id="culture" name="culture" />
+    <input type="checkbox" id="culture" name="categories" value="culture" <% if (data.categories && data.categories.includes("culture")) { %> checked <% } %> />
     <label for="culture">culture</label>
   </div>
 
   <div>
-    <input type="checkbox" id="art" name="art" />
+    <input type="checkbox" id="art" name="categories" value="art" <% if (data.categories && data.categories.includes("art")) { %> checked <% } %> />
     <label for="art">art</label>
   </div>
 
   <div>
-    <input type="checkbox" id="nature" name="nature" />
+    <input type="checkbox" id="nature" name="categories" value="nature" <% if (data.categories && data.categories.includes("nature")) { %> checked <% } %> />
     <label for="nature">nature</label>
   </div>
 
   <div>
-    <input type="checkbox" id="history" name="history" />
+    <input type="checkbox" id="history" name="categories" value="history" <% if (data.categories && data.categories.includes("history")) { %> checked <% } %> />
     <label for="history">history</label>
   </div>
 
   <div>
-    <input type="checkbox" id="other" name="other" />
+    <input type="checkbox" id="other" name="categories" value="other" <% if (data.categories && data.categories.includes("other")) { %> checked <% } %> />
     <label for="other">other</label>
   </div>
-
-</label></p>
+</p>
 
 <p><label>What was your budget for this trip?
     <select name="budget">
@@ -374,18 +381,32 @@
       </select>
 </label></p>
 
-<p><label> Rate your experience on a scale from 1 (worst) to 5 (best):
-  <label><input type="radio" name="experience" value="1">1 </label>
-  <label><input type="radio" name="experience" value="2">2</label>
-  <label><input type="radio" name="experience" value="3">3</label>
-  <label><input type="radio" name="experience" value="4">4</label>
-  <label><input type="radio" name="experience" value="5">5</label>
-</label></p>
+<!-- <p><label> Rate your experience on a scale from 1 (worst) to 5 (best):
+  <label><input type="radio" name="rating" value="1">1 </label>
+  <label><input type="radio" name="rating" value="2">2</label>
+  <label><input type="radio" name="rating" value="3">3</label>
+  <label><input type="radio" name="rating" value="4">4</label>
+  <label><input type="radio" name="rating" value="5">5</label>
+</label></p> -->
+
+<p>
+  <label> Rate your experience on a scale from 1 (worst) to 5 (best):</label>
+  <select name="rating">
+    <option value="">select rating</option>
+    <% for (let i = 1; i <= 5; i++) { %>
+      <% if (data.rating && data.rating == i.toString()) { %>
+        <option value="<%= i %>" selected><%= i %></option>
+      <% } else { %>
+        <option value="<%= i %>"><%= i %></option>
+      <% } %>
+    <% } %>
+  </select>
+</p>
 
 <p><label>
   <div class="input-group">
     <label for='files'>Upload images:</label>
-    <input id='files' type="file" accept="image/*" name="photo">
+    <input id='files' type="file" accept="image/*" name="files" multiple>
   </div>
 </label></p>
 
@@ -399,6 +420,7 @@
 
   <!-- load local js -->
 <script src="/main.js"></script>
+<script src="/post.js"></script>
 </body>
 
 </html>

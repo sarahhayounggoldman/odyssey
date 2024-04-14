@@ -15,11 +15,13 @@ const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const flash = require('express-flash');
 const multer = require('multer');
+// const upload = multer({ dest: "uploads/" }); //multer
 
 // our modules loaded from cwd
 
 const { Connection } = require('./connection');
 const cs304 = require('./cs304');
+const { error } = require('console');
 
 // Create and configure the app
 
@@ -39,7 +41,7 @@ app.use(flash());
 
 
 app.use(serveStatic('public'));
-//app.use(express.static('public'));
+// app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 const mongoUri = cs304.getMongoUri();
@@ -52,12 +54,16 @@ app.use(cookieSession({
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
+//for multer/file upload
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // ================================================================
 // custom routes here
 
 const DB = process.env.USER;
-const WMDB = 'wmdb';
-const STAFF = 'staff';
+const ODYSSEY_USERS = 'odyssey_users';
+const ODYSSEY_POSTS = 'odyssey_users';
 
 // main page. This shows the use of session cookies
 app.get('/', (req, res) => {
@@ -158,8 +164,9 @@ app.get('/profile', async (req, res) => {
     return res.render('profile.ejs', {uid, visits});
 });
 
+//NEED TO DEBUG
 //multer for file upload
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', serveStatic('uploads'));
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -175,10 +182,80 @@ var storage = multer.diskStorage({
 
 //middleware
   var upload = multer({ storage: storage,
-    limits: {fileSize: 1_000 }});
+    limits: {fileSize: 1_000_000 }});
 
 //TBA: where to send it
 
+// app.post("/upload", upload.array("files"), uploadFiles);
+// function uploadFiles(req, res) {
+//     console.log(req.body);
+// }
+
+
+
+// POSTING A POST! We want to 1) add it to the database and 2) have it show up on the Explore and Profile pages of the user.
+//Starting with just Explore first!
+
+app.post('/explore', upload.array('files'), async (req, res) => {
+
+    try {
+
+    
+      const formData = req.body;
+  
+      const db = await Connection.open(mongoUri, DB);
+  
+      const result = await db.collection(ODYSSEY_POSTS).insertOne({
+        authorID: formData.authorID,
+        timestamp: new Date(),
+        location: {
+          country: formData.country,
+          city: formData.city,
+        },
+        categories: formData.categories,
+        budget: formData.budget,
+        travelType: formData.travelType,
+        rating: formData.rating,
+        content: {
+          text: formData.caption,
+          images: req.files.map(file => file.path)
+        },
+      });   
+
+      return res.redirect(`/explore`);
+
+    } //try
+    catch {
+        res.status(500).send("server error");
+        console.error('Error uploading files:', error);
+    }
+});
+
+
+
+// app.post("/explore", async (req, res) => {
+//     // examples of flashing
+//     const db = await Connection.open(mongoUri, DB);
+//     // var existingMovie = await db.collection(MOVIES).find({tt: parseInt(req.body.movieTt)}).toArray();
+
+//     var user = await db.collection(ODYSSEY_USERS).find({authorID: NULL}).toArray();
+//     // if (existingMovie.length!=0) {
+//     //     req.flash('error', `Error: tt .${req.body.movieTt} in use`);
+//     //     console.log(`tt .${req.body.movieTt} in use`);
+//     //     return res.render('form.ejs', {movieTt: req.body.movieTt, movieTitle: req.body.movieTitle, movieRelease: req.body.movieRelease});
+//     // }
+//     // else{
+//     //     var ourStaff = await db.collection(STAFF).find({uid: SCOTT}).toArray();
+//     //     const result = await db.collection(MOVIES).insertOne({
+//     //               tt: parseInt(req.body.movieTt),
+//     //               title: req.body.movieTitle,
+//     //               release: req.body.movieRelease,
+//     //               addedby: ourStaff[0]
+//     //     });
+//     //     console.log(`This is inserted: ${result.insertedId}`);
+//     //     return res.redirect(`/update/${req.body.movieTt}`); //redirect to update
+//     // } 
+// });
 
 // ================================================================
 // postlude

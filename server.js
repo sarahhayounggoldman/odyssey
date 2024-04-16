@@ -15,11 +15,13 @@ const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const flash = require('express-flash');
 const multer = require('multer');
+// const upload = multer({ dest: "uploads/" }); //multer
 
 // our modules loaded from cwd
 
 const { Connection } = require('./connection');
 const cs304 = require('./cs304');
+const { error } = require('console');
 
 // Create and configure the app
 
@@ -39,7 +41,7 @@ app.use(flash());
 
 
 app.use(serveStatic('public'));
-//app.use(express.static('public'));
+// app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 const mongoUri = cs304.getMongoUri();
@@ -52,12 +54,59 @@ app.use(cookieSession({
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
+//for multer/file upload
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+//NEED TO DEBUG
+//multer for file upload
+app.use('/uploads', serveStatic('uploads'));
+
+function timeString(dateObj) {
+    if( !dateObj) {
+        dateObj = new Date();
+    }
+    // convert val to two-digit string
+    d2 = (val) => val < 10 ? '0'+val : ''+val;
+    let hh = d2(dateObj.getHours())
+    let mm = d2(dateObj.getMinutes())
+    let ss = d2(dateObj.getSeconds())
+    return hh+mm+ss
+}
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+        let parts = file.originalname.split('.');
+        let ext = parts[parts.length-1];
+        let hhmmss = timeString();
+        cb(null, file.fieldname + '-' + hhmmss + '.' + ext);
+    }
+  })
+
+console.log('Multer configured successfully'); 
+
+//middleware
+  var upload = multer({ storage: storage,
+    limits: {fileSize: 1_000_000_000 }});
+
+//TBA: where to send it
+
+// app.post("/upload", upload.array("files"), uploadFiles);
+// function uploadFiles(req, res) {
+//     console.log(req.body);
+// }
+
+
+
 // ================================================================
 // custom routes here
 
 const DB = process.env.USER;
-const WMDB = 'wmdb';
-const STAFF = 'staff';
+const ODYSSEY_USERS = 'odyssey_users';
+const ODYSSEY_POSTS = 'odyssey_posts';
 
 // main page. This shows the use of session cookies
 app.get('/', (req, res) => {
@@ -157,6 +206,138 @@ app.get('/profile', async (req, res) => {
     req.session.visits = visits;
     return res.render('profile.ejs', {uid, visits});
 });
+
+
+
+// //multer for file upload
+// app.use('/uploads', serveStatic('uploads'));
+
+// function timeString(dateObj) {
+//     if( !dateObj) {
+//         dateObj = new Date();
+//     }
+//     // convert val to two-digit string
+//     d2 = (val) => val < 10 ? '0'+val : ''+val;
+//     let hh = d2(dateObj.getHours())
+//     let mm = d2(dateObj.getMinutes())
+//     let ss = d2(dateObj.getSeconds())
+//     return hh+mm+ss
+// }
+
+// var storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//       cb(null, 'uploads')
+//     },
+//     filename: function (req, file, cb) {
+//         let parts = file.originalname.split('.');
+//         let ext = parts[parts.length-1];
+//         let hhmmss = timeString();
+//         cb(null, file.fieldname + '-' + hhmmss + '.' + ext);
+//     }
+//   })
+
+// console.log('Multer configured successfully'); 
+
+// //middleware
+//   var upload = multer({ storage: storage,
+//     limits: {fileSize: 1_000_000_000 }});
+
+// POSTING A POST! We want to 1) add it to the database and 2) have it show up on the Explore and Profile pages of the user.
+//Starting with just Explore first!
+
+// app.post('/explore', upload.array('files'), async (req, res) => {
+
+//     try {
+//       const formData = req.body;
+//       const db = await Connection.open(mongoUri, DB);
+  
+//       const result = await db.collection(ODYSSEY_POSTS).insertOne({
+//         authorID: formData.authorID,
+//         timestamp: new Date(),
+//         location: {
+//           country: formData.country,
+//           city: formData.city,
+//         },
+//         categories: formData.categories,
+//         budget: formData.budget,
+//         travelType: formData.travelType,
+//         rating: formData.rating,
+//         content: {
+//           text: formData.caption,
+//           images: req.files.map(file => file.path)
+//         },
+//       });   
+
+//       return res.redirect(`/explore`);
+
+//     } //try
+//     catch(error) {
+//         // res.status(500).send("server error");
+//         console.error('Error uploading files:', error);
+//         return res.status(500).send("Server error: " + error.message);
+//     }
+// });
+
+app.post('/explore', upload.array('files'), async (req, res) => {
+    try {
+        console.log('GOT HERE');
+        console.log('Received form submission:', req.body);
+        console.log('Uploaded files:', req.files);
+
+        const formData = req.body;
+        const db = await Connection.open(mongoUri, DB);
+  
+        const result = await db.collection(ODYSSEY_POSTS).insertOne({
+            authorID: formData.authorID,
+            timestamp: new Date(),
+            location: {
+                country: formData.country,
+                city: formData.city,
+            },
+            categories: formData.categories,
+            // categories: Array.isArray(formData.categories) ? formData.categories : [formData.categories],
+
+            budget: formData.budget,
+            travelType: formData.travelType,
+            rating: formData.rating,
+            content: {
+                text: formData.caption,
+                images: req.files.map(file => file.path)
+            },
+        });   
+
+        return res.redirect(`/explore`);
+    } catch (error) {
+        console.error('Error uploading files:', error);
+        return res.status(500).send("Server error: " + error.message);
+    }
+});
+
+
+
+// app.post("/explore", async (req, res) => {
+//     // examples of flashing
+//     const db = await Connection.open(mongoUri, DB);
+//     // var existingMovie = await db.collection(MOVIES).find({tt: parseInt(req.body.movieTt)}).toArray();
+
+//     var user = await db.collection(ODYSSEY_USERS).find({authorID: NULL}).toArray();
+//     // if (existingMovie.length!=0) {
+//     //     req.flash('error', `Error: tt .${req.body.movieTt} in use`);
+//     //     console.log(`tt .${req.body.movieTt} in use`);
+//     //     return res.render('form.ejs', {movieTt: req.body.movieTt, movieTitle: req.body.movieTitle, movieRelease: req.body.movieRelease});
+//     // }
+//     // else{
+//     //     var ourStaff = await db.collection(STAFF).find({uid: SCOTT}).toArray();
+//     //     const result = await db.collection(MOVIES).insertOne({
+//     //               tt: parseInt(req.body.movieTt),
+//     //               title: req.body.movieTitle,
+//     //               release: req.body.movieRelease,
+//     //               addedby: ourStaff[0]
+//     //     });
+//     //     console.log(`This is inserted: ${result.insertedId}`);
+//     //     return res.redirect(`/update/${req.body.movieTt}`); //redirect to update
+//     // } 
+// });
 
 // ================================================================
 // postlude

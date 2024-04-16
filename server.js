@@ -17,9 +17,13 @@ const flash = require('express-flash');
 const multer = require('multer');
 // const upload = multer({ dest: "uploads/" }); //multer
 
+ // for logins
+const bcrypt = require('bcrypt')
+const ROUNDS = 15;
+
 // our modules loaded from cwd
 
-const { Connection } = require('./connection');
+const { Connection } = require('./connection'); //QUESTION - does this need to be .js?
 const cs304 = require('./cs304');
 const { error } = require('console');
 
@@ -107,6 +111,8 @@ console.log('Multer configured successfully');
 const DB = process.env.USER;
 const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
+// const DBNAME = "bcrypt";
+// const USERS = "users";
 
 // main page. This shows the use of session cookies
 app.get('/', (req, res) => {
@@ -196,16 +202,7 @@ app.get('/saved', async (req, res) => {
     return res.render('saved.ejs', {uid, visits});
 });
 
-app.get('/profile', async (req, res) => {
-    // const db = await Connection.open(mongoUri, WMDB);
-    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-    // console.log('len', all.length, 'first', all[0]);
-    let uid = req.session.uid || 'unknown';
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    return res.render('profile.ejs', {uid, visits});
-});
+
 
 
 
@@ -337,6 +334,115 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 //     //     console.log(`This is inserted: ${result.insertedId}`);
 //     //     return res.redirect(`/update/${req.body.movieTt}`); //redirect to update
 //     // } 
+// });
+
+
+//Code for Login
+// app.get("/", (req, res) => {
+//     return res.render("index.ejs", {})
+//   });
+
+app.get('/profile', async (req, res) => {
+    // const db = await Connection.open(mongoUri, WMDB);
+    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
+    // console.log('len', all.length, 'first', all[0]);
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    return res.render('profile.ejs', {uid, visits});
+});
+  
+app.post("/join", async (req, res) => {
+try {
+    const username = req.body.username;
+    const password = req.body.password;
+    const db = await Connection.open(mongoUri, DBNAME);
+    var existingUser = await db.collection(USERS).findOne({username: username});
+    if (existingUser) {
+    req.flash('error', "Login already exists - please try logging in instead.");
+    return res.redirect('/')
+    }
+    const hash = await bcrypt.hash(password, ROUNDS);
+    await db.collection(USERS).insertOne({
+        username: username,
+        hash: hash
+    });
+    console.log('successfully joined', username, password, hash);
+    req.flash('info', 'successfully joined and logged in as ' + username);
+    req.session.username = username;
+    req.session.loggedIn = true;
+    return res.redirect('/hello');
+} catch (error) {
+    req.flash('error', `Form submission error: ${error}`);
+    return res.redirect('/')
+}
+});
+
+app.post("/login", async (req, res) => {
+try {
+    const username = req.body.username;
+    const password = req.body.password;
+    const db = await Connection.open(mongoUri, DBNAME);
+    var existingUser = await db.collection(USERS).findOne({username: username});
+    console.log('user', existingUser);
+    if (!existingUser) {
+    req.flash('error', "Username does not exist - try again.");
+    return res.redirect('/')
+    }
+    const match = await bcrypt.compare(password, existingUser.hash); 
+    console.log('match', match);
+    if (!match) {
+        req.flash('error', "Username or password incorrect - try again.");
+        return res.redirect('/')
+    }
+    req.flash('info', 'successfully logged in as ' + username);
+    req.session.username = username;
+    req.session.loggedIn = true;
+    console.log('login as', username);
+    return res.redirect('/hello');
+} catch (error) {
+    req.flash('error', `Form submission error: ${error}`);
+    return res.redirect('/')
+}
+});
+
+app.post('/logout', (req,res) => {
+if (req.session.username) {
+    req.session.username = null;
+    req.session.loggedIn = false;
+    req.flash('info', 'You are logged out');
+    return res.redirect('/');
+} else {
+    req.flash('error', 'You are not logged in - please do so.');
+    return res.redirect('/');
+}
+});
+
+// app.get('/hello', (req,res) => {
+// if (!req.session.loggedIn) {
+//     req.flash('error', 'You are not logged in - please do so.');
+//     return res.redirect("/");
+// }
+// return res.render('hello.ejs', {username: req.session.username});
+// });
+
+// function requiresLogin(req, res, next) {
+// if (!req.session.loggedIn) {
+//     req.flash('error', 'This page requires you to be logged in - please do so.');
+//     return res.redirect("/");
+// } else {
+//     next();
+// }
+// }
+    
+
+// app.get('/about', requiresLogin, (req,res) => {
+// return res.render('about.ejs', {username: req.session.username});
+// });
+
+// app.get('/profile', requiresLogin, (req,res) => {
+// return res.render('profile.ejs', {username: req.session.username});
 // });
 
 // ================================================================

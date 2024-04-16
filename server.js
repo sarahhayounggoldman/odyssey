@@ -352,6 +352,17 @@ app.get('/profile', async (req, res) => {
     req.session.visits = visits;
     return res.render('profile.ejs', {uid, visits});
 });
+
+app.get('/loggedIn', async (req, res) => {
+    // const db = await Connection.open(mongoUri, WMDB);
+    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
+    // console.log('len', all.length, 'first', all[0]);
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    return res.render('loggedIn.ejs', {uid, visits});
+});
   
 app.post("/join", async (req, res) => {
 try {
@@ -372,10 +383,10 @@ try {
     req.flash('info', 'successfully joined and logged in as ' + username);
     req.session.username = username;
     req.session.loggedIn = true;
-    return res.redirect('/hello');
+    return res.redirect('/loggedIn');
 } catch (error) {
     req.flash('error', `Form submission error: ${error}`);
-    return res.redirect('/')
+    return res.redirect('/profile')
 }
 });
 
@@ -388,13 +399,13 @@ try {
     console.log('user', existingUser);
     if (!existingUser) {
     req.flash('error', "Username does not exist - try again.");
-    return res.redirect('/')
+    return res.redirect('/profile')
     }
     const match = await bcrypt.compare(password, existingUser.hash); 
     console.log('match', match);
     if (!match) {
         req.flash('error', "Username or password incorrect - try again.");
-        return res.redirect('/')
+        return res.redirect('/profile')
     }
     req.flash('info', 'successfully logged in as ' + username);
     req.session.username = username;
@@ -403,7 +414,7 @@ try {
     return res.redirect('/hello');
 } catch (error) {
     req.flash('error', `Form submission error: ${error}`);
-    return res.redirect('/')
+    return res.redirect('/profile')
 }
 });
 
@@ -415,7 +426,7 @@ if (req.session.username) {
     return res.redirect('/');
 } else {
     req.flash('error', 'You are not logged in - please do so.');
-    return res.redirect('/');
+    return res.redirect('/profile');
 }
 });
 

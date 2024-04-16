@@ -207,6 +207,8 @@ app.get('/profile', async (req, res) => {
     return res.render('profile.ejs', {uid, visits});
 });
 
+
+
 // //multer for file upload
 // app.use('/uploads', serveStatic('uploads'));
 

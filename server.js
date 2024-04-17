@@ -116,7 +116,20 @@ const ODYSSEY_POSTS = 'odyssey_posts';
 // const USERS = "users";
 
 // main page. This shows the use of session cookies
+
 app.get('/', (req, res) => {
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    console.log('uid', uid);
+    if (!req.session.loggedIn) {
+        req.flash('error', 'You are not logged in - please do so.');
+    }
+    return res.render('login.ejs', {uid, visits});
+});
+
+app.get('/home', (req, res) => {
     let uid = req.session.uid || 'unknown';
     let visits = req.session.visits || 0;
     visits++;
@@ -131,7 +144,7 @@ app.post('/set-uid/', (req, res) => {
     console.log('in set-uid');
     req.session.uid = req.body.uid;
     req.session.logged_in = true;
-    res.redirect('/');
+    res.redirect('/home');
 });
 
 // shows how logins might work via Ajax
@@ -154,7 +167,7 @@ app.post('/set-uid-ajax/', (req, res) => {
 //     console.log('in logout');
 //     req.session.uid = false;
 //     req.session.logged_in = false;
-//     res.redirect('/');
+//     res.redirect('/home');
 // });
 
 // two kinds of forms (GET and POST), both of which are pre-filled with data
@@ -211,6 +224,16 @@ app.get('/search', async (req, res) => {
     res.render('searchResults', { posts: posts });
 });
 
+app.get('/profile', async (req, res) => {
+    // const db = await Connection.open(mongoUri, WMDB);
+    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
+    // console.log('len', all.length, 'first', all[0]);
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    return res.render('profile.ejs', {uid, visits});
+});
 
 
 
@@ -346,20 +369,6 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 
 
 //Code for Login
-app.get('/profile', async (req, res) => {
-    // const db = await Connection.open(mongoUri, WMDB);
-    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-    // console.log('len', all.length, 'first', all[0]);
-    let uid = req.session.uid || 'unknown';
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    if (!req.session.loggedIn) {
-        req.flash('error', 'You are not logged in - please do so.');
-    }
-    return res.render('profile.ejs', {uid, visits});
-});
-
 app.get('/loggedIn', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
@@ -380,7 +389,7 @@ try {
     if (existingUser) {
         console.log("1");
         req.flash('error', "Login already exists - please try logging in instead.");
-        return res.redirect('/profile')
+        return res.redirect('/')
     }
     const hash = await bcrypt.hash(password, ROUNDS);
     await db.collection(ODYSSEY_USERS).insertOne({
@@ -396,7 +405,7 @@ try {
 } catch (error) {
     console.log("3");
     req.flash('error', `Form submission error: ${error}`);
-    return res.redirect('/profile')
+    return res.redirect('/')
 }
 });
 
@@ -410,13 +419,13 @@ try {
     if (!existingUser) {
     console.log("4");
     req.flash('error', "Username does not exist - try again.");
-    return res.redirect('/profile')
+    return res.redirect('/')
     }
     const match = await bcrypt.compare(password, existingUser.hash); 
     console.log('match', match);
     if (!match) {
         req.flash('error', "Username or password incorrect - try again.");
-        return res.redirect('/profile')
+        return res.redirect('/')
     }
     console.log("5");
     req.flash('info', 'successfully logged in as ' + username);
@@ -427,7 +436,7 @@ try {
 } catch (error) {
     console.log("6");
     req.flash('error', `Form submission error: ${error}`);
-    return res.redirect('/profile')
+    return res.redirect('/')
 }
 });
 
@@ -437,11 +446,11 @@ if (req.session.username) {
     req.session.loggedIn = false;
     console.log("7");
     req.flash('info', 'You are logged out');
-    return res.redirect('/profile');
+    return res.redirect('/');
 } else {
     console.log("8");
     req.flash('error', 'You are not logged in - please do so.');
-    return res.redirect('/profile');
+    return res.redirect('/');
 }
 });
 

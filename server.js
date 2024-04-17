@@ -108,7 +108,8 @@ console.log('Multer configured successfully');
 // ================================================================
 // custom routes here
 
-const DB = process.env.USER;
+// const DB = process.env.USER;
+const DB = 'odyssey';
 const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
 // const DBNAME = "bcrypt";
@@ -350,10 +351,6 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 
 
 //Code for Login
-// app.get("/", (req, res) => {
-//     return res.render("index.ejs", {})
-//   });
-
 app.get('/profile', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
@@ -362,6 +359,9 @@ app.get('/profile', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
+    if (!req.session.loggedIn) {
+        req.flash('error', 'You are not logged in - please do so.');
+    }
     return res.render('profile.ejs', {uid, visits});
 });
 
@@ -383,9 +383,9 @@ try {
     const db = await Connection.open(mongoUri, DB);
     var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
     if (existingUser) {
-    console.log("1");
-    req.flash('error', "Login already exists - please try logging in instead.");
-    return res.redirect('/profile')
+        console.log("1");
+        req.flash('error', "Login already exists - please try logging in instead.");
+        return res.redirect('/profile')
     }
     const hash = await bcrypt.hash(password, ROUNDS);
     await db.collection(ODYSSEY_USERS).insertOne({
@@ -450,21 +450,7 @@ if (req.session.username) {
 }
 });
 
-// app.post('/logout/', (req, res) => {
-//     console.log('in logout');
-//     req.session.uid = false;
-//     req.session.logged_in = false;
-//     req.flash('error', "Login already exists - please try logging in instead.");
-//     res.redirect('/profile');
-// });
 
-// app.get('/hello', (req,res) => {
-// if (!req.session.loggedIn) {
-//     req.flash('error', 'You are not logged in - please do so.');
-//     return res.redirect("/");
-// }
-// return res.render('hello.ejs', {username: req.session.username});
-// });
 
 // function requiresLogin(req, res, next) {
 // if (!req.session.loggedIn) {

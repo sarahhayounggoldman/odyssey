@@ -423,11 +423,11 @@ try {
         req.flash('error', "Username or password incorrect - try again.");
         return res.redirect('/profile')
     }
+    console.log("5");
     req.flash('info', 'successfully logged in as ' + username);
     req.session.username = username;
     req.session.loggedIn = true;
     console.log('login as', username);
-    console.log("5");
     return res.redirect('/loggedIn');
 } catch (error) {
     console.log("6");

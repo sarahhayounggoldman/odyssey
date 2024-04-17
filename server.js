@@ -202,6 +202,18 @@ app.get('/saved', async (req, res) => {
     return res.render('saved.ejs', {uid, visits});
 });
 
+app.get('/search', async (req, res) => {
+    const searchedCountry = req.query.country;
+    const db = await Connection.open(mongoUri, DB);
+    try {
+        const posts = await db.collection(ODYSSEY_POSTS).find({"location.country": searchedCountry}).toArray();
+        console.log(posts); // check output
+        res.render('searchResults', { posts: posts });
+    } catch (error) {
+        console.error('Error retrieving search results:', error);
+        res.status(500).send("Server error: " + error.message);
+    }
+});
 
 
 

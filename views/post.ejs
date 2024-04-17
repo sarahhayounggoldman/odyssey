@@ -1,27 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Travel Log Post</title>
-</head>
-<body>
-    <div class="post-container">
-        <div class="header">
-            <div class="location"><%= post.location %></div>
-            <div class="date-time"><%= post.dateTime %></div>
-        </div>
-        <div class="username">@<%= post.username %></div>
-        <div class="image-container">
-            <img src="<%= post.imageUrl %>" alt="Travel image of <%= post.location %>">
-        </div>
-        <div class="tags">
-            <span class="tag">Budget: <%= post.budget %></span>
-            <span class="tag">Travel Type: <%= post.travelType %></span>
-            <span class="tag">Rating: <%= post.rating %></span>
-        </div>
-        <div class="caption"><%= post.caption %></div>
+<div class="post-container">
+    <div class="header">
+        <div class="location"><%= post.location.country %>, <%= post.location.city %></div>
+        <div class="date-time"><%= new Date(post.timestamp).toISOString() %></div>
     </div>
-</body>
-</html>
+    <div class="username">@<%= post.authorID %></div>
+    <div class="image-container">
+        <% if (post.content.images) { %>
+            <img src="<%= post.content.images %>" alt="Travel image of <%= post.location.city %>">
+        <% } else { %>
+            <img src="/path/to/default-image.jpg" alt="Default Image">
+        <% } %>
+    </div>
+    <div class="tags">
+        <span class="tag">Budget: <%= post.budget %></span>
+        <span class="tag">Travel Type: <%= post.travelType %></span>
+        <span class="tag">Rating: <%= post.rating %></span>
+    </div>
+    <div class="caption"><%= post.content.text %></div>
+</div>

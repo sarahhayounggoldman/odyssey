@@ -1,29 +1,29 @@
-const form = document.getElementById("post-form");
+// const form = document.getElementById("post-form");
 
-form.addEventListener("submit", submitForm);
+// form.addEventListener("submit", submitForm);
 
-function submitForm(e) {
-  e.preventDefault();
+// function submitForm(e) {
+//   e.preventDefault();
 
-//TEST form elt exists
-  console.log("Form:", form);
+// //TEST form elt exists
+//   console.log("Form:", form);
 
   
-  const formData = new FormData(form);
+//   const formData = new FormData(form);
 
-  console.log("FormData:", formData);
+//   console.log("FormData:", formData);
 
-  formData.forEach((value, key) => {
-    console.log(`${key}: ${value}`);
-  });
+//   formData.forEach((value, key) => {
+//     console.log(`${key}: ${value}`);
+//   });
 
-  fetch("http://localhost:9132/explore", {
-      method: 'POST',
-      body: formData,
-  })
-  .then((res) => console.log(res))
-  .catch((err) => console.error("Error occurred", err));
-}
+//   fetch("http://localhost:9132/explore", {
+//       method: 'POST',
+//       body: formData,
+//   })
+//   .then((res) => console.log(res))
+//   .catch((err) => console.error("Error occurred", err));
+// }
 
 // const form = document.getElementById("post-form");
 

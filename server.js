@@ -108,7 +108,8 @@ console.log('Multer configured successfully');
 // ================================================================
 // custom routes here
 
-const DB = process.env.USER;
+// const DB = process.env.USER;
+const DB = 'odyssey';
 const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
 // const DBNAME = "bcrypt";
@@ -149,12 +150,12 @@ app.post('/set-uid-ajax/', (req, res) => {
 });
 
 // conventional non-Ajax logout, so redirects
-app.post('/logout/', (req, res) => {
-    console.log('in logout');
-    req.session.uid = false;
-    req.session.logged_in = false;
-    res.redirect('/');
-});
+// app.post('/logout/', (req, res) => {
+//     console.log('in logout');
+//     req.session.uid = false;
+//     req.session.logged_in = false;
+//     res.redirect('/');
+// });
 
 // two kinds of forms (GET and POST), both of which are pre-filled with data
 // from previous request, including a SELECT menu. Everything but radio buttons
@@ -345,10 +346,6 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 
 
 //Code for Login
-// app.get("/", (req, res) => {
-//     return res.render("index.ejs", {})
-//   });
-
 app.get('/profile', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
@@ -357,6 +354,9 @@ app.get('/profile', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
+    if (!req.session.loggedIn) {
+        req.flash('error', 'You are not logged in - please do so.');
+    }
     return res.render('profile.ejs', {uid, visits});
 });
 
@@ -368,21 +368,22 @@ app.get('/loggedIn', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('loggedIn.ejs', {uid, visits});
+    return res.render('loggedIn.ejs', {uid, visits, username: req.session.username});
 });
   
 app.post("/join", async (req, res) => {
 try {
     const username = req.body.username;
     const password = req.body.password;
-    const db = await Connection.open(mongoUri, DBNAME);
-    var existingUser = await db.collection(USERS).findOne({username: username});
+    const db = await Connection.open(mongoUri, DB);
+    var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
     if (existingUser) {
-    req.flash('error', "Login already exists - please try logging in instead.");
-    return res.redirect('/')
+        console.log("1");
+        req.flash('error', "Login already exists - please try logging in instead.");
+        return res.redirect('/profile')
     }
     const hash = await bcrypt.hash(password, ROUNDS);
-    await db.collection(USERS).insertOne({
+    await db.collection(ODYSSEY_USERS).insertOne({
         username: username,
         hash: hash
     });
@@ -390,8 +391,10 @@ try {
     req.flash('info', 'successfully joined and logged in as ' + username);
     req.session.username = username;
     req.session.loggedIn = true;
+    console.log("2");
     return res.redirect('/loggedIn');
 } catch (error) {
+    console.log("3");
     req.flash('error', `Form submission error: ${error}`);
     return res.redirect('/profile')
 }
@@ -401,10 +404,11 @@ app.post("/login", async (req, res) => {
 try {
     const username = req.body.username;
     const password = req.body.password;
-    const db = await Connection.open(mongoUri, DBNAME);
-    var existingUser = await db.collection(USERS).findOne({username: username});
+    const db = await Connection.open(mongoUri, DB);
+    var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
     console.log('user', existingUser);
     if (!existingUser) {
+    console.log("4");
     req.flash('error', "Username does not exist - try again.");
     return res.redirect('/profile')
     }
@@ -414,12 +418,14 @@ try {
         req.flash('error', "Username or password incorrect - try again.");
         return res.redirect('/profile')
     }
+    console.log("5");
     req.flash('info', 'successfully logged in as ' + username);
     req.session.username = username;
     req.session.loggedIn = true;
     console.log('login as', username);
-    return res.redirect('/hello');
+    return res.redirect('/loggedIn');
 } catch (error) {
+    console.log("6");
     req.flash('error', `Form submission error: ${error}`);
     return res.redirect('/profile')
 }
@@ -429,21 +435,17 @@ app.post('/logout', (req,res) => {
 if (req.session.username) {
     req.session.username = null;
     req.session.loggedIn = false;
+    console.log("7");
     req.flash('info', 'You are logged out');
-    return res.redirect('/');
+    return res.redirect('/profile');
 } else {
+    console.log("8");
     req.flash('error', 'You are not logged in - please do so.');
     return res.redirect('/profile');
 }
 });
 
-// app.get('/hello', (req,res) => {
-// if (!req.session.loggedIn) {
-//     req.flash('error', 'You are not logged in - please do so.');
-//     return res.redirect("/");
-// }
-// return res.render('hello.ejs', {username: req.session.username});
-// });
+
 
 // function requiresLogin(req, res, next) {
 // if (!req.session.loggedIn) {

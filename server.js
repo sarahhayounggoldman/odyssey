@@ -359,17 +359,6 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 
 
 //Code for Login
-// app.get('/loggedIn', async (req, res) => {
-//     // const db = await Connection.open(mongoUri, WMDB);
-//     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-//     // console.log('len', all.length, 'first', all[0]);
-//     let uid = req.session.uid || 'unknown';
-//     let visits = req.session.visits || 0;
-//     visits++;
-//     req.session.visits = visits;
-//     return res.render('loggedIn.ejs', {uid, visits, username: req.session.username});
-// });
-
 app.get('/profile', requiresLogin, async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();

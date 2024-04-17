@@ -149,12 +149,12 @@ app.post('/set-uid-ajax/', (req, res) => {
 });
 
 // conventional non-Ajax logout, so redirects
-app.post('/logout/', (req, res) => {
-    console.log('in logout');
-    req.session.uid = false;
-    req.session.logged_in = false;
-    res.redirect('/');
-});
+// app.post('/logout/', (req, res) => {
+//     console.log('in logout');
+//     req.session.uid = false;
+//     req.session.logged_in = false;
+//     res.redirect('/');
+// });
 
 // two kinds of forms (GET and POST), both of which are pre-filled with data
 // from previous request, including a SELECT menu. Everything but radio buttons
@@ -373,7 +373,7 @@ app.get('/loggedIn', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('loggedIn.ejs', {uid, visits});
+    return res.render('loggedIn.ejs', {uid, visits, username: req.session.username});
 });
   
 app.post("/join", async (req, res) => {
@@ -449,6 +449,14 @@ if (req.session.username) {
     return res.redirect('/profile');
 }
 });
+
+// app.post('/logout/', (req, res) => {
+//     console.log('in logout');
+//     req.session.uid = false;
+//     req.session.logged_in = false;
+//     req.flash('error', "Login already exists - please try logging in instead.");
+//     res.redirect('/profile');
+// });
 
 // app.get('/hello', (req,res) => {
 // if (!req.session.loggedIn) {

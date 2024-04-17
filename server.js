@@ -368,14 +368,15 @@ app.post("/join", async (req, res) => {
 try {
     const username = req.body.username;
     const password = req.body.password;
-    const db = await Connection.open(mongoUri, DBNAME);
-    var existingUser = await db.collection(USERS).findOne({username: username});
+    const db = await Connection.open(mongoUri, DB);
+    var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
     if (existingUser) {
+    console.log("1");
     req.flash('error', "Login already exists - please try logging in instead.");
-    return res.redirect('/')
+    return res.redirect('/profile')
     }
     const hash = await bcrypt.hash(password, ROUNDS);
-    await db.collection(USERS).insertOne({
+    await db.collection(ODYSSEY_USERS).insertOne({
         username: username,
         hash: hash
     });
@@ -383,8 +384,10 @@ try {
     req.flash('info', 'successfully joined and logged in as ' + username);
     req.session.username = username;
     req.session.loggedIn = true;
+    console.log("2");
     return res.redirect('/loggedIn');
 } catch (error) {
+    console.log("3");
     req.flash('error', `Form submission error: ${error}`);
     return res.redirect('/profile')
 }
@@ -394,10 +397,11 @@ app.post("/login", async (req, res) => {
 try {
     const username = req.body.username;
     const password = req.body.password;
-    const db = await Connection.open(mongoUri, DBNAME);
-    var existingUser = await db.collection(USERS).findOne({username: username});
+    const db = await Connection.open(mongoUri, DB);
+    var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
     console.log('user', existingUser);
     if (!existingUser) {
+    console.log("4");
     req.flash('error', "Username does not exist - try again.");
     return res.redirect('/profile')
     }
@@ -411,8 +415,10 @@ try {
     req.session.username = username;
     req.session.loggedIn = true;
     console.log('login as', username);
-    return res.redirect('/hello');
+    console.log("5");
+    return res.redirect('/loggedIn');
 } catch (error) {
+    console.log("6");
     req.flash('error', `Form submission error: ${error}`);
     return res.redirect('/profile')
 }
@@ -422,9 +428,11 @@ app.post('/logout', (req,res) => {
 if (req.session.username) {
     req.session.username = null;
     req.session.loggedIn = false;
+    console.log("7");
     req.flash('info', 'You are logged out');
-    return res.redirect('/');
+    return res.redirect('/profile');
 } else {
+    console.log("8");
     req.flash('error', 'You are not logged in - please do so.');
     return res.redirect('/profile');
 }

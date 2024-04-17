@@ -1,9 +1,12 @@
-/* Navigation Bar Styles */
+/* Importing Google Font 'Fredoka' */
 @import url('https://fonts.googleapis.com/css?family=Fredoka');
 
+/* Global styles */
 body {
   background-color: #f9fbf2;
   font-family: 'Fredoka', sans-serif;
+  margin: 0;
+  padding: 20px;
 }
 
 main {
@@ -11,16 +14,17 @@ main {
   text-align: center;
 }
 
+/* Navigation bar styles */
 .navigation {
   background-color: #d7f9ff;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0; 
+  padding: 10px 0;
   position: fixed;
   top: 0;
-  left: 0; 
+  left: 0;
   right: 0;
   width: 100%;
   z-index: 1000;
@@ -28,18 +32,19 @@ main {
 }
 
 .navigation .logo a {
-  color: #0e1c36;
+  color: #000000;
   font-size: 24px;
   text-decoration: none;
-  padding-left: 10px; 
+  padding-left: 10px;
 }
 
-
+/* Search container within the navigation */
 .navigation-search-container {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .search-field {
@@ -47,14 +52,36 @@ main {
   border-radius: 20px;
   font-size: 16px;
   padding: 8px 15px;
+  padding-right: 45px; /* Increased padding to avoid overlap */
   width: 60%;
+  position: relative;
 }
 
 .fa-search {
   position: absolute;
-  left: 10px;
+  left: 30px;
+  color: #ccc;
 }
 
+/* Adjusted search button to fit inside the search field */
+button {
+  position: absolute;
+  right: 10px; /* Adjusted to be inside the search field */
+  border: none;
+  background-color: #1b9ee9; /* Matching the logo color */
+  color: white;
+  padding: 4px 8px; /* Adjusted padding */
+  border-radius: 20px; /* Keeping the rounded edges */
+  cursor: pointer;
+  font-size: 12px; /* Smaller font size */
+  outline: none;
+}
+
+button:hover {
+  background-color: #016faf; /* Slightly darker on hover */
+}
+
+/* Link styles in the navigation */
 .navigation-links {
   display: flex;
   align-items: center;
@@ -64,26 +91,14 @@ main {
 }
 
 .navigation-links a {
-  color: #0e1c36;
+  color: #000000;
   text-decoration: none;
-  margin: 0 5px; 
-  font-size: 16px; 
+  margin: 0 5px;
+  font-size: 16px;
   padding: 10px;
 }
 
-.notification-bubble {
-  background-color: #ed4956;
-  border-radius: 10px;
-  color: white;
-  display: block;
-  font-size: 12px;
-  padding: 2px 5px;
-  position: absolute;
-  top: -10px;
-  right: -10px;
-}
-
-/* Responsive adjustments */
+/* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
   .navigation-links, .navigation-search-container {
     flex-direction: column;
@@ -91,11 +106,11 @@ main {
   }
 
   .search-field {
-    width: 80%; 
+    width: 80%; /* Larger on smaller screens */
   }
 
   .navigation-links a {
-    margin: 5px 0; 
+    margin: 5px 0;
   }
 
   .navigation {
@@ -105,50 +120,7 @@ main {
   }
 }
 
-.bottom-bar {
-  background-color: #d7f9ff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0; 
-  position: fixed;
-  left: 0; 
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  z-index: 0;
-  height: 60px;
-}
-
-#post-button{
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* footer */
-/* .footer {
-  color: #565656;
-  font-family: verdana;
-  font-size: 12px;
-  padding-bottom: 30px;
-  padding-top: 60px;
-  text-align: center;
-} */
-
-
-
-
-/* CSS for post */
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 20px;
-}
-
+/* Styles for posts and forms */
 .post-container, .form-container {
   background-color: #fff;
   border: 1px solid #ddd;
@@ -174,7 +146,7 @@ body {
 
 .username {
   font-size: 14px;
-  color: #333;
+  color: #1b9ee9;
   margin-bottom: 10px;
   font-weight: bold;
 }
@@ -193,42 +165,4 @@ body {
   font-size: 12px;
   margin-right: 5px;
   margin-bottom: 5px;
-  color: #555;
-}
-
-.caption {
-  font-size: 14px;
-  color: #333;
-}
-
-.form-container form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-container label {
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #333;
-}
-
-.form-container input, .form-container select, .form-container textarea, button {
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-}
-
-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background-color: #45a049;
-}
+  color

@@ -129,38 +129,38 @@ app.get('/', (req, res) => {
     return res.render('login.ejs', {uid, visits});
 });
 
-app.get('/home', (req, res) => {
+app.get('/home', requiresLogin, (req, res) => {
     let uid = req.session.uid || 'unknown';
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
     console.log('uid', uid);
-    return res.render('index.ejs', {uid, visits});
+    return res.render('index.ejs', {uid, visits, username: req.session.username});
 });
 
 // shows how logins might work by setting a value in the session
 // This is a conventional, non-Ajax, login, so it redirects to main page 
-app.post('/set-uid/', (req, res) => {
-    console.log('in set-uid');
-    req.session.uid = req.body.uid;
-    req.session.logged_in = true;
-    res.redirect('/home');
-});
+// app.post('/set-uid/', (req, res) => {
+//     console.log('in set-uid');
+//     req.session.uid = req.body.uid;
+//     req.session.logged_in = true;
+//     res.redirect('/home');
+// });
 
 // shows how logins might work via Ajax
-app.post('/set-uid-ajax/', (req, res) => {
-    console.log(Object.keys(req.body));
-    console.log(req.body);
-    let uid = req.body.uid;
-    if(!uid) {
-        res.send({error: 'no uid'}, 400);
-        return;
-    }
-    req.session.uid = req.body.uid;
-    req.session.logged_in = true;
-    console.log('logged in via ajax as ', req.body.uid);
-    res.send({error: false});
-});
+// app.post('/set-uid-ajax/', (req, res) => {
+//     console.log(Object.keys(req.body));
+//     console.log(req.body);
+//     let uid = req.body.uid;
+//     if(!uid) {
+//         res.send({error: 'no uid'}, 400);
+//         return;
+//     }
+//     req.session.uid = req.body.uid;
+//     req.session.logged_in = true;
+//     console.log('logged in via ajax as ', req.body.uid);
+//     res.send({error: false});
+// });
 
 // conventional non-Ajax logout, so redirects
 // app.post('/logout/', (req, res) => {
@@ -183,7 +183,7 @@ app.post('/form/', (req, res) => {
     return res.render('form.ejs', {action: '/form/', data: req.body });
 });
 
-app.get('/explore', async (req, res) => {
+app.get('/explore', requiresLogin,async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -191,10 +191,10 @@ app.get('/explore', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('explore.ejs', {uid, visits});
+    return res.render('explore.ejs', {uid, visits, username: req.session.username});
 });
 
-app.get('/followers', async (req, res) => {
+app.get('/followers', requiresLogin, async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -202,10 +202,10 @@ app.get('/followers', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('followers.ejs', {uid, visits});
+    return res.render('followers.ejs', {uid, visits, username: req.session.username});
 });
 
-app.get('/saved', async (req, res) => {
+app.get('/saved', requiresLogin, async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -213,18 +213,18 @@ app.get('/saved', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('saved.ejs', {uid, visits});
+    return res.render('saved.ejs', {uid, visits, username: req.session.username});
 });
 
-app.get('/search', async (req, res) => {
+app.get('/search', requiresLogin, async (req, res) => {
     const searchedCountry = req.query.country;
     const db = await Connection.open(mongoUri, DB);
     const posts = await db.collection(ODYSSEY_POSTS).find({"location.country": searchedCountry}).toArray();
     console.log(posts); // check output
-    res.render('searchResults', { posts: posts });
+    res.render('searchResults', { posts: posts, username: req.session.username});
 });
 
-app.get('/profile', async (req, res) => {
+app.get('/profile', requiresLogin, async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -232,7 +232,7 @@ app.get('/profile', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('profile.ejs', {uid, visits});
+    return res.render('profile.ejs', {uid, visits, username: req.session.username});
 });
 
 
@@ -456,14 +456,14 @@ if (req.session.username) {
 
 
 
-// function requiresLogin(req, res, next) {
-// if (!req.session.loggedIn) {
-//     req.flash('error', 'This page requires you to be logged in - please do so.');
-//     return res.redirect("/");
-// } else {
-//     next();
-// }
-// }
+function requiresLogin(req, res, next) {
+    if (!req.session.loggedIn) {
+        req.flash('error', 'This page requires you to be logged in - please do so.');
+        return res.redirect("/");
+    } else {
+        next();
+    }
+}
     
 
 // app.get('/about', requiresLogin, (req,res) => {

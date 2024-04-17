@@ -224,16 +224,6 @@ app.get('/search', requiresLogin, async (req, res) => {
     res.render('searchResults', { posts: posts, username: req.session.username});
 });
 
-app.get('/profile', requiresLogin, async (req, res) => {
-    // const db = await Connection.open(mongoUri, WMDB);
-    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-    // console.log('len', all.length, 'first', all[0]);
-    let uid = req.session.uid || 'unknown';
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    return res.render('profile.ejs', {uid, visits, username: req.session.username});
-});
 
 
 
@@ -369,7 +359,18 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 
 
 //Code for Login
-app.get('/loggedIn', async (req, res) => {
+// app.get('/loggedIn', async (req, res) => {
+//     // const db = await Connection.open(mongoUri, WMDB);
+//     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
+//     // console.log('len', all.length, 'first', all[0]);
+//     let uid = req.session.uid || 'unknown';
+//     let visits = req.session.visits || 0;
+//     visits++;
+//     req.session.visits = visits;
+//     return res.render('loggedIn.ejs', {uid, visits, username: req.session.username});
+// });
+
+app.get('/profile', requiresLogin, async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -377,8 +378,9 @@ app.get('/loggedIn', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('loggedIn.ejs', {uid, visits, username: req.session.username});
+    return res.render('profile.ejs', {uid, visits, username: req.session.username});
 });
+
   
 app.post("/join", async (req, res) => {
 try {
@@ -401,7 +403,7 @@ try {
     req.session.username = username;
     req.session.loggedIn = true;
     console.log("2");
-    return res.redirect('/loggedIn');
+    return res.redirect('/profile');
 } catch (error) {
     console.log("3");
     req.flash('error', `Form submission error: ${error}`);
@@ -432,7 +434,7 @@ try {
     req.session.username = username;
     req.session.loggedIn = true;
     console.log('login as', username);
-    return res.redirect('/loggedIn');
+    return res.redirect('/profile');
 } catch (error) {
     console.log("6");
     req.flash('error', `Form submission error: ${error}`);

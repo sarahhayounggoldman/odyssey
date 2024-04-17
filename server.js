@@ -211,8 +211,9 @@ app.get('/search', async (req, res) => {
     res.render('searchResults', { posts: posts });
 });
 
-
-
+app.get('/profile', async (req, res) => {
+    const username = req.body.username;
+});
 
 // //multer for file upload
 // app.use('/uploads', serveStatic('uploads'));

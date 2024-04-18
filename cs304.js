@@ -1,1 +1,1 @@
-../cs304.js
+/home/cs304node/apps/cs304.js

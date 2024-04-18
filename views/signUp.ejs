@@ -9,10 +9,28 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
-    <%- include("partials/navbar.ejs") %>
     <%- include("partials/flashes.ejs") %>
     <h1>Welcome!</h1>
-    <h1>You are logged in and THIS IS THE PAGE WHEN YOU CLICK ON MYSITE</h1>
+    <h1>THIS IS THE SIGNUP PAGE</h1>
+    
+    <h2>Sign Up:</h2>
+  <p>
+    <form action="/signup" method="POST">
+        <label> Email: 
+            <input type="text" name="email" placeholder="og102@wellesley.edu">
+        </label>
+        <label> Username: 
+            <input type="text" name="username" placeholder="og102">
+        </label>
+        <label> Password: 
+            <input type="text" name="password" placeholder="********">
+        </label>
+        <button type="submit">Sign up</button>
+    </form>
+  </p>
+  
+  <h3>Have an account?  <a href="/">Login</a></h3>
+ 
 
     <footer class="footer">
         <p>Copyright © The Odyssey Team 2024 all rights reserved.</p>

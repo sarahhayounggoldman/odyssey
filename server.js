@@ -132,14 +132,15 @@ app.get('/', (req, res) => {
    
 });
 
-app.get('/home', requiresLogin, (req, res) => {
-    let uid = req.session.uid || 'unknown';
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    console.log('uid', uid);
-    return res.render('index.ejs', {uid, visits, username: req.session.username});
-});
+
+// app.get('/home', (req, res) => {
+//     let uid = req.session.uid || 'unknown';
+//     let visits = req.session.visits || 0;
+//     visits++;
+//     req.session.visits = visits;
+//     console.log('uid', uid);
+//     return res.render('index.ejs', {uid, visits, username: req.session.username});
+// });
 
 // shows how logins might work by setting a value in the session
 // This is a conventional, non-Ajax, login, so it redirects to main page 
@@ -186,7 +187,7 @@ app.post('/form/', (req, res) => {
     return res.render('form.ejs', {action: '/form/', data: req.body });
 });
 
-app.get('/explore', requiresLogin,async (req, res) => {
+app.get('/explore', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -197,7 +198,7 @@ app.get('/explore', requiresLogin,async (req, res) => {
     return res.render('explore.ejs', {uid, visits, username: req.session.username});
 });
 
-app.get('/followers', requiresLogin, async (req, res) => {
+app.get('/followers', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -208,7 +209,7 @@ app.get('/followers', requiresLogin, async (req, res) => {
     return res.render('followers.ejs', {uid, visits, username: req.session.username});
 });
 
-app.get('/saved', requiresLogin, async (req, res) => {
+app.get('/saved', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -219,7 +220,7 @@ app.get('/saved', requiresLogin, async (req, res) => {
     return res.render('saved.ejs', {uid, visits, username: req.session.username});
 });
 
-app.get('/search', requiresLogin, async (req, res) => {
+app.get('/search', async (req, res) => {
     const searchedCountry = req.query.country;
     const db = await Connection.open(mongoUri, DB);
     const posts = await db.collection(ODYSSEY_POSTS).find({"location.country": searchedCountry}).toArray();
@@ -365,7 +366,7 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 
 
 //Code for Login
-app.get('/profile', requiresLogin, async (req, res) => {
+app.get('/profile', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
@@ -376,8 +377,17 @@ app.get('/profile', requiresLogin, async (req, res) => {
     return res.render('profile.ejs', {uid, visits, username: req.session.username});
 });
 
+app.get('/signup', (req, res) => {
+    let uid = req.session.uid || 'unknown';
+    let visits = req.session.visits || 0;
+    visits++;
+    req.session.visits = visits;
+    console.log('uid', uid);
+    return res.render('signUp.ejs', {uid, visits});
+   
+});
   
-app.post("/join", async (req, res) => {
+app.post("/signup", async (req, res) => {
 try {
     const username = req.body.username;
     const password = req.body.password;
@@ -398,7 +408,7 @@ try {
     req.session.username = username;
     req.session.loggedIn = true;
     console.log("2");
-    return res.redirect('/profile');
+    return res.redirect('/mySite');
 } catch (error) {
     console.log("3");
     req.flash('error', `Form submission error: ${error}`);
@@ -429,7 +439,7 @@ try {
     req.session.username = username;
     req.session.loggedIn = true;
     console.log('login as', username);
-    return res.redirect('/profile');
+    return res.redirect('/mySite');
 } catch (error) {
     console.log("6");
     req.flash('error', `Form submission error: ${error}`);
@@ -451,14 +461,14 @@ if (req.session.username) {
 }
 });
 
-function requiresLogin(req, res, next) {
-    if (!req.session.loggedIn) {
-        req.flash('error', 'This page requires you to be logged in - please do so.');
-        return res.redirect("/");
-    } else {
-        next();
-    }
-}
+// function requiresLogin(req, res, next) {
+//     if (!req.session.loggedIn) {
+//         req.flash('error', 'This page requires you to be logged in - please do so.');
+//         return res.redirect("/");
+//     } else {
+//         next();
+//     }
+// }
     
 
 // app.get('/about', requiresLogin, (req,res) => {

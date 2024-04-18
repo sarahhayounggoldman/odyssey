@@ -9,35 +9,25 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
-    <%- include("partials/navbar.ejs") %>
     <%- include("partials/flashes.ejs") %>
     <h1>Welcome!</h1>
     <h1>THIS IS THE LOGIN PAGE</h1>
     
-    <h2>Register:</h2>
-  <p>
-    <form action="/join" method="POST">
-        <label> Username
-            <input type="text" name="username" placeholder="og102">
-        </label>
-        <label> Password
-            <input type="text" name="password" placeholder="********">
-        </label>
-        <button type="submit">register</button>
-    </form>
-  </p>
   <h2>Login:</h2>
   <p>
     <form action="/login" method="POST">
-        <label> Username
+        <label> Username: 
             <input type="text" name="username" placeholder="og102">
         </label>
-        <label> Password
+        <label> Password: 
             <input type="text" name="password" placeholder="********">
         </label>
-        <button type="submit">login</button>
+        <button type="submit">Login</button>
     </form>
   </p>
+
+  <h3>Don't have an account? <a href="/signup">Sign up</a></h3>
+  
 
     <footer class="footer">
         <p>Copyright © The Odyssey Team 2024 all rights reserved.</p>

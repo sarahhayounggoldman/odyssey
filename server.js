@@ -128,7 +128,7 @@ app.get('/', (req, res) => {
         req.flash('error', 'You are not logged in - please do so.');
         return res.render('login.ejs', {visits});
     }else{
-        return res.render('mySite.ejs', {visits, username: req.session.username});
+        return res.render('home.ejs', {visits, username: req.session.username});
     }
    
 });
@@ -367,6 +367,15 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 
 
 // Sign up, login, and logout
+function requiresLogin(req, res, next) {
+    if (!req.session.loggedIn) {
+        req.flash('error', 'This page requires you to be logged in - please do so.');
+        return res.redirect("/");
+    } else {
+        next();
+    }
+}
+
 app.get('/profile', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
@@ -476,15 +485,6 @@ app.post('/logout', (req,res) => {
         return res.redirect('/');
 }
 });
-
-// function requiresLogin(req, res, next) {
-//     if (!req.session.loggedIn) {
-//         req.flash('error', 'This page requires you to be logged in - please do so.');
-//         return res.redirect("/");
-//     } else {
-//         next();
-//     }
-// }
 
 
 // ================================================================

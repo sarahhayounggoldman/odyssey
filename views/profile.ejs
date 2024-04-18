@@ -12,11 +12,11 @@
     <%- include("partials/navbar.ejs") %>
     <%- include("partials/flashes.ejs") %>
     <h1>Welcome!</h1>
-    <h1>YOU HAVE SUCCESSFULLY LOGGED IN AND THIS IS YOUR PROFILE PAGE</h1>
+    <h1>YOU HAVE SUCCESSFULLY LOGGED IN AS <%= username %> AND THIS IS YOUR PROFILE PAGE</h1>
 
     <p>
         <form action="/logout" method="POST">
-          <button>Logout <%= username %></button>
+          <button class="profile-button">Logout</button>
         </form>
     </p>
 

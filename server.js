@@ -118,16 +118,17 @@ const ODYSSEY_POSTS = 'odyssey_posts';
 // main page. This shows the use of session cookies
 
 app.get('/', (req, res) => {
-    let uid = req.session.uid || 'unknown';
+    // let uid = req.session.uid || 'unknown';
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    console.log('uid', uid);
+    // console.log('uid', uid);
     if (!req.session.loggedIn) {
+        console.log('0');
         req.flash('error', 'You are not logged in - please do so.');
-        return res.render('login.ejs', {uid, visits});
+        return res.render('login.ejs', {visits});
     }else{
-        return res.render('mySite.ejs', {uid, visits, username: req.session.username});
+        return res.render('mySite.ejs', {visits, username: req.session.username});
     }
    
 });
@@ -191,33 +192,33 @@ app.get('/explore', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
-    let uid = req.session.uid || 'unknown';
+    // let uid = req.session.uid || 'unknown';
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('explore.ejs', {uid, visits, username: req.session.username});
+    return res.render('explore.ejs', {visits, username: req.session.username});
 });
 
 app.get('/followers', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
-    let uid = req.session.uid || 'unknown';
+    // let uid = req.session.uid || 'unknown';
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('followers.ejs', {uid, visits, username: req.session.username});
+    return res.render('followers.ejs', {visits, username: req.session.username});
 });
 
 app.get('/saved', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
-    let uid = req.session.uid || 'unknown';
+    // let uid = req.session.uid || 'unknown';
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('saved.ejs', {uid, visits, username: req.session.username});
+    return res.render('saved.ejs', {visits, username: req.session.username});
 });
 
 app.get('/search', async (req, res) => {
@@ -370,20 +371,20 @@ app.get('/profile', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
-    let uid = req.session.uid || 'unknown';
+    // let uid = req.session.uid || 'unknown';
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('profile.ejs', {uid, visits, username: req.session.username});
+    return res.render('profile.ejs', {visits, username: req.session.username});
 });
 
 app.get('/signup', (req, res) => {
-    let uid = req.session.uid || 'unknown';
+    // let uid = req.session.uid || 'unknown';
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
     console.log('uid', uid);
-    return res.render('signUp.ejs', {uid, visits});
+    return res.render('signUp.ejs', {visits});
    
 });
   
@@ -408,7 +409,7 @@ try {
     req.session.username = username;
     req.session.loggedIn = true;
     console.log("2");
-    return res.redirect('/mySite');
+    return res.redirect('/');
 } catch (error) {
     console.log("3");
     req.flash('error', `Form submission error: ${error}`);
@@ -439,7 +440,7 @@ try {
     req.session.username = username;
     req.session.loggedIn = true;
     console.log('login as', username);
-    return res.redirect('/mySite');
+    return res.redirect('/');
 } catch (error) {
     console.log("6");
     req.flash('error', `Form submission error: ${error}`);

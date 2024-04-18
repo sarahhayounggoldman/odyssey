@@ -63,17 +63,25 @@ main {
   color: #ccc;
 }
 
-/* Login and Sign up */
+/* Login/Sign up form */
+
 label {
   display: block;
-  font-size: 16px;
+  margin-bottom: 20px;
 }
 
+/* footer */
+.footer {
+  color: #565656;
+  font-size: 12px;
+  padding-bottom: 30px;
+  padding-top: 60px;
+  text-align: center;
+}
 
 /* Adjusted search button to fit inside the search field */
-button {
-  /* position: absolute; */
-
+.search-button {
+  position: absolute;
   right: 10px; /* Adjusted to be inside the search field */
   border: none;
   background-color: #1b9ee9; /* Matching the logo color */
@@ -82,6 +90,18 @@ button {
   border-radius: 20px; /* Keeping the rounded edges */
   cursor: pointer;
   font-size: 12px; /* Smaller font size */
+  outline: none;
+}
+
+.profile-button {
+  right: 10px; /* Adjusted to be inside the search field */
+  border: none;
+  background-color: #1b9ee9; /* Matching the logo color */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px; /* Keeping the rounded edges */
+  cursor: pointer;
+  font-size: 18px;
   outline: none;
 }
 

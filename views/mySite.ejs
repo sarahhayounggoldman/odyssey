@@ -10,18 +10,15 @@
 </head>
 <body>
     <%- include("partials/navbar.ejs") %>
+    <%- include("partials/flashes.ejs") %>
     <h1>Welcome!</h1>
-    <h1>THIS IS THE FOLLOWERS PAGE</h1>
-    
-    <p>Everything is fine.</p>
+    <h1>You are logged in and THIS IS THE PAGE WHEN YOU CLICK ON MYSITE</h1>
 
-    <p>You have visited <%= visits %> times.</p>
-
-    <h2>Links</h2>
-
-    <p><a href="/form/">a pizza form</a></p>
-    
-    <p><a href="/staffList/">staff listing</a></p>
+    <p>
+        <form action="/logout" method="POST">
+          <button>Logout <%= username %></button>
+        </form>
+    </p>
 
     <footer class="footer">
         <p>Copyright © The Odyssey Team 2024 all rights reserved.</p>
@@ -29,15 +26,6 @@
 
     <!-- load local js -->
     <script src="/main.js"></script>
-    <script>
-        var uid = "<%= uid %>";
-        if(uid !== 'unknown') {
-            $("#logged-in").show();
-            $("#not-logged-in").hide();
-        } else {
-            $("#logged-in").hide();
-            $("#not-logged-in").show();
-        }
-    </script>
+<!-- uid script -->
 </body>
 </html>

@@ -125,8 +125,11 @@ app.get('/', (req, res) => {
     console.log('uid', uid);
     if (!req.session.loggedIn) {
         req.flash('error', 'You are not logged in - please do so.');
+        return res.render('login.ejs', {uid, visits});
+    }else{
+        return res.render('mySite.ejs', {uid, visits, username: req.session.username});
     }
-    return res.render('login.ejs', {uid, visits});
+   
 });
 
 app.get('/home', requiresLogin, (req, res) => {

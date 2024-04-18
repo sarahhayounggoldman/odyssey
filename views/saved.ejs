@@ -15,18 +15,6 @@
     
     <p>Everything is fine.</p>
 
-    <div id="logged-in">
-    <p>You are logged in as <span id="login-uid"><%= uid %></span>
-        <form method="post" action="/logout/"><input type="submit" value="logout"></form></p>
-    </div>
-    <div id="not-logged-in">
-    <p>You are not logged in.</p>
-    <form id="login_form" method="post" action="/set-uid/">
-        <p><label>uid <input name="uid"></label></p>
-        <input type="button" id="login-ajax" value="Login">
-    </form>
-    </div>
-
     <p>You have visited <%= visits %> times.</p>
 
     <h2>Links</h2>

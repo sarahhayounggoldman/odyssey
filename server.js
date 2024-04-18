@@ -445,8 +445,6 @@ if (req.session.username) {
 }
 });
 
-
-
 function requiresLogin(req, res, next) {
     if (!req.session.loggedIn) {
         req.flash('error', 'This page requires you to be logged in - please do so.');

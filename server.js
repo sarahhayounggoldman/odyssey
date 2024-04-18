@@ -324,7 +324,10 @@ app.post('/explore', upload.array('files'), async (req, res) => {
             },
         });   
 
-        return res.redirect(`/explore`);
+        // return res.redirect(`/explore`); //OLD
+        const posts = await db.collection(ODYSSEY_POSTS).find({}).toArray();
+        return res.render('explore.ejs', { posts, username: req.session.username });
+
     } catch (error) {
         console.error('Error uploading files:', error);
         return res.status(500).send("Server error: " + error.message);

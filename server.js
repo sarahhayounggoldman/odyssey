@@ -383,13 +383,14 @@ app.get('/signup', (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    console.log('uid', uid);
+    // console.log('uid', uid);
     return res.render('signUp.ejs', {visits});
    
 });
   
 app.post("/signup", async (req, res) => {
 try {
+    const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
     const db = await Connection.open(mongoUri, DB);
@@ -402,6 +403,10 @@ try {
     const hash = await bcrypt.hash(password, ROUNDS);
     await db.collection(ODYSSEY_USERS).insertOne({
         username: username,
+        email: email,
+        followers: [],
+        following: [],
+        postIDs: [],
         hash: hash
     });
     console.log('successfully joined', username, password, hash);

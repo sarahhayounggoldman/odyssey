@@ -65,7 +65,8 @@ main {
 
 /* Login/Sign up form */
 
-label {
+#login-form label,
+#signup-form label  {
   display: block;
   margin-bottom: 20px;
 }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Odyssey</title>
+    <title>Saved</title>
     <!-- load local stylesheet (css) -->
     <link rel="stylesheet" href="/styles.css" />
     <!-- loading jquery -->
@@ -29,15 +29,5 @@
 
     <!-- load local js -->
     <script src="/main.js"></script>
-    <script>
-        var uid = "<%= uid %>";
-        if(uid !== 'unknown') {
-            $("#logged-in").show();
-            $("#not-logged-in").hide();
-        } else {
-            $("#logged-in").hide();
-            $("#not-logged-in").show();
-        }
-    </script>
 </body>
 </html>

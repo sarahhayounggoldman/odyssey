@@ -17,7 +17,7 @@ const flash = require('express-flash');
 const multer = require('multer');
 // const upload = multer({ dest: "uploads/" }); //multer
 
- // for logins
+// for logins
 const bcrypt = require('bcrypt')
 const ROUNDS = 15;
 
@@ -366,7 +366,7 @@ app.post('/explore', upload.array('files'), async (req, res) => {
 // });
 
 
-//Code for Login
+// Sign up, login, and logout
 app.get('/profile', async (req, res) => {
     // const db = await Connection.open(mongoUri, WMDB);
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
@@ -375,7 +375,12 @@ app.get('/profile', async (req, res) => {
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('profile.ejs', {visits, username: req.session.username});
+    return res.render('profile.ejs', 
+        {
+            visits, 
+            username: req.session.username
+        }
+    );
 });
 
 app.get('/signup', (req, res) => {
@@ -384,86 +389,91 @@ app.get('/signup', (req, res) => {
     visits++;
     req.session.visits = visits;
     // console.log('uid', uid);
-    return res.render('signUp.ejs', {visits});
-   
+    return res.render('signUp.ejs', 
+        {
+            visits
+        }
+    );
 });
   
 app.post("/signup", async (req, res) => {
-try {
-    const email = req.body.email;
-    const username = req.body.username;
-    const password = req.body.password;
-    const db = await Connection.open(mongoUri, DB);
-    var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
-    if (existingUser) {
-        console.log("1");
-        req.flash('error', "Login already exists - please try logging in instead.");
+    try {
+        const email = req.body.email;
+        const username = req.body.username;
+        const password = req.body.password;
+        const db = await Connection.open(mongoUri, DB);
+        var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
+        if (existingUser) {
+            console.log("1");
+            req.flash('error', "Login already exists - please try logging in instead.");
+            return res.redirect('/')
+        }
+        const hash = await bcrypt.hash(password, ROUNDS);
+        await db.collection(ODYSSEY_USERS).insertOne(
+            {
+                username: username,
+                email: email,
+                followers: [],
+                following: [],
+                postIDs: [],
+                hash: hash
+            }
+        );
+        console.log('successfully joined', username, password, hash);
+        req.flash('info', 'successfully joined and logged in as ' + username);
+        req.session.username = username;
+        req.session.loggedIn = true;
+        console.log("2");
+        return res.redirect('/');
+    } catch (error) {
+        console.log("3");
+        req.flash('error', `Form submission error: ${error}`);
         return res.redirect('/')
     }
-    const hash = await bcrypt.hash(password, ROUNDS);
-    await db.collection(ODYSSEY_USERS).insertOne({
-        username: username,
-        email: email,
-        followers: [],
-        following: [],
-        postIDs: [],
-        hash: hash
-    });
-    console.log('successfully joined', username, password, hash);
-    req.flash('info', 'successfully joined and logged in as ' + username);
-    req.session.username = username;
-    req.session.loggedIn = true;
-    console.log("2");
-    return res.redirect('/');
-} catch (error) {
-    console.log("3");
-    req.flash('error', `Form submission error: ${error}`);
-    return res.redirect('/')
-}
 });
 
 app.post("/login", async (req, res) => {
-try {
-    const username = req.body.username;
-    const password = req.body.password;
-    const db = await Connection.open(mongoUri, DB);
-    var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
-    console.log('user', existingUser);
-    if (!existingUser) {
-    console.log("4");
-    req.flash('error', "Username does not exist - try again.");
-    return res.redirect('/')
-    }
-    const match = await bcrypt.compare(password, existingUser.hash); 
-    console.log('match', match);
-    if (!match) {
-        req.flash('error', "Username or password incorrect - try again.");
+    try {
+        const username = req.body.username;
+        const password = req.body.password;
+        const db = await Connection.open(mongoUri, DB);
+        var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
+        console.log('user', existingUser);
+        if (!existingUser) {
+            console.log("4");
+            req.flash('error', "Username does not exist - try again.");
+            return res.redirect('/')
+        }
+        const match = await bcrypt.compare(password, existingUser.hash); 
+        console.log('match', match);
+        if (!match) {
+            req.flash('error', "Username or password incorrect - try again.");
+            return res.redirect('/')
+        }
+        console.log("5");
+        req.flash('info', 'successfully logged in as ' + username);
+        req.session.username = username;
+        req.session.loggedIn = true;
+        console.log('login as', username);
+        return res.redirect('/');
+    } catch (error) {
+        console.log("6");
+        req.flash('error', `Form submission error: ${error}`);
         return res.redirect('/')
     }
-    console.log("5");
-    req.flash('info', 'successfully logged in as ' + username);
-    req.session.username = username;
-    req.session.loggedIn = true;
-    console.log('login as', username);
-    return res.redirect('/');
-} catch (error) {
-    console.log("6");
-    req.flash('error', `Form submission error: ${error}`);
-    return res.redirect('/')
-}
 });
 
 app.post('/logout', (req,res) => {
-if (req.session.username) {
-    req.session.username = null;
-    req.session.loggedIn = false;
-    console.log("7");
-    req.flash('info', 'You are logged out');
-    return res.redirect('/');
-} else {
-    console.log("8");
-    req.flash('error', 'You are not logged in - please do so.');
-    return res.redirect('/');
+    if (req.session.username) {
+        req.session.username = null;
+        req.session.loggedIn = false;
+        console.log("7");
+        req.flash('info', 'You are logged out');
+        return res.redirect('/');
+    } else {
+        console.log("8");
+        req.flash('error', 'You are not logged in - please do so.');
+        return res.redirect('/');
 }
 });
 
@@ -475,15 +485,7 @@ if (req.session.username) {
 //         next();
 //     }
 // }
-    
 
-// app.get('/about', requiresLogin, (req,res) => {
-// return res.render('about.ejs', {username: req.session.username});
-// });
-
-// app.get('/profile', requiresLogin, (req,res) => {
-// return res.render('profile.ejs', {username: req.session.username});
-// });
 
 // ================================================================
 // postlude

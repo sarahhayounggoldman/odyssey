@@ -193,6 +193,11 @@ app.get('/explore', async (req, res) => {
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
     // let uid = req.session.uid || 'unknown';
+
+    const db = await Connection.open(mongoUri, DB);
+    const allPosts = db.collection(ODYSSEY_POSTS).find({}).toArray();
+    console.log(allPosts)
+
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;

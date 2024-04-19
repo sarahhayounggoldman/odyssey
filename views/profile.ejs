@@ -15,10 +15,21 @@
     <h1>YOU HAVE SUCCESSFULLY LOGGED IN AS <%= username %> AND THIS IS YOUR PROFILE PAGE</h1>
 
     <p>
-        <form action="/logout" method="POST">
+       
           <button class="profile-button">Logout</button>
-        </form>
     </p>
+
+    <body>
+        <form action="/profile" method="POST">
+        <% if (posts.length > 0) { %>
+            <% posts.forEach(post => { %>
+                <%- include('post', { post: post }) %>
+            <% }); %>
+        <% } else { %>
+            <p>No posts yet.</p>
+        <% } %>
+        </form>
+    </body>
 
     <footer class="footer">
         <p>Copyright © The Odyssey Team 2024 all rights reserved.</p>

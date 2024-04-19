@@ -229,6 +229,13 @@ app.get('/search', async (req, res) => {
     res.render('searchResults', { posts: posts, username: req.session.username});
 });
 
+app.get('/profile', async (req, res) => {
+    const user = req.session.username;
+    const db = await Connection.open(mongoUri, DB);
+    const posts = await db.collection(ODYSSEY_POSTS).find({"username": user}).toArray();
+    console.log(posts); // check output
+    res.render('searchResults', { posts: posts, username: req.session.username});
+});
 
 
 

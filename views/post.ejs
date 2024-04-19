@@ -3,7 +3,7 @@
         <div class="location"><%= post.location.country %>, <%= post.location.city %></div>
         <div class="date-time"><%= new Date(post.timestamp).toISOString() %></div>
     </div>
-    <div class="username">@<%= post.authorID %></div>
+    <div class="username">@<%= post.username %></div>
     <div class="image-container">
         <% if (post.content.images) { %>
             <img src="<%= post.content.images %>" alt="Travel image of <%= post.location.city %>">

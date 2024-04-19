@@ -229,7 +229,7 @@ app.get('/saved', async (req, res) => {
 app.get('/search', async (req, res) => {
     const searchedCountry = req.query.country;
     const db = await Connection.open(mongoUri, DB);
-    const posts = await db.collection(ODYSSEY_POSTS).find({"location.country": searchedCountry}).toArray();
+    const posts = await db.collection(ODYSSEY_POSTS).find({"location.country": new RegExp(searchedCountry,'i')}).toArray();
     console.log(posts); // check output
     res.render('searchResults', { posts: posts, username: req.session.username});
 });
@@ -316,7 +316,8 @@ app.post('/explore', upload.array('files'), async (req, res) => {
         const db = await Connection.open(mongoUri, DB);
   
         const result = await db.collection(ODYSSEY_POSTS).insertOne({
-            authorID: formData.authorID,
+            // authorID: formData.authorID,
+            username: req.session.username,
             timestamp: new Date(),
             location: {
                 country: formData.country,

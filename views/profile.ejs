@@ -21,11 +21,6 @@
     <p># of followers goes here</p>
     <p># following goes here</p>
 
-    <p>
-       
-          <button class="profile-button">Logout</button>
-    </p>
-
     <body>
         <form action="/profile" method="POST">
         <% if (posts.length > 0) { %>
@@ -37,6 +32,12 @@
         <% } %>
         </form>
     </body>
+
+    <p>
+        <form action="/logout" method="POST">
+          <button class="profile-button">Logout</button>
+        </form>
+    </p>
 
     <footer class="footer">
         <p>Copyright © The Odyssey Team 2024 all rights reserved.</p>

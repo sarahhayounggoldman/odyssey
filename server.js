@@ -234,13 +234,7 @@ app.get('/search', async (req, res) => {
     res.render('searchResults', { posts: posts, username: req.session.username});
 });
 
-app.get('/profile', async (req, res) => {
-    const user = req.session.username;
-    const db = await Connection.open(mongoUri, DB);
-    const posts = await db.collection(ODYSSEY_POSTS).find({"username": user}).toArray();
-    console.log(posts); // check output
-    res.render('searchResults', { posts: posts, username: req.session.username});
-});
+
 
 
 
@@ -397,16 +391,21 @@ app.get('/profile', async (req, res) => {
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
     // let uid = req.session.uid || 'unknown';
+    const db = await Connection.open(mongoUri, DB);
+    const posts = await db.collection(ODYSSEY_POSTS).find({"username": req.session.username}).toArray();
+    console.log(posts); // check output
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
     return res.render('profile.ejs', 
         {
             visits, 
-            username: req.session.username
+            username: req.session.username,
+            posts: posts
         }
     );
 });
+
 
 app.get('/signup', (req, res) => {
     // let uid = req.session.uid || 'unknown';

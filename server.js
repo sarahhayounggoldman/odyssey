@@ -195,13 +195,13 @@ app.get('/explore', async (req, res) => {
     // let uid = req.session.uid || 'unknown';
 
     const db = await Connection.open(mongoUri, DB);
-    const allPosts = db.collection(ODYSSEY_POSTS).find({}).toArray();
-    console.log(allPosts)
+    const allPosts = await db.collection(ODYSSEY_POSTS).find({}).toArray();
+    console.log(allPosts);
 
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('explore.ejs', {visits, username: req.session.username});
+    return res.render('explore.ejs', {posts: allPosts, visits, username: req.session.username});
 });
 
 app.get('/followers', async (req, res) => {

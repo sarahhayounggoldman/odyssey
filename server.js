@@ -15,6 +15,10 @@ const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const flash = require('express-flash');
 const multer = require('multer');
+const fs = require('node:fs/promises');
+const { ObjectId } = require('mongodb');
+
+
 // const upload = multer({ dest: "uploads/" }); //multer
 
 // for logins
@@ -26,6 +30,7 @@ const ROUNDS = 15;
 const { Connection } = require('./connection'); //QUESTION - does this need to be .js?
 const cs304 = require('./cs304');
 const { error } = require('console');
+const { fstat } = require('fs');
 
 // Create and configure the app
 
@@ -64,7 +69,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //NEED TO DEBUG
 //multer for file upload
-app.use('/uploads', serveStatic('uploads'));
+app.use('/uploads', express.static('uploads'));
 
 function timeString(dateObj) {
     if( !dateObj) {
@@ -242,6 +247,45 @@ app.get('/profile', async (req, res) => {
     res.render('searchResults', { posts: posts, username: req.session.username});
 });
 
+// Edit post form
+app.get('/edit/:postId', async (req, res) => {
+    const db = await Connection.open(mongoUri, DB);
+    try {
+        const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(req.params.postId) });
+        if (post.username !== req.session.username) {
+            req.flash('error', 'You are not authorized to edit this post.');
+            return res.redirect('/explore');
+        }
+        res.render('editPost', { post: post });
+    } catch (error) {
+        req.flash('error', 'Error fetching post data: ' + error.message);
+        res.redirect('/explore');
+    }
+});
+
+// Route to handle the update
+// Update post in the database
+app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
+    const db = await Connection.open(mongoUri, DB);
+    const formData = req.body;
+    let updateData = {
+        location: { country: formData.country, city: formData.city },
+        categories: formData.categories,
+        budget: formData.budget,
+        travelType: formData.travelType,
+        rating: formData.rating,
+        content: { text: formData.caption }
+    };
+
+    if (req.file) {
+        updateData.content.images = req.file.filename; // handle file upload
+    }
+
+    await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(req.params.postId) }, { $set: updateData });
+    req.flash('info', 'Post updated successfully.');
+    res.redirect('/explore');
+});
+
 
 
 // //multer for file upload
@@ -313,14 +357,18 @@ app.get('/profile', async (req, res) => {
 //     }
 // });
 
-app.post('/explore', upload.array('files'), async (req, res) => {
+app.post('/explore', upload.single('file'), async (req, res) => {
     try {
         console.log('GOT HERE');
         console.log('Received form submission:', req.body);
-        console.log('Uploaded files:', req.files);
+        console.log('Uploaded files:', req.file);
 
         const formData = req.body;
         const db = await Connection.open(mongoUri, DB);
+
+        //change file perms
+        let val = await fs.chmod('uploads/' + req.file.filename, 0o664);
+        console.log('chmod val', val);
   
         const result = await db.collection(ODYSSEY_POSTS).insertOne({
             // authorID: formData.authorID,
@@ -338,7 +386,7 @@ app.post('/explore', upload.array('files'), async (req, res) => {
             rating: formData.rating,
             content: {
                 text: formData.caption,
-                images: req.files.map(file => file.path)
+                images: req.file.filename
             },
         });   
 

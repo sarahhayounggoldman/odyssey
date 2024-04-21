@@ -2,11 +2,14 @@
     <div class="header">
         <div class="location"><%= post.location.country %>, <%= post.location.city %></div>
         <div class="date-time"><%= new Date(post.timestamp).toISOString() %></div>
+        <% if (post.username === username) { %>
+            <a href="/edit/<%= post._id %>" class="edit-post-button">Edit</a>
+        <% } %>
     </div>
     <div class="username">@<%= post.username %></div>
     <div class="image-container">
         <% if (post.content.images) { %>
-            <img src="<%= post.content.images %>" alt="Travel image of <%= post.location.city %>">
+            <img src="/uploads/<%= post.content.images %>" alt="Travel image of <%= post.location.city %>">
         <% } else { %>
             <img src="/path/to/default-image.jpg" alt="Default Image">
         <% } %>

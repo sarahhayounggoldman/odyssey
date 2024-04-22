@@ -336,7 +336,8 @@ app.post('/explore', upload.single('file'), async (req, res) => {
             rating: formData.rating,
             content: {
                 text: formData.caption,
-                images: req.file.filename
+                images: req.file.filename,
+                likes: 0
             },
         });   
 

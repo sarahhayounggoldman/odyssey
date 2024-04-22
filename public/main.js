@@ -50,6 +50,7 @@ $(document).ready(function() {
 //     });
 //}
 function likePost(postId) {
+    console.log("got here to likePost");
     $.post("/likeAjax/" + postId, { postId: postId }).then(processAction);
 }
 function processAction(resp) {
@@ -57,8 +58,8 @@ function processAction(resp) {
     if (resp.error) {
         alert('Error: '+resp.error);
     }
-    console.log("Liked movie "+resp.tt+". Total likes: "+resp.likes);
-    $(`[data-tt=${resp.tt}]`).find('.likeCounter').text(resp.likes);
+    console.log("Liked movie "+resp.id+". Total likes: "+resp.likes);
+    $(`[data-id=${resp.id}]`).find('.likeCounter').text(resp.likes);
 }
 // function likePost(postId) {
 //     $.post("/explore", { postId: postId }).then(processAction);

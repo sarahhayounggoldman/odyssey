@@ -20,4 +20,14 @@
         <span class="tag">Rating: <%= post.rating %></span>
     </div>
     <div class="caption"><%= post.content.text %></div>
+
+    <!-- ADDED LIKE STUFF BELOW -->
+
+    <button class="likeBtn" type="button" data-post-id="<%= post.id %>">
+        ❤️ like!
+    </button>
+    <p class="likeCounter">
+        <%= post.likes ? post.likes : '0' %>
+    </p>
+
 </div>

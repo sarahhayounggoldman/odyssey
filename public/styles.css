@@ -63,12 +63,24 @@ main {
   color: #ccc;
 }
 
-/* Login/Sign up form */
+/* Login/Sign up form and buttons*/
 
 #login-form label,
 #signup-form label  {
   display: block;
   margin-bottom: 20px;
+}
+
+.profile-button {
+  right: 10px; /* Adjusted to be inside the search field */
+  border: none;
+  background-color: #1b9ee9; /* Matching the logo color */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px; /* Keeping the rounded edges */
+  cursor: pointer;
+  font-size: 18px;
+  outline: none;
 }
 
 /* footer */
@@ -94,18 +106,6 @@ main {
   outline: none;
 }
 
-.profile-button {
-  right: 10px; /* Adjusted to be inside the search field */
-  border: none;
-  background-color: #1b9ee9; /* Matching the logo color */
-  color: white;
-  padding: 10px 20px;
-  border-radius: 20px; /* Keeping the rounded edges */
-  cursor: pointer;
-  font-size: 18px;
-  outline: none;
-}
-
 button:hover {
   background-color: #016faf; /* Slightly darker on hover */
 }
@@ -126,6 +126,40 @@ button:hover {
   font-size: 16px;
   padding: 10px;
 }
+
+/* Bottom nav bar */
+.bottom-bar {
+  background-color: #d7f9ff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 10px 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 60px;
+}
+
+#post-button {
+  right: 10px; /* Adjusted to be inside the search field */
+  border: none;
+  background-color: #1b9ee9; /* Matching the logo color */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px; /* Keeping the rounded edges */
+  cursor: pointer;
+  font-size: 18px;
+  text-align: center;
+  outline: none;
+  top: 50%;
+  left: 50%;
+  float: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {

@@ -139,50 +139,6 @@ app.get('/', (req, res) => {
 });
 
 
-// app.get('/home', (req, res) => {
-//     let uid = req.session.uid || 'unknown';
-//     let visits = req.session.visits || 0;
-//     visits++;
-//     req.session.visits = visits;
-//     console.log('uid', uid);
-//     return res.render('index.ejs', {uid, visits, username: req.session.username});
-// });
-
-// shows how logins might work by setting a value in the session
-// This is a conventional, non-Ajax, login, so it redirects to main page 
-// app.post('/set-uid/', (req, res) => {
-//     console.log('in set-uid');
-//     req.session.uid = req.body.uid;
-//     req.session.logged_in = true;
-//     res.redirect('/home');
-// });
-
-// shows how logins might work via Ajax
-// app.post('/set-uid-ajax/', (req, res) => {
-//     console.log(Object.keys(req.body));
-//     console.log(req.body);
-//     let uid = req.body.uid;
-//     if(!uid) {
-//         res.send({error: 'no uid'}, 400);
-//         return;
-//     }
-//     req.session.uid = req.body.uid;
-//     req.session.logged_in = true;
-//     console.log('logged in via ajax as ', req.body.uid);
-//     res.send({error: false});
-// });
-
-// conventional non-Ajax logout, so redirects
-// app.post('/logout/', (req, res) => {
-//     console.log('in logout');
-//     req.session.uid = false;
-//     req.session.logged_in = false;
-//     res.redirect('/home');
-// });
-
-// two kinds of forms (GET and POST), both of which are pre-filled with data
-// from previous request, including a SELECT menu. Everything but radio buttons
-
 app.get('/form/', (req, res) => {
     console.log('get form');
     return res.render('form.ejs', {action: '/form/', data: req.query });
@@ -200,13 +156,13 @@ app.get('/explore', async (req, res) => {
     // let uid = req.session.uid || 'unknown';
 
     const db = await Connection.open(mongoUri, DB);
-    const allPosts = db.collection(ODYSSEY_POSTS).find({}).toArray();
-    console.log(allPosts)
+    const allPosts = await db.collection(ODYSSEY_POSTS).find({}).toArray();
+    console.log(allPosts);
 
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
-    return res.render('explore.ejs', {visits, username: req.session.username});
+    return res.render('explore.ejs', {posts: allPosts, visits, username: req.session.username});
 });
 
 app.get('/followers', async (req, res) => {
@@ -245,45 +201,6 @@ app.get('/profile', async (req, res) => {
     const posts = await db.collection(ODYSSEY_POSTS).find({"username": user}).toArray();
     console.log(posts); // check output
     res.render('searchResults', { posts: posts, username: req.session.username});
-});
-
-// Edit post form
-app.get('/edit/:postId', async (req, res) => {
-    const db = await Connection.open(mongoUri, DB);
-    try {
-        const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(req.params.postId) });
-        if (post.username !== req.session.username) {
-            req.flash('error', 'You are not authorized to edit this post.');
-            return res.redirect('/explore');
-        }
-        res.render('editPost', { post: post });
-    } catch (error) {
-        req.flash('error', 'Error fetching post data: ' + error.message);
-        res.redirect('/explore');
-    }
-});
-
-// Route to handle the update
-// Update post in the database
-app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
-    const db = await Connection.open(mongoUri, DB);
-    const formData = req.body;
-    let updateData = {
-        location: { country: formData.country, city: formData.city },
-        categories: formData.categories,
-        budget: formData.budget,
-        travelType: formData.travelType,
-        rating: formData.rating,
-        content: { text: formData.caption }
-    };
-
-    if (req.file) {
-        updateData.content.images = req.file.filename; // handle file upload
-    }
-
-    await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(req.params.postId) }, { $set: updateData });
-    req.flash('info', 'Post updated successfully.');
-    res.redirect('/explore');
 });
 
 
@@ -404,31 +321,28 @@ app.post('/explore', upload.single('file'), async (req, res) => {
 });
 
 
+//LIKES!!!!
+app.post('/likeAjax/:postId', async (req, res) => {
+    const postId = parseInt(req.params.postId);
+    const doc = await likePost(postId);
+    return res.json({ error: false, likes: doc.likes, postId: postId });
+});
 
-// app.post("/explore", async (req, res) => {
-//     // examples of flashing
-//     const db = await Connection.open(mongoUri, DB);
-//     // var existingMovie = await db.collection(MOVIES).find({tt: parseInt(req.body.movieTt)}).toArray();
-
-//     var user = await db.collection(ODYSSEY_USERS).find({authorID: NULL}).toArray();
-//     // if (existingMovie.length!=0) {
-//     //     req.flash('error', `Error: tt .${req.body.movieTt} in use`);
-//     //     console.log(`tt .${req.body.movieTt} in use`);
-//     //     return res.render('form.ejs', {movieTt: req.body.movieTt, movieTitle: req.body.movieTitle, movieRelease: req.body.movieRelease});
-//     // }
-//     // else{
-//     //     var ourStaff = await db.collection(STAFF).find({uid: SCOTT}).toArray();
-//     //     const result = await db.collection(MOVIES).insertOne({
-//     //               tt: parseInt(req.body.movieTt),
-//     //               title: req.body.movieTitle,
-//     //               release: req.body.movieRelease,
-//     //               addedby: ourStaff[0]
-//     //     });
-//     //     console.log(`This is inserted: ${result.insertedId}`);
-//     //     return res.redirect(`/update/${req.body.movieTt}`); //redirect to update
-//     // } 
+// app.post('/explore', async (req, res) => {
+//     const postId = parseInt(req.params.postId);
+//     const doc = await likePost(postId);
+//     return res.json({ error: false, likes: doc.likes, postId: postId });
 // });
 
+// function processAction(resp) {
+//     console.log('response is ', resp);
+//     if (resp.error) {
+//         alert('Error: ' + resp.error);
+//     } else {
+//         console.log("Liked post " + resp.postId + ". Total likes: " + resp.likes);
+//         $(`[data-post-id=${resp.postId}]`).find('.likeCounter').text(resp.likes);
+//     }
+// }
 
 // Sign up, login, and logout
 function requiresLogin(req, res, next) {
@@ -445,16 +359,21 @@ app.get('/profile', async (req, res) => {
     // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
     // console.log('len', all.length, 'first', all[0]);
     // let uid = req.session.uid || 'unknown';
+    const db = await Connection.open(mongoUri, DB);
+    const posts = await db.collection(ODYSSEY_POSTS).find({"username": req.session.username}).toArray();
+    console.log(posts); // check output
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
     return res.render('profile.ejs', 
         {
             visits, 
-            username: req.session.username
+            username: req.session.username,
+            posts: posts
         }
     );
 });
+
 
 app.get('/signup', (req, res) => {
     // let uid = req.session.uid || 'unknown';

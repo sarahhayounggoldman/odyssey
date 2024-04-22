@@ -41,26 +41,33 @@ $(document).ready(function() {
     });
 });
 
-// function likePost(postId) {
-//     $.post("/likeAjax/" + postId, { postId: postId }).then(function(resp) {
-//         console.log("Liked post " + resp.postId + ". Total likes: " + resp.likes);
-//         $(`[data-post-id=${resp.postId}]`).find('.likeCounter').text(resp.likes);
-//     }).catch(function(error) {
-//         console.error("Error liking post:", error);
-//     });
-//}
 function likePost(postId) {
     console.log("got here to likePost");
     $.post("/likeAjax/" + postId, { postId: postId }).then(processAction);
 }
+
 function processAction(resp) {
     console.log('response is ',resp);
     if (resp.error) {
         alert('Error: '+resp.error);
     }
-    console.log("Liked movie "+resp.id+". Total likes: "+resp.likes);
-    $(`[data-id=${resp.id}]`).find('.likeCounter').text(resp.likes);
+    console.log("Liked post "+resp.postId+". Total likes: "+resp.likes);
+    $(`[data-post-id=${resp.postId}]`).find('.likeCounter').text(resp.likes);
 }
+
+// function likePost(postId) {
+//     console.log("got here to likePost");
+//     $.post("/likeAjax/" + postId, { postId: postId }).then(processAction);
+// }
+// function processAction(resp) {
+//     console.log('response is ',resp);
+//     if (resp.error) {
+//         alert('Error: '+resp.error);
+//     }
+//     console.log("Liked movie "+resp.id+". Total likes: "+resp.likes);
+//     $(`[data-id=${resp.id}]`).find('.likeCounter').text(resp.likes);
+// }
+
 // function likePost(postId) {
 //     $.post("/explore", { postId: postId }).then(processAction);
 // }

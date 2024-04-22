@@ -195,12 +195,52 @@ app.get('/search', async (req, res) => {
     res.render('searchResults', { posts: posts, username: req.session.username});
 });
 
+<<<<<<< HEAD
 app.get('/profile', async (req, res) => {
     const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
     const posts = await db.collection(ODYSSEY_POSTS).find({"username": user}).toArray();
     console.log(posts); // check output
     res.render('searchResults', { posts: posts, username: req.session.username});
+});
+
+//Edit post form
+app.get('/edit/:postId', async (req, res) => {
+    const db = await Connection.open(mongoUri, DB);
+    try {
+        const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(req.params.postId) });
+        if (post.username !== req.session.username) {
+            req.flash('error', 'You are not authorized to edit this post.');
+            return res.redirect('/explore');
+        }
+        res.render('editPost', { post: post });
+    } catch (error) {
+        req.flash('error', 'Error fetching post data: ' + error.message);
+        res.redirect('/explore');
+    }
+});
+
+// Route to handle the update
+// Update post in the database
+app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
+    const db = await Connection.open(mongoUri, DB);
+    const formData = req.body;
+    let updateData = {
+        location: { country: formData.country, city: formData.city },
+        categories: formData.categories,
+        budget: formData.budget,
+        travelType: formData.travelType,
+        rating: formData.rating,
+        content: { text: formData.caption }
+    };
+
+    if (req.file) {
+        updateData.content.images = req.file.filename; // handle file upload
+    }
+
+    await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(req.params.postId) }, { $set: updateData });
+    req.flash('info', 'Post updated successfully.');
+    res.redirect('/explore');
 });
 
 
@@ -273,6 +313,8 @@ app.get('/profile', async (req, res) => {
 //         return res.status(500).send("Server error: " + error.message);
 //     }
 // });
+=======
+>>>>>>> d312e87a70b4486c3a5fffe9d28935e1e7716884
 
 app.post('/explore', upload.single('file'), async (req, res) => {
     try {

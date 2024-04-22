@@ -391,15 +391,19 @@ app.get('/profile', async (req, res) => {
     const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
     const posts = await db.collection(ODYSSEY_POSTS).find({"username": user}).toArray();
-    console.log(posts); // check output
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
+    const onePerson = await db.collection(ODYSSEY_USERS).find({"username": user}).toArray();
+    let person = onePerson[0]
+    // const bio = person.bio;
+    const followers = person.followers;
+    const following = person.following;
     console.log(posts); // check output
     return res.render('profile.ejs', 
         {
             username: req.session.username,
-            posts: posts
+            posts: posts,
+            bio: person.bio,
+            followers: followers.length,
+            following: following.length
         }
     );
 });
@@ -494,15 +498,25 @@ app.post('/logout', (req,res) => {
 
 app.get('/editprofile', (req, res) => {
     console.log('edit profile');
-    return res.render('editProfile.ejs', {action: '/editprofile', data: req.query });
+    return res.render('editProfile.ejs');
 });
 
-
-// app.post('/editprofile', (req, res) => {
-//     console.log('edited profile');
-//     return res.render('editProfile.ejs', {action: '/editprofile', data: req.body });
-// });
-
+  
+app.post("/editprofile", async (req, res) => {
+    try {
+        const username =  req.session.username;
+        console.log('username is ', username);
+        const db = await Connection.open(mongoUri, DB);
+        var existingUser = await db.collection(ODYSSEY_USERS).updateOne({username: username}, {$set:{bio:'Placeholder Bio'}});
+        if (existingUser) {
+            req.flash('info', "updated succesfully.");
+            return res.redirect('/profile')
+        }
+    } catch (error) {
+        req.flash('error', `Form submission error: ${error}`);
+        return res.redirect('/')
+    }
+});
 
 // ================================================================
 // postlude

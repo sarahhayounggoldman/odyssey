@@ -15,17 +15,17 @@
 
   <h1>Edit Profile</h1>
 
-  <form id="post-form" method="POST" action="/explore" enctype='multipart/form-data'>
+  <form id="edit-profile-form" method="POST" action="/editprofile">
   
-<p><label> Username:
-<textarea rows="1" cols="40" name="city" id="city"><%= data.city %></textarea>
-</label></p>
+    <p><label> Username:
+    <textarea rows="1" cols="40" name="city" id="city"></textarea>
+    </label></p>
 
-<p><label>Bio:
-      <textarea rows="5" cols="50" name="caption" id="caption"><%= data.caption %></textarea>
-</label></p>
+    <p><label>Bio:
+          <textarea rows="5" cols="50" name="caption" id="caption"></textarea>
+    </label></p>
 
-  <p><button type="submit" class="profile-button">Update</button></p>
+    <p><button type="submit" class="profile-button">Update</button></p>
 </form>
 
   <!-- load local js -->

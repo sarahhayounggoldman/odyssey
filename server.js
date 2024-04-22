@@ -195,7 +195,6 @@ app.get('/search', async (req, res) => {
     res.render('searchResults', { posts: posts, username: req.session.username});
 });
 
-<<<<<<< HEAD
 app.get('/profile', async (req, res) => {
     const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
@@ -313,8 +312,6 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
 //         return res.status(500).send("Server error: " + error.message);
 //     }
 // });
-=======
->>>>>>> d312e87a70b4486c3a5fffe9d28935e1e7716884
 
 app.post('/explore', upload.single('file'), async (req, res) => {
     try {

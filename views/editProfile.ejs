@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Post</title>
+  <!-- load local stylesheet (css) -->
+  <link rel="stylesheet" href="/styles.css" />
+  <!-- loading jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
+<body>
+  <a href="/profile"> &lt; Back </a>
+
+  <h1>Edit Profile</h1>
+
+  <form id="post-form" method="POST" action="/explore" enctype='multipart/form-data'>
+  
+<p><label> Username:
+<textarea rows="1" cols="40" name="city" id="city"><%= data.city %></textarea>
+</label></p>
+
+<p><label>Bio:
+      <textarea rows="5" cols="50" name="caption" id="caption"><%= data.caption %></textarea>
+</label></p>
+
+  <p><button type="submit" class="profile-button">Update</button></p>
+</form>
+
+  <!-- load local js -->
+<script src="/main.js"></script>
+<script src="/post.js"></script>
+</body>
+
+</html>

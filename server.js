@@ -426,7 +426,6 @@ app.post("/signup", async (req, res) => {
         const db = await Connection.open(mongoUri, DB);
         var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
         if (existingUser) {
-            console.log("1");
             req.flash('error', "Login already exists - please try logging in instead.");
             return res.redirect('/')
         }
@@ -435,6 +434,7 @@ app.post("/signup", async (req, res) => {
             {
                 username: username,
                 email: email,
+                bio: '',
                 followers: [],
                 following: [],
                 postIDs: [],
@@ -445,10 +445,8 @@ app.post("/signup", async (req, res) => {
         req.flash('info', 'successfully joined and logged in as ' + username);
         req.session.username = username;
         req.session.loggedIn = true;
-        console.log("2");
         return res.redirect('/');
     } catch (error) {
-        console.log("3");
         req.flash('error', `Form submission error: ${error}`);
         return res.redirect('/')
     }
@@ -462,7 +460,6 @@ app.post("/login", async (req, res) => {
         var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
         console.log('user', existingUser);
         if (!existingUser) {
-            console.log("4");
             req.flash('error', "Username does not exist - try again.");
             return res.redirect('/')
         }
@@ -472,14 +469,12 @@ app.post("/login", async (req, res) => {
             req.flash('error', "Username or password incorrect - try again.");
             return res.redirect('/')
         }
-        console.log("5");
         req.flash('info', 'successfully logged in as ' + username);
         req.session.username = username;
         req.session.loggedIn = true;
         console.log('login as', username);
         return res.redirect('/');
     } catch (error) {
-        console.log("6");
         req.flash('error', `Form submission error: ${error}`);
         return res.redirect('/')
     }
@@ -489,15 +484,24 @@ app.post('/logout', (req,res) => {
     if (req.session.username) {
         req.session.username = null;
         req.session.loggedIn = false;
-        console.log("7");
         req.flash('info', 'You are logged out');
         return res.redirect('/');
     } else {
-        console.log("8");
         req.flash('error', 'You are not logged in - please do so.');
         return res.redirect('/');
 }
 });
+
+app.get('/editprofile', (req, res) => {
+    console.log('edit profile');
+    return res.render('editProfile.ejs', {action: '/editprofile', data: req.query });
+});
+
+
+// app.post('/editprofile', (req, res) => {
+//     console.log('edited profile');
+//     return res.render('editProfile.ejs', {action: '/editprofile', data: req.body });
+// });
 
 
 // ================================================================

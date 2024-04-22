@@ -192,16 +192,10 @@ app.get('/search', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     const posts = await db.collection(ODYSSEY_POSTS).find({"location.country": new RegExp(searchedCountry,'i')}).toArray();
     console.log(posts); // check output
-    res.render('searchResults', { posts: posts, username: req.session.username});
+    res.render('searchResults.ejs', { posts: posts, username: req.session.username});
 });
 
-app.get('/profile', async (req, res) => {
-    const user = req.session.username;
-    const db = await Connection.open(mongoUri, DB);
-    const posts = await db.collection(ODYSSEY_POSTS).find({"username": user}).toArray();
-    console.log(posts); // check output
-    res.render('searchResults', { posts: posts, username: req.session.username});
-});
+
 
 //Edit post form
 app.get('/edit/:postId', async (req, res) => {
@@ -394,19 +388,16 @@ function requiresLogin(req, res, next) {
 }
 
 app.get('/profile', async (req, res) => {
-    // const db = await Connection.open(mongoUri, WMDB);
-    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-    // console.log('len', all.length, 'first', all[0]);
-    // let uid = req.session.uid || 'unknown';
+    const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
-    const posts = await db.collection(ODYSSEY_POSTS).find({"username": req.session.username}).toArray();
+    const posts = await db.collection(ODYSSEY_POSTS).find({"username": user}).toArray();
     console.log(posts); // check output
     let visits = req.session.visits || 0;
     visits++;
     req.session.visits = visits;
+    console.log(posts); // check output
     return res.render('profile.ejs', 
         {
-            visits, 
             username: req.session.username,
             posts: posts
         }

@@ -36,7 +36,7 @@ $("#login-ajax").click(loginAjax);
 // like button handler
 $(document).ready(function() {
     $(".likeBtn").on('click', function(event) {
-        var postId = $(this).data("post-id");
+        var postId = $(this).closest("[data-post-id]").attr("data-post-id");
         likePost(postId);
     });
 });

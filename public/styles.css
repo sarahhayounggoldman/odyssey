@@ -231,8 +231,8 @@ button:hover {
   /* color; */
 }
 
-Styles for the "Edit" button
-.edit-post-button {
+/* Styles for the "Edit" button */
+/* .edit-post-button {
   position: absolute;
   top: 10px; 
   right: 10px; 
@@ -243,9 +243,9 @@ Styles for the "Edit" button
   border-radius: 5px; 
   font-size: 12px; 
   cursor: pointer; 
-  border: none;
-}
+  border: none; 
+} */
 
-.edit-post-button:hover {
+/* .edit-post-button:hover {
   background-color: #016faf; 
-}
+} */

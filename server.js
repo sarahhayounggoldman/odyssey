@@ -196,7 +196,7 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
         budget: formData.budget,
         travelType: formData.travelType,
         rating: formData.rating,
-        content: { text: formData.caption }
+        content: { text: formData.caption, images: formData.images }
     };
 
     if (req.file) {

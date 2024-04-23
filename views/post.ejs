@@ -32,9 +32,10 @@
 
     <!-- ADDED LIKE STUFF BELOW -->
 
-    <button class="likeBtn" type="button" data-post-id="<%= post.id %>">
+    <button class="likeBtn" type="button" data-post-id="<%= post._id %>">
         ❤️ like!
     </button>
+    
     <p class="likeCounter">
         <%= post.likes ? post.likes : '0' %>
     </p>

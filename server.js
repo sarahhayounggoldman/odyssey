@@ -123,17 +123,12 @@ const ODYSSEY_POSTS = 'odyssey_posts';
 // main page. This shows the use of session cookies
 
 app.get('/', (req, res) => {
-    // let uid = req.session.uid || 'unknown';
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    // console.log('uid', uid);
     if (!req.session.loggedIn) {
         console.log('0');
         req.flash('error', 'You are not logged in - please do so.');
-        return res.render('login.ejs', {visits});
+        return res.render('login.ejs');
     }else{
-        return res.render('home.ejs', {visits, username: req.session.username});
+        return res.render('home.ejs', {username: req.session.username});
     }
    
 });
@@ -150,41 +145,18 @@ app.post('/form/', (req, res) => {
 });
 
 app.get('/explore', async (req, res) => {
-    // const db = await Connection.open(mongoUri, WMDB);
-    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-    // console.log('len', all.length, 'first', all[0]);
-    // let uid = req.session.uid || 'unknown';
-
     const db = await Connection.open(mongoUri, DB);
     const allPosts = await db.collection(ODYSSEY_POSTS).find({}).toArray();
     console.log(allPosts);
-
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    return res.render('explore.ejs', {posts: allPosts, visits, username: req.session.username});
+    return res.render('explore.ejs', {posts: allPosts, username: req.session.username});
 });
 
 app.get('/followers', async (req, res) => {
-    // const db = await Connection.open(mongoUri, WMDB);
-    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-    // console.log('len', all.length, 'first', all[0]);
-    // let uid = req.session.uid || 'unknown';
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    return res.render('followers.ejs', {visits, username: req.session.username});
+    return res.render('followers.ejs', {username: req.session.username});
 });
 
 app.get('/saved', async (req, res) => {
-    // const db = await Connection.open(mongoUri, WMDB);
-    // let all = await db.collection(STAFF).find({}).sort({name: 1}).toArray();
-    // console.log('len', all.length, 'first', all[0]);
-    // let uid = req.session.uid || 'unknown';
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    return res.render('saved.ejs', {visits, username: req.session.username});
+    return res.render('saved.ejs', {username: req.session.username});
 });
 
 app.get('/search', async (req, res) => {
@@ -340,13 +312,8 @@ app.post('/explore', upload.single('file'), async (req, res) => {
             },
             likes: 0
         });   
-
-        // return res.redirect(`/explore`); //OLD
-        let visits = req.session.visits || 0;
-        visits++;
-        req.session.visits = visits;
         const posts = await db.collection(ODYSSEY_POSTS).find({}).toArray();
-        return res.render('explore.ejs', {visits, posts, username: req.session.username });
+        return res.render('explore.ejs', {posts, username: req.session.username });
 
     } catch (error) {
         console.error('Error uploading files:', error);
@@ -430,16 +397,7 @@ app.get('/profile', async (req, res) => {
 
 
 app.get('/signup', (req, res) => {
-    // let uid = req.session.uid || 'unknown';
-    let visits = req.session.visits || 0;
-    visits++;
-    req.session.visits = visits;
-    // console.log('uid', uid);
-    return res.render('signUp.ejs', 
-        {
-            visits
-        }
-    );
+    return res.render('signUp.ejs');
 });
   
 app.post("/signup", async (req, res) => {
@@ -508,7 +466,7 @@ app.post('/logout', (req,res) => {
     if (req.session.username) {
         req.session.username = null;
         req.session.loggedIn = false;
-        req.flash('info', 'You are logged out');
+        req.flash('info', 'You are logged out.');
         return res.redirect('/');
     } else {
         req.flash('error', 'You are not logged in - please do so.');
@@ -517,7 +475,6 @@ app.post('/logout', (req,res) => {
 });
 
 app.get('/editprofile', (req, res) => {
-    console.log('edit profile');
     return res.render('editProfile.ejs');
 });
 
@@ -525,12 +482,14 @@ app.get('/editprofile', (req, res) => {
 app.post("/editprofile", async (req, res) => {
     try {
         const username =  req.session.username;
+        // const newUsername =  req.body.newUsername;
         const bio = req.body.bio;
-        console.log('username is ', username);
+        console.log('username is', username);
         const db = await Connection.open(mongoUri, DB);
+        // var existingUser = await db.collection(ODYSSEY_USERS).updateOne({username: username}, {$set:{bio: bio, username: newUsername}});
         var existingUser = await db.collection(ODYSSEY_USERS).updateOne({username: username}, {$set:{bio: bio}});
         if (existingUser) {
-            req.flash('info', "updated succesfully.");
+            req.flash('info', "Updated succesfully.");
             return res.redirect('/profile')
         }
     } catch (error) {

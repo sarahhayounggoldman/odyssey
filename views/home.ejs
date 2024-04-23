@@ -14,9 +14,11 @@
     <h1>Welcome!</h1>
     <h2>You are logged in as  <%= username %> and this is the home page</h2>
 
-    <p>Everything is fine.</p>
-
-    <!-- <p>You have visited <%= visits %> times.</p> -->
+    <p>
+        <form action="/logout" method="POST">
+          <button class="profile-button">Logout</button>
+        </form>
+    </p>
 
     <%- include("partials/bottombar.ejs") %>
 

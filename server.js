@@ -196,7 +196,7 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
         budget: formData.budget,
         travelType: formData.travelType,
         rating: formData.rating,
-        content: { text: formData.caption, images: formData.images }
+        content: { text: formData.caption }
     };
 
     if (req.file) {
@@ -325,22 +325,18 @@ app.post('/explore', upload.single('file'), async (req, res) => {
 //LIKES!!!!
 
 app.post('/likeAjax/:postId', async (req, res) => {
-    const postId = req.params.postId;
-    console.log(req.params);
+    const postId = parseInt(req.params.postId);
     const doc = await likePost(postId);
-    console.log(doc.postId);
     return res.json({ error: false, likes: doc.likes, postId: postId });
 });
 
 async function likePost(postId) {
     const db = await Connection.open(mongoUri, DB);
     const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
-    console.log(postId);
     if (post) {
-        console.log(post.likes);
         const updatedLikes = post.likes ? post.likes + 1 : 1;
         await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(postId) }, { $set: { likes: updatedLikes } });
-        return { likes: updatedLikes, postId: postId };
+        return { likes: updatedLikes };
     } else {
         throw new Error('Post not found');
     }

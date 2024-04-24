@@ -478,19 +478,28 @@ app.post('/logout', (req,res) => {
 }
 });
 
-app.get('/editprofile', (req, res) => {
-    return res.render('editProfile.ejs');
+app.get('/editprofile', async(req, res) => {
+    // return res.render('editProfile.ejs');
+    const username =  req.session.username;
+    const db = await Connection.open(mongoUri, DB);
+    try {
+        const person = await db.collection(ODYSSEY_USERS).findOne({username: username});
+        const bio = person.bio;
+        res.render('editProfile.ejs', {username: username, bio: bio });
+    } catch (error) {
+        req.flash('error', 'Error fetching profile data: ' + error.message);
+        res.redirect('/explore');
+    }
 });
 
   
 app.post("/editprofile", async (req, res) => {
     try {
-        var username =  req.session.username;
+        const username =  req.session.username;
         const newUsername =  req.body.newUsername;
         const bio = req.body.bio;
         const db = await Connection.open(mongoUri, DB);
         var existingUser = await db.collection(ODYSSEY_USERS).updateOne({username: username}, {$set:{bio: bio, username: newUsername}});
-        // var existingUser = await db.collection(ODYSSEY_USERS).updateOne({username: username}, {$set:{bio: bio}});
         if (existingUser) {
             req.flash('info', "Updated succesfully.");
             req.session.username = newUsername;

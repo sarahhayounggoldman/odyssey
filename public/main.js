@@ -52,7 +52,8 @@ function processAction(resp) {
         alert('Error: '+resp.error);
     }
     console.log("Liked post "+resp.postId+". Total likes: "+resp.likes);
-    $(`[data-post-id=${resp.postId}]`).find('.likeCounter').text(resp.likes);
+    console.log(resp.postId);
+    $(`[data-post-id=${String(resp.postId)}]`).closest(".post-container").find('.likeCounter').text(resp.likes);
 }
 
 // function likePost(postId) {

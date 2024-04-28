@@ -7,7 +7,7 @@
 
 // standard modules, loaded from node_modules
 const path = require('path');
-require("dotenv").config({ path: path.join(process.env.HOME, '.cs304env')});
+require("dotenv").config({ path: path.join(process.env.HOME, '.cs304env') });
 const express = require('express');
 const morgan = require('morgan');
 const serveStatic = require('serve-static');
@@ -31,6 +31,7 @@ const { Connection } = require('./connection'); //QUESTION - does this need to b
 const cs304 = require('./cs304');
 const { error } = require('console');
 const { fstat } = require('fs');
+const { open } = require('./connection');
 
 // Create and configure the app
 
@@ -72,34 +73,36 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('/students/odyssey/uploads'));
 
 function timeString(dateObj) {
-    if( !dateObj) {
+    if (!dateObj) {
         dateObj = new Date();
     }
     // convert val to two-digit string
-    d2 = (val) => val < 10 ? '0'+val : ''+val;
+    d2 = (val) => val < 10 ? '0' + val : '' + val;
     let hh = d2(dateObj.getHours())
     let mm = d2(dateObj.getMinutes())
     let ss = d2(dateObj.getSeconds())
-    return hh+mm+ss
+    return hh + mm + ss
 }
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, '/students/odyssey/uploads')
+        cb(null, '/students/odyssey/uploads')
     },
     filename: function (req, file, cb) {
         let parts = file.originalname.split('.');
-        let ext = parts[parts.length-1];
+        let ext = parts[parts.length - 1];
         let hhmmss = timeString();
         cb(null, file.fieldname + '-' + hhmmss + '.' + ext);
     }
-  })
+})
 
-console.log('Multer configured successfully'); 
+console.log('Multer configured successfully');
 
 //middleware
-  var upload = multer({ storage: storage,
-    limits: {fileSize: 1_000_000_000 }});
+var upload = multer({
+    storage: storage,
+    limits: { fileSize: 1_000_000_000 }
+});
 
 
 // ================================================================
@@ -119,32 +122,59 @@ app.get('/', (req, res) => {
         console.log('0');
         req.flash('error', 'You are not logged in - please do so.');
         return res.render('login.ejs');
-    }else{
-        return res.render('home.ejs', {username: req.session.username});
+    } else {
+        return res.render('home.ejs', { username: req.session.username });
     }
-   
+
 });
 
 
 app.get('/form/', (req, res) => {
     console.log('get form');
-    return res.render('form.ejs', {action: '/form/', data: req.query });
+    return res.render('form.ejs', { action: '/form/', data: req.query });
 });
 
 app.post('/form/', (req, res) => {
     console.log('post form');
-    return res.render('form.ejs', {action: '/form/', data: req.body });
+    return res.render('form.ejs', { action: '/form/', data: req.body });
 });
 
 app.get('/explore', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
-    const allPosts = await db.collection(ODYSSEY_POSTS).find({}).toArray();
-    console.log(allPosts);
-    return res.render('explore.ejs', {posts: allPosts, username: req.session.username});
+    let sortOptions = {};
+    let queryFilter = {};
+    let sort_option = req.query.sort_option || 'recent';  // Default to 'recent' if not specified
+
+    if (sort_option === 'recent') {
+        sortOptions.timestamp = -1;
+    } else if (sort_option === 'oldest') {
+        sortOptions.timestamp = 1;
+    } else if (sort_option === 'budget_high') {
+        sortOptions.budget = -1;
+        queryFilter.budget = { $exists: true, $ne: null };
+    } else if (sort_option === 'budget_low') {
+        sortOptions.budget = 1;
+        queryFilter.budget = { $exists: true, $ne: null };
+    } else if (sort_option === 'rating_high') {
+        sortOptions.rating = -1;
+        queryFilter.rating = { $exists: true, $ne: null };
+    } else if (sort_option === 'rating_low') {
+        sortOptions.rating = 1;
+        queryFilter.rating = { $exists: true, $ne: null };
+    } else if (sort_option === 'likes_high') {
+        sortOptions.likes = -1;
+    } else if (sort_option === 'likes_low') {
+        sortOptions.likes = 1;
+    }
+
+    const allPosts = await db.collection('odyssey_posts').find(queryFilter).sort(sortOptions).toArray();
+    const username = req.session.username;  // Retrieve username from session
+    res.render('explore.ejs', { posts: allPosts, username: username, sort_option: sort_option });
 });
 
+
 app.get('/followers', async (req, res) => {
-    return res.render('followers.ejs', {username: req.session.username});
+    return res.render('followers.ejs', { username: req.session.username });
 });
 
 app.post('/save-post/:postId', requiresLogin, async (req, res) => {
@@ -182,12 +212,43 @@ app.get('/saved', requiresLogin, async (req, res) => {
 
 
 app.get('/search', async (req, res) => {
-    const searchedCountry = req.query.country;
     const db = await Connection.open(mongoUri, DB);
-    const posts = await db.collection(ODYSSEY_POSTS).find({"location.country": new RegExp(searchedCountry,'i')}).toArray();
-    console.log(posts); // check output
-    res.render('searchResults.ejs', { posts: posts, username: req.session.username});
+    let sortOptions = {};
+    let sort_option = req.query.sort_option || 'recent'; // Default to 'recent' if not specified
+    const searchedCountry = req.query.country; 
+
+    if (sort_option === 'recent') {
+        sortOptions.timestamp = -1;
+    } else if (sort_option === 'oldest') {
+        sortOptions.timestamp = 1;
+    } else if (sort_option === 'budget_high') {
+        sortOptions.budget = -1;
+    } else if (sort_option === 'budget_low') {
+        sortOptions.budget = 1;
+    } else if (sort_option === 'rating_high') {
+        sortOptions.rating = -1;
+    } else if (sort_option === 'rating_low') {
+        sortOptions.rating = 1;
+    } else if (sort_option === 'likes_high') {
+        sortOptions.likes = -1;
+    } else if (sort_option === 'likes_low') {
+        sortOptions.likes = 1;
+    }
+
+    let query = {
+        "location.country": new RegExp(searchedCountry, 'i')
+    };
+
+    const posts = await db.collection('odyssey_posts').find(query).sort(sortOptions).toArray();
+    const username = req.session.username; 
+    res.render('searchResults.ejs', {
+        posts: posts,
+        username: username,
+        sort_option: sort_option,
+        searchedCountry: searchedCountry  
+    });
 });
+
 
 
 //Edit post form
@@ -242,7 +303,7 @@ app.post('/explore', upload.single('file'), async (req, res) => {
         //change file perms
         let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
         console.log('chmod val', val);
-  
+
         const result = await db.collection(ODYSSEY_POSTS).insertOne({
             // authorID: formData.authorID,
             username: req.session.username,
@@ -262,9 +323,9 @@ app.post('/explore', upload.single('file'), async (req, res) => {
                 images: req.file.filename
             },
             likes: 0
-        });   
+        });
         const posts = await db.collection(ODYSSEY_POSTS).find({}).toArray();
-        return res.render('explore.ejs', {posts, username: req.session.username });
+        return res.render('explore.ejs', { posts, username: req.session.username });
 
     } catch (error) {
         console.error('Error uploading files:', error);
@@ -311,14 +372,14 @@ function requiresLogin(req, res, next) {
 app.get('/profile', async (req, res) => {
     const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
-    const posts = await db.collection(ODYSSEY_POSTS).find({"username": user}).toArray();
-    const onePerson = await db.collection(ODYSSEY_USERS).find({"username": user}).toArray();
+    const posts = await db.collection(ODYSSEY_POSTS).find({ "username": user }).toArray();
+    const onePerson = await db.collection(ODYSSEY_USERS).find({ "username": user }).toArray();
     let person = onePerson[0]
     // const bio = person.bio;
     const followers = person.followers;
     const following = person.following;
     console.log(posts); // check output
-    return res.render('profile.ejs', 
+    return res.render('profile.ejs',
         {
             username: req.session.username,
             posts: posts,
@@ -333,14 +394,14 @@ app.get('/profile', async (req, res) => {
 app.get('/signup', (req, res) => {
     return res.render('signUp.ejs');
 });
-  
+
 app.post("/signup", async (req, res) => {
     try {
         const email = req.body.email;
         const username = req.body.username;
         const password = req.body.password;
         const db = await Connection.open(mongoUri, DB);
-        var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
+        var existingUser = await db.collection(ODYSSEY_USERS).findOne({ username: username });
         if (existingUser) {
             req.flash('error', "Login already exists - please try logging in instead.");
             return res.redirect('/')
@@ -373,13 +434,13 @@ app.post("/login", async (req, res) => {
         const username = req.body.username;
         const password = req.body.password;
         const db = await Connection.open(mongoUri, DB);
-        var existingUser = await db.collection(ODYSSEY_USERS).findOne({username: username});
+        var existingUser = await db.collection(ODYSSEY_USERS).findOne({ username: username });
         console.log('user', existingUser);
         if (!existingUser) {
             req.flash('error', "Username does not exist - try again.");
             return res.redirect('/')
         }
-        const match = await bcrypt.compare(password, existingUser.hash); 
+        const match = await bcrypt.compare(password, existingUser.hash);
         console.log('match', match);
         if (!match) {
             req.flash('error', "Username or password incorrect - try again.");
@@ -396,7 +457,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.post('/logout', (req,res) => {
+app.post('/logout', (req, res) => {
     if (req.session.username) {
         req.session.username = null;
         req.session.loggedIn = false;
@@ -405,31 +466,31 @@ app.post('/logout', (req,res) => {
     } else {
         req.flash('error', 'You are not logged in - please do so.');
         return res.redirect('/');
-}
+    }
 });
 
-app.get('/editprofile', async(req, res) => {
+app.get('/editprofile', async (req, res) => {
     // return res.render('editProfile.ejs');
-    const username =  req.session.username;
+    const username = req.session.username;
     const db = await Connection.open(mongoUri, DB);
     try {
-        const person = await db.collection(ODYSSEY_USERS).findOne({username: username});
+        const person = await db.collection(ODYSSEY_USERS).findOne({ username: username });
         const bio = person.bio;
-        res.render('editProfile.ejs', {username: username, bio: bio });
+        res.render('editProfile.ejs', { username: username, bio: bio });
     } catch (error) {
         req.flash('error', 'Error fetching profile data: ' + error.message);
         res.redirect('/explore');
     }
 });
 
-  
+
 app.post("/editprofile", async (req, res) => {
     try {
-        const username =  req.session.username;
-        const newUsername =  req.body.newUsername;
+        const username = req.session.username;
+        const newUsername = req.body.newUsername;
         const bio = req.body.bio;
         const db = await Connection.open(mongoUri, DB);
-        var existingUser = await db.collection(ODYSSEY_USERS).updateOne({username: username}, {$set:{bio: bio, username: newUsername}});
+        var existingUser = await db.collection(ODYSSEY_USERS).updateOne({ username: username }, { $set: { bio: bio, username: newUsername } });
         if (existingUser) {
             req.flash('info', "Updated succesfully.");
             req.session.username = newUsername;
@@ -449,6 +510,6 @@ app.post("/editprofile", async (req, res) => {
 const serverPort = cs304.getPort(8080);
 
 // this is last, because it never returns
-app.listen(serverPort, function() {
+app.listen(serverPort, function () {
     console.log(`open http://localhost:${serverPort}`);
 });

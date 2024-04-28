@@ -178,13 +178,22 @@ button:hover {
   border-radius: 5px;
   padding: 5px 10px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .likeCounter {
   font-size: 16px; 
 }
 
+.save-post-button{
+  background-color: #1b9ee9; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {

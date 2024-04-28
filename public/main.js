@@ -68,22 +68,21 @@ $(document).ready(function() {
     });
 });
 
-// function likePost(postId) {
-//     console.log("got here to likePost");
-//     $.post("/likeAjax/" + postId, { postId: postId }).then(processAction);
-// }
-// function processAction(resp) {
-//     console.log('response is ',resp);
-//     if (resp.error) {
-//         alert('Error: '+resp.error);
-//     }
-//     console.log("Liked movie "+resp.id+". Total likes: "+resp.likes);
-//     $(`[data-id=${resp.id}]`).find('.likeCounter').text(resp.likes);
-// }
+//for converting time to user's clock
+document.addEventListener('DOMContentLoaded', function () {
+    const dateTimeElements = document.querySelectorAll('.date-time');
 
-// function likePost(postId) {
-//     $.post("/explore", { postId: postId }).then(processAction);
-// }
+    dateTimeElements.forEach(element => {
+      const timestamp = element.getAttribute('data-timestamp');
+      const date = new Date(timestamp);
+      const formattedDate = date.toLocaleString('default', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+      });
+      element.textContent = formattedDate;
+    });
+});
+
 
 console.log('main.js loaded');
 

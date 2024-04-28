@@ -69,7 +69,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //NEED TO DEBUG
 //multer for file upload
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('/students/team_abcd/uploads'));
 
 function timeString(dateObj) {
     if( !dateObj) {
@@ -85,7 +85,7 @@ function timeString(dateObj) {
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'uploads')
+      cb(null, '/students/odyssey/uploads')
     },
     filename: function (req, file, cb) {
         let parts = file.originalname.split('.');

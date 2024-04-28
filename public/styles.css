@@ -160,6 +160,30 @@ button:hover {
   min-width: 0; 
 }
 
+.like-section {
+  display: flex;
+  align-items: center; 
+  justify-content: flex-start; 
+  margin-top: 10px; 
+}
+
+.likeBtn, .likeCounter {
+  margin-right: 15px; 
+}
+
+.likeBtn {
+  background-color: #1b9ee9; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.likeCounter {
+  font-size: 16px; 
+}
 
 
 /* Responsive adjustments for smaller screens */

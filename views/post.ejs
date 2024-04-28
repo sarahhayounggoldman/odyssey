@@ -33,14 +33,14 @@
     </div>
     <div class="caption"><%= post.content.text %></div>
 
-    <!-- ADDED LIKE STUFF BELOW -->
-
-    <button class="likeBtn" type="button" data-post-id="<%= post._id %>">
-        ❤️ like!
-    </button>
-    
+<div class = like-section> 
     <p class="likeCounter">
         <%= post.likes ? post.likes : '0' %>
     </p>
-
+    
+    <button class="likeBtn" type="button" data-post-id="<%= post._id %>">
+        ❤️ like!
+    </button>   
+</div>
+   
 </div>

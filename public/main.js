@@ -33,10 +33,12 @@ function loginAjax() {
 
 $("#login-ajax").click(loginAjax);
 
-// like button handler
+
+//likes 
 $(document).ready(function() {
-    $(".likeBtn").on('click', function(event) {
+    $('body').on('click', '.likeBtn', function() {
         var postId = $(this).closest("[data-post-id]").attr("data-post-id");
+        //var postId = $(this).data('post-id') || $(this).closest('[data-post-id]').attr('data-post-id');
         likePost(postId);
     });
 });

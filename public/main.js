@@ -56,6 +56,18 @@ function processAction(resp) {
     $(`[data-post-id=${String(resp.postId)}]`).closest(".post-container").find('.likeCounter').text(resp.likes);
 }
 
+//save button handler
+$(document).ready(function() {
+    $('.save-post-button').click(function() {
+        var postId = $(this).data('post-id');
+        $.post('/save-post/' + postId, function(data) {
+            alert('Post saved successfully!');
+        }).fail(function(response) {
+            alert('Error saving post: ' + response.responseText);
+        });
+    });
+});
+
 // function likePost(postId) {
 //     console.log("got here to likePost");
 //     $.post("/likeAjax/" + postId, { postId: postId }).then(processAction);

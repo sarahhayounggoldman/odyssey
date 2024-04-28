@@ -147,39 +147,50 @@ app.get('/followers', async (req, res) => {
     return res.render('followers.ejs', {username: req.session.username});
 });
 
+app.get('/saved', requiresLogin, async (req, res) => {
+    const username = req.session.username;
+    const db = await Connection.open(mongoUri, DB);
+    // get user
+    const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
+    if (!user) {
+        console.error("No user found with username:", username);
+        return res.status(404).render('error.ejs', { message: "User not found." });
+    }
+
+    // handle case with no saved posts
+    if (!user.savedPosts || user.savedPosts.length === 0) {
+        return res.render('saved.ejs', { posts: [], message: "You haven't saved any posts yet." });
+    }
+    const postIds = user.savedPosts.map(id => new ObjectId(id));
+    const posts = await db.collection(ODYSSEY_POSTS).find({ _id: { $in: postIds } }).toArray();
+    console.log("Fetched posts:", posts);
+    res.render('saved.ejs', { posts: posts, username: username });
+});
+
+
 app.post('/save-post/:postId', requiresLogin, async (req, res) => {
     const postId = req.params.postId;
     const username = req.session.username;
     const db = await Connection.open(mongoUri, DB);
+   
     try {
         const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
         if (user.savedPosts && user.savedPosts.includes(postId)) {
             return res.status(400).send('Post already saved');
         }
-        const updatedUser = await db.collection(ODYSSEY_USERS).updateOne(
+
+        await db.collection(ODYSSEY_USERS).updateOne(
             { username: username },
             { $addToSet: { savedPosts: postId } }  // Using $addToSet to avoid duplicates
         );
         res.send('Post saved successfully');
     } catch (error) {
         console.error('Error saving post:', error);
-        res.status(500).send("Server error: " + error.message);
+        if (!res.headersSent) {
+            res.status(500).send("Server error: " + error.message);
+        }
     }
 });
-
-app.get('/saved', requiresLogin, async (req, res) => {
-    const username = req.session.username;
-    const db = await Connection.open(mongoUri, DB);
-    try {
-        const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
-        const posts = await db.collection(ODYSSEY_POSTS).find({ _id: { $in: user.savedPosts.map(id => new ObjectId(id)) } }).toArray();
-        res.render('saved.ejs', { posts: posts });
-    } catch (error) {
-        req.flash('error', 'Error fetching saved posts: ' + error.message);
-        res.redirect('/explore');
-    }
-});
-
 
 app.get('/search', async (req, res) => {
     const searchedCountry = req.query.country;
@@ -188,7 +199,6 @@ app.get('/search', async (req, res) => {
     console.log(posts); // check output
     res.render('searchResults.ejs', { posts: posts, username: req.session.username});
 });
-
 
 //Edit post form
 app.get('/edit/:postId', async (req, res) => {

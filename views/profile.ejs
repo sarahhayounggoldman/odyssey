@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <title>Profile</title>
-    <!-- load local stylesheet (css) -->
+    <!-- Load local stylesheet -->
     <link rel="stylesheet" href="/styles.css" />
-    <!-- loading jquery -->
+    <!-- Loading jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
@@ -14,41 +14,33 @@
 
     <h1>My Profile</h1>
     <p>@<%= username %></p>
-
     <p><%= bio %></p>
-
     <p><%= followers %> Followers</p>
     <p><%= following %> Following</p>
 
-    <a href="/editprofile"> Edit Profile </a>
+    <a href="/editprofile">Edit Profile</a>
 
-    <body>
-        <form action="/profile" method="POST">
-        <% if (posts.length > 0) { %>
-            <% posts.forEach(post => { %>
-                <%- include('post', { post: post }) %>
-            <% }); %>
-        <% } else { %>
-            <p>No posts yet.</p>
-        <% } %>
-        </form>
-    </body>
+    <% if (posts.length > 0) { %>
+        <% posts.forEach(post => { %>
+            <%- include('post', { post: post, username: username }) %> <!-- Pass the username to post template -->
+        <% }); %>
+    <% } else { %>
+        <p>No posts yet.</p>
+    <% } %>
 
     <p>
         <form action="/logout" method="POST">
-          <button class="profile-button">Logout</button>
+            <button class="profile-button">Logout</button>
         </form>
     </p>
 
     <%- include("partials/bottombar.ejs") %>
 
-
     <footer class="footer">
         <p>Copyright © The Odyssey Team 2024 all rights reserved.</p>
     </footer>
 
-    <!-- load local js -->
+    <!-- Load local JavaScript -->
     <script src="/main.js"></script>
-<!-- uid script -->
 </body>
 </html>

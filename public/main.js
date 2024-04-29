@@ -101,3 +101,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
 console.log('main.js loaded');
 
+//For managing the dropdown of editing and deleting a post. 
+document.addEventListener('DOMContentLoaded', function() {
+    var settingsButtons = document.querySelectorAll('.settings-btn');
+    settingsButtons.forEach(function(btn) {
+        btn.addEventListener('click', function(event) {
+            var dropdown = this.nextElementSibling;
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
+            event.stopPropagation();
+        });
+    });
+
+    window.addEventListener('click', function() {
+        var dropdowns = document.querySelectorAll('.settings-dropdown');
+        dropdowns.forEach(function(dropdown) {
+            dropdown.style.display = 'none';
+        });
+    });
+});
+
+

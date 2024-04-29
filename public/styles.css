@@ -260,3 +260,52 @@ button:hover {
   margin-right: 5px;
   margin-bottom: 5px;
 }
+
+
+.post-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.post-settings {
+  position: relative;
+  display: inline-block;
+}
+
+.settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px; /* Adjust size as needed */
+  color: #ccc; /* Adjust color as needed */
+}
+
+.settings-dropdown {
+  display: none; /* ensure it's hidden by default */
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.settings-dropdown a, .settings-dropdown button {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+
+.settings-btn:hover .settings-dropdown, .settings-dropdown:hover {
+  display: block;
+}
+
+.settings-dropdown button:hover {
+  background-color: #f1f1f1;
+}

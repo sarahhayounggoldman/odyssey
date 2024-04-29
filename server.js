@@ -27,7 +27,7 @@ const ROUNDS = 15;
 
 // our modules loaded from cwd
 
-const { Connection } = require('./connection'); 
+const { Connection } = require('./connection');
 const cs304 = require('./cs304');
 const { error } = require('console');
 const { fstat } = require('fs');
@@ -173,33 +173,33 @@ app.get('/explore', async (req, res) => {
 // renders followers page showing a user's followers
 app.get('/followers', async (req, res) => {
     const user = req.session.username;
-   
+
     const db = await Connection.open(mongoUri, DB);
     const userCollection = await db.collection(ODYSSEY_USERS).findOne({ username: user });
     const followers = userCollection.following;
     console.log(followers);
     let allFollowerPosts = [];
-   
+
     for (const follower of followers) {
         const followerPosts = await db.collection(ODYSSEY_POSTS).find({ username: follower }).toArray();
         allFollowerPosts = allFollowerPosts.concat(followerPosts);
     }
-   
-    return res.render('followers.ejs', {posts: allFollowerPosts, username: req.session.username});
-}); 
+
+    return res.render('followers.ejs', { posts: allFollowerPosts, username: req.session.username });
+});
 
 //Followers
 app.post('/follow/:username', async (req, res) => {
     const user = req.session.username;
     const userToFollow = req.params.username;
- 
- 
+
+
     const doc = await follow(user, userToFollow);
     req.flash('info', `You followed ${doc.following}`);
     return res.redirect("/user/" + userToFollow);
 });
- 
- 
+
+
 async function follow(currentUser, userToFollow) {
     const db = await Connection.open(mongoUri, DB);
     const users = await db.collection(ODYSSEY_USERS);
@@ -208,13 +208,13 @@ async function follow(currentUser, userToFollow) {
     await users.updateOne(
         { username: currentUser },
         { $addToSet: { following: userToFollow } },
-        { upsert: true});
+        { upsert: true });
 
     //update userToFollow to have currentUser as follower
     await users.updateOne(
         { username: userToFollow },
         { $addToSet: { followers: currentUser } },
-        { upsert: true});
+        { upsert: true });
 
     console.log("hello2");
     usersCollection = await db.collection(ODYSSEY_USERS).find({}).toArray();
@@ -227,21 +227,22 @@ async function follow(currentUser, userToFollow) {
 app.get('/user/:username', async (req, res) => {
     const user = req.params.username;
     const db = await Connection.open(mongoUri, DB);
-    const userPosts = await db.collection(ODYSSEY_POSTS).find({username: user}).toArray();
-    const person = await db.collection(ODYSSEY_USERS).findOne({username: user});
- 
- 
+    const userPosts = await db.collection(ODYSSEY_POSTS).find({ username: user }).toArray();
+    const person = await db.collection(ODYSSEY_USERS).findOne({ username: user });
+
+
     const followers = person.followers;
     const following = person.following;
- 
- 
+
+
     return res.render('user.ejs', {
         username: user,
         posts: userPosts,
         bio: person.bio,
         followers: followers.length,
-        following: following.length});
-}); 
+        following: following.length
+    });
+});
 
 // displays a user's saved posts
 app.get('/saved', requiresLogin, async (req, res) => {
@@ -269,7 +270,7 @@ app.post('/save-post/:postId', requiresLogin, async (req, res) => {
     const postId = req.params.postId;
     const username = req.session.username;
     const db = await Connection.open(mongoUri, DB);
-   
+
     try {
         const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
         if (user.savedPosts && user.savedPosts.includes(postId)) {
@@ -294,7 +295,7 @@ app.get('/search', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     let sortOptions = {};
     let sort_option = req.query.sort_option || 'recent'; // Default to 'recent' if not specified
-    const searchedCountry = req.query.country; 
+    const searchedCountry = req.query.country;
 
     if (sort_option === 'recent') {
         sortOptions.timestamp = -1;
@@ -319,12 +320,12 @@ app.get('/search', async (req, res) => {
     };
 
     const posts = await db.collection('odyssey_posts').find(query).sort(sortOptions).toArray();
-    const username = req.session.username; 
+    const username = req.session.username;
     res.render('searchResults.ejs', {
         posts: posts,
         username: username,
         sort_option: sort_option,
-        searchedCountry: searchedCountry  
+        searchedCountry: searchedCountry
     });
 });
 
@@ -343,6 +344,7 @@ app.get('/edit/:postId', async (req, res) => {
         res.redirect('/explore');
     }
 });
+
 
 // updates a post in the database
 app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
@@ -365,6 +367,19 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
     req.flash('info', 'Post updated successfully.');
     res.redirect('/explore');
 });
+
+app.delete('/delete/:postId', async (req, res) => {
+    const db = await Connection.open(mongoUri, DB);
+
+    const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(req.params.postId) });
+    if (post.username !== req.session.username) {
+        return res.status(403).send('You are not authorized to delete this post.');
+    }
+    await db.collection(ODYSSEY_POSTS).deleteOne({ _id: new ObjectId(req.params.postId) });
+    res.send('Post deleted');
+
+});
+
 
 // posts a post 
 app.post('/explore', upload.single('file'), async (req, res) => {

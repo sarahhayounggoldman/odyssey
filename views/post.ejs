@@ -10,15 +10,20 @@
 <div class="post-container">
     <div class="header">
         <div class="location"><%= post.location.country %>, <%= post.location.city %></div>
-        <!-- OLD CODE BELOW LINE 14 -->
-        <!-- <div class="date-time"><%= new Date(post.timestamp).toISOString() %></div> -->
         <div class="date-time" data-timestamp="<%= post.timestamp %>"></div>
-        <% if (post.username === username) { %>
-            <a href="/edit/<%= post._id %>" class="edit-post-button">Edit</a>
-        <% } %>
-
-    <button class="save-post-button" type = "button" data-post-id = "<%= post._id %>"> Save </button>
-
+        <div class="post-controls">
+            <% if (post.username === username) { %>
+                <button class="save-post-button" type="button" data-post-id="<%= post._id %>">Save</button>
+                <!-- Dropdown for edit and delete -->
+                <div class="post-settings">
+                    <button class="settings-btn">⋮</button>
+                    <div class="settings-dropdown">
+                        <a href="/edit/<%= post._id %>" class="edit-post-button">Edit</a>
+                        <button type="button" class="delete-post-button" onclick="deletePost('<%= post._id %>')">Delete</button>
+                    </div>
+                </div>
+            <% } %>
+        </div>
     </div>
     <div class="username">
         <% if (post.username === username) { %>
@@ -40,23 +45,26 @@
         <span class="tag">Rating: <%= post.rating %></span>
     </div>
     <div class="caption"><%= post.content.text %></div>
-
-
-    <div class = like-section> 
-        <p class="likeCounter">
-            <%= post.likes ? post.likes : '0' %>
-        </p>
-        
-        <button class="likeBtn" type="button" data-post-id="<%= post._id %>">
-            ❤️ like!
-        </button>   
+    <div class="like-section"> 
+        <p class="likeCounter"><%= post.likes ? post.likes : '0' %></p>
+        <button class="likeBtn" type="button" data-post-id="<%= post._id %>">❤️ like!</button>   
     </div>
-
-    <div class = comment-section> 
+    <div class="comment-section"> 
         <input type="text" name="comment" placeholder="Comment">
-        <button class="sendComment" type="button" data-post-id="<%= post._id %>">
-            Send
-        </button>
+        <button class="sendComment" type="button" data-post-id="<%= post._id %>">Send</button>
     </div>
-
 </div>
+
+<script>
+    function deletePost(postId) {
+        if (confirm('Are you sure you want to delete this post?')) {
+            $.ajax({
+                url: '/delete/' + postId,
+                type: 'DELETE',
+                success: function(result) {
+                    window.location.reload(true);
+                }
+            });
+        }
+    }
+</script>

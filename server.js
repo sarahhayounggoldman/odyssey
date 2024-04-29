@@ -172,8 +172,76 @@ app.get('/explore', async (req, res) => {
 
 // renders followers page showing a user's followers
 app.get('/followers', async (req, res) => {
-    return res.render('followers.ejs', {username: req.session.username});
+    const user = req.session.username;
+   
+    const db = await Connection.open(mongoUri, DB);
+    const userCollection = await db.collection(ODYSSEY_USERS).findOne({ username: user });
+    const followers = userCollection.following;
+    console.log(followers);
+    let allFollowerPosts = [];
+   
+    for (const follower of followers) {
+        const followerPosts = await db.collection(ODYSSEY_POSTS).find({ username: follower }).toArray();
+        allFollowerPosts = allFollowerPosts.concat(followerPosts);
+    }
+   
+    return res.render('followers.ejs', {posts: allFollowerPosts, username: req.session.username});
+}); 
+
+//Followers
+app.post('/follow/:username', async (req, res) => {
+    const user = req.session.username;
+    const userToFollow = req.params.username;
+ 
+ 
+    const doc = await follow(user, userToFollow);
+    req.flash('info', `You followed ${doc.following}`);
+    return res.redirect("/user/" + userToFollow);
 });
+ 
+ 
+async function follow(currentUser, userToFollow) {
+    const db = await Connection.open(mongoUri, DB);
+    const users = await db.collection(ODYSSEY_USERS);
+
+    //update currentUser to have userToFollow in their follwoing
+    await users.updateOne(
+        { username: currentUser },
+        { $addToSet: { following: userToFollow } },
+        { upsert: true});
+
+    //update userToFollow to have currentUser as follower
+    await users.updateOne(
+        { username: userToFollow },
+        { $addToSet: { followers: currentUser } },
+        { upsert: true});
+
+    console.log("hello2");
+    usersCollection = await db.collection(ODYSSEY_USERS).find({}).toArray();
+    console.log(usersCollection);
+
+    return { following: userToFollow };
+};
+
+//shows the posts of a single user
+app.get('/user/:username', async (req, res) => {
+    const user = req.params.username;
+    const db = await Connection.open(mongoUri, DB);
+    const userPosts = await db.collection(ODYSSEY_POSTS).find({username: user}).toArray();
+    const person = await db.collection(ODYSSEY_USERS).findOne({username: user});
+ 
+ 
+    const followers = person.followers;
+    const following = person.following;
+ 
+ 
+    return res.render('user.ejs', {
+        username: user,
+        posts: userPosts,
+        bio: person.bio,
+        followers: followers.length,
+        following: following.length});
+}); 
 
 // displays a user's saved posts
 app.get('/saved', requiresLogin, async (req, res) => {

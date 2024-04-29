@@ -349,9 +349,23 @@ app.post('/explore', upload.single('file'), async (req, res) => {
 
 app.post('/likeAjax/:postId', async (req, res) => {
     const postId = req.params.postId;
-    console.log(req.params);
+    const username = req.session.username;
+
+    const db = await Connection.open(mongoUri, DB);
+    const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
+
+    if (user.likedPosts && user.likedPosts.map(id => id.toString()).includes(postId.toString())) {
+        console.log("User already liked this post.");
+        return res.status(400).json({ error: true, message: 'You already liked this post!' });
+    }
+
     const doc = await likePost(postId);
-    console.log(doc.postId);
+
+    await db.collection(ODYSSEY_USERS).updateOne(
+        { _id: user._id },
+        { $addToSet: { likedPosts: postId } }
+    );
+
     return res.json({ error: false, likes: doc.likes, postId: postId });
 });
 

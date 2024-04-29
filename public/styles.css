@@ -51,9 +51,9 @@ main {
   border: 1px solid #ccc;
   border-radius: 20px;
   font-size: 16px;
-  padding: 8px 15px;
+  padding: 6px 12px;
   padding-right: 45px; /* Increased padding to avoid overlap */
-  width: 60%;
+  width: 50%;
   position: relative;
 }
 
@@ -63,10 +63,9 @@ main {
   color: #ccc;
 }
 
-/* Login/Sign up form and buttons*/
-
+/* Login/Sign up form and buttons */
 #login-form label,
-#signup-form label  {
+#signup-form label {
   display: block;
   margin-bottom: 20px;
 }
@@ -76,10 +75,10 @@ main {
   border: none;
   background-color: #1b9ee9; /* Matching the logo color */
   color: white;
-  padding: 10px 20px;
+  padding: 5px 10px;
   border-radius: 20px; /* Keeping the rounded edges */
   cursor: pointer;
-  font-size: 18px;
+  font-size: 14px;
   outline: none;
 }
 
@@ -138,28 +137,63 @@ button:hover {
   right: 0;
   width: 100%;
   z-index: 1000;
-  height: 60px;
+  height: 25px;
 }
 
 #post-button {
-  right: 10px; /* Adjusted to be inside the search field */
   border: none;
-  background-color: #1b9ee9; /* Matching the logo color */
+  background-color: #1b9ee9;
   color: white;
-  padding: 10px 20px;
-  border-radius: 20px; /* Keeping the rounded edges */
+  padding: 3px 13px;
+  border-radius: 10px; 
   cursor: pointer;
-  font-size: 18px;
+  font-size: 15px;
   text-align: center;
   outline: none;
+  position: absolute;
   top: 50%;
   left: 50%;
-  float: none;
-  position: absolute;
   transform: translate(-50%, -50%);
+  white-space: nowrap;
+  box-sizing: border-box;
+  display: inline-block; 
+  min-width: 0; 
 }
 
+.like-section {
+  display: flex;
+  align-items: center; 
+  justify-content: flex-start; 
+  margin-top: 10px; 
+}
 
+.likeBtn, .likeCounter {
+  margin-right: 15px; 
+}
+
+.likeBtn {
+  background-color: #1b9ee9; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.likeCounter {
+  font-size: 16px; 
+}
+
+.save-post-button{
+  background-color: #1b9ee9; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
@@ -169,17 +203,13 @@ button:hover {
   }
 
   .search-field {
-    width: 80%; /* Larger on smaller screens */
-  }
-
-  .navigation-links a {
-    margin: 5px 0;
+    width: 70%; /* Adjusted for smaller screens */
   }
 
   .navigation {
     flex-direction: column;
     height: auto;
-    padding: 10px;
+    padding: 5px;
   }
 }
 
@@ -187,12 +217,13 @@ button:hover {
 .post-container, .form-container {
   background-color: #fff;
   border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-radius: 8px;
-  padding: 15px;
-  width: 80%;
-  max-width: 500px;
-  margin: 20px auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 10px; /* Reduced padding */
+  width: 70%; /* Smaller width */
+  max-width: 400px; /* Smaller max-width */
+  margin: 10px auto; /* Adjusted margin for better centering and less space */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtler shadow */
 }
 
 .header {
@@ -228,24 +259,4 @@ button:hover {
   font-size: 12px;
   margin-right: 5px;
   margin-bottom: 5px;
-  /* color; */
 }
-
-/* Styles for the "Edit" button */
-/* .edit-post-button {
-  position: absolute;
-  top: 10px; 
-  right: 10px; 
-  background-color: #1b9ee9; 
-  color: white; 
-  padding: 5px 10px;
-  text-decoration: none;
-  border-radius: 5px; 
-  font-size: 12px; 
-  cursor: pointer; 
-  border: none; 
-} */
-
-/* .edit-post-button:hover {
-  background-color: #016faf; 
-} */

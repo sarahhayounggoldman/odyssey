@@ -10,10 +10,15 @@
 <div class="post-container">
     <div class="header">
         <div class="location"><%= post.location.country %>, <%= post.location.city %></div>
-        <div class="date-time"><%= new Date(post.timestamp).toISOString() %></div>
+        <!-- OLD CODE BELOW LINE 14 -->
+        <!-- <div class="date-time"><%= new Date(post.timestamp).toISOString() %></div> -->
+        <div class="date-time" data-timestamp="<%= post.timestamp %>"></div>
         <% if (post.username === username) { %>
             <a href="/edit/<%= post._id %>" class="edit-post-button">Edit</a>
         <% } %>
+
+    <button class="save-post-button" type = "button" data-post-id = "<%= post._id %>"> Save </button>
+
     </div>
     <div class="username">@<%= post.username %></div>
     <div class="image-container">
@@ -30,14 +35,14 @@
     </div>
     <div class="caption"><%= post.content.text %></div>
 
-    <!-- ADDED LIKE STUFF BELOW -->
-
-    <button class="likeBtn" type="button" data-post-id="<%= post._id %>">
-        ❤️ like!
-    </button>
-    
+<div class = like-section> 
     <p class="likeCounter">
         <%= post.likes ? post.likes : '0' %>
     </p>
-
+    
+    <button class="likeBtn" type="button" data-post-id="<%= post._id %>">
+        ❤️ like!
+    </button>   
+</div>
+   
 </div>

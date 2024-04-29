@@ -18,11 +18,11 @@
   <form id="edit-profile-form" method="POST" action="/editprofile">
   
     <p><label> Username:
-    <textarea rows="1" cols="40" name="newUsername" id="newUsername"></textarea>
+    <textarea rows="1" cols="40" name="newUsername" id="newUsername"><%= username %></textarea>
     </label></p>
 
     <p><label>Bio:
-          <textarea rows="5" cols="50" name="bio" id="bio"></textarea>
+          <textarea rows="5" cols="50" name="bio" id="bio"><%= bio %></textarea>
     </label></p>
 
     <p><button type="submit" class="profile-button">Update</button></p>

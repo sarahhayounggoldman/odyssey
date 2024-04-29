@@ -27,7 +27,7 @@ const ROUNDS = 15;
 
 // our modules loaded from cwd
 
-const { Connection } = require('./connection'); //QUESTION - does this need to be .js?
+const { Connection } = require('./connection'); 
 const cs304 = require('./cs304');
 const { error } = require('console');
 const { fstat } = require('fs');
@@ -56,6 +56,7 @@ app.set('view engine', 'ejs');
 
 const mongoUri = cs304.getMongoUri();
 
+//session management
 app.use(cookieSession({
     name: 'session',
     keys: ['horsebattery'],
@@ -68,10 +69,9 @@ app.use(cookieSession({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//NEED TO DEBUG
-//multer for file upload
 app.use('/uploads', express.static('/students/odyssey/uploads'));
 
+//helper function to convert date object to a string
 function timeString(dateObj) {
     if (!dateObj) {
         dateObj = new Date();
@@ -108,15 +108,11 @@ var upload = multer({
 // ================================================================
 // custom routes here
 
-// const DB = process.env.USER;
 const DB = 'odyssey';
 const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
-// const DBNAME = "bcrypt";
-// const USERS = "users";
 
-// main page. This shows the use of session cookies
-
+// main page; this get redirects to login page if not logged in, otherwise shows the home page
 app.get('/', (req, res) => {
     if (!req.session.loggedIn) {
         console.log('0');
@@ -128,17 +124,19 @@ app.get('/', (req, res) => {
 
 });
 
-
+// get request for our form 
 app.get('/form/', (req, res) => {
     console.log('get form');
     return res.render('form.ejs', { action: '/form/', data: req.query });
 });
 
+// post for our form
 app.post('/form/', (req, res) => {
     console.log('post form');
     return res.render('form.ejs', { action: '/form/', data: req.body });
 });
 
+// displays sorted posts based on what the user wants to sort by; ex) budget, rating, date/time posted
 app.get('/explore', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     let sortOptions = {};
@@ -172,11 +170,12 @@ app.get('/explore', async (req, res) => {
     res.render('explore.ejs', { posts: allPosts, username: username, sort_option: sort_option });
 });
 
-
+// renders followers page showing a user's followers
 app.get('/followers', async (req, res) => {
     return res.render('followers.ejs', {username: req.session.username});
 });
 
+// displays a user's saved posts
 app.get('/saved', requiresLogin, async (req, res) => {
     const username = req.session.username;
     const db = await Connection.open(mongoUri, DB);
@@ -197,7 +196,7 @@ app.get('/saved', requiresLogin, async (req, res) => {
     res.render('saved.ejs', { posts: posts, username: username });
 });
 
-
+// saves a post to the user's saved page
 app.post('/save-post/:postId', requiresLogin, async (req, res) => {
     const postId = req.params.postId;
     const username = req.session.username;
@@ -222,6 +221,7 @@ app.post('/save-post/:postId', requiresLogin, async (req, res) => {
     }
 });
 
+// searches posts based on user's selected search criteria
 app.get('/search', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     let sortOptions = {};
@@ -260,9 +260,7 @@ app.get('/search', async (req, res) => {
     });
 });
 
-
-
-//Edit post form
+// allows users to edit their own posts
 app.get('/edit/:postId', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     try {
@@ -278,8 +276,7 @@ app.get('/edit/:postId', async (req, res) => {
     }
 });
 
-// Route to handle the update
-// Update post in the database
+// updates a post in the database
 app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     const formData = req.body;
@@ -301,7 +298,7 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
     res.redirect('/explore');
 });
 
-
+// posts a post 
 app.post('/explore', upload.single('file'), async (req, res) => {
     try {
         console.log('GOT HERE');
@@ -316,7 +313,6 @@ app.post('/explore', upload.single('file'), async (req, res) => {
         console.log('chmod val', val);
 
         const result = await db.collection(ODYSSEY_POSTS).insertOne({
-            // authorID: formData.authorID,
             username: req.session.username,
             timestamp: new Date(),
             location: {
@@ -324,7 +320,6 @@ app.post('/explore', upload.single('file'), async (req, res) => {
                 city: formData.city,
             },
             categories: formData.categories,
-            // categories: Array.isArray(formData.categories) ? formData.categories : [formData.categories],
 
             budget: formData.budget,
             travelType: formData.travelType,
@@ -344,9 +339,7 @@ app.post('/explore', upload.single('file'), async (req, res) => {
     }
 });
 
-
-//LIKES!!!!
-
+// handles Ajax requests for liking a post, checking to make sure the user hasn't already liked the post
 app.post('/likeAjax/:postId', async (req, res) => {
     const postId = req.params.postId;
     const username = req.session.username;
@@ -354,13 +347,14 @@ app.post('/likeAjax/:postId', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
 
+    // if user has already liked the post
     if (user.likedPosts && user.likedPosts.map(id => id.toString()).includes(postId.toString())) {
         console.log("User already liked this post.");
         return res.status(400).json({ error: true, message: 'You already liked this post!' });
     }
 
+    // else like the post
     const doc = await likePost(postId);
-
     await db.collection(ODYSSEY_USERS).updateOne(
         { _id: user._id },
         { $addToSet: { likedPosts: postId } }
@@ -369,6 +363,7 @@ app.post('/likeAjax/:postId', async (req, res) => {
     return res.json({ error: false, likes: doc.likes, postId: postId });
 });
 
+// increments the like count of a post in the database
 async function likePost(postId) {
     const db = await Connection.open(mongoUri, DB);
     const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
@@ -384,7 +379,7 @@ async function likePost(postId) {
 }
 
 
-// Sign up, login, and logout
+// middleware to check permissions and make sure users are logged in before accessing pages with other users' info
 function requiresLogin(req, res, next) {
     if (!req.session.loggedIn) {
         req.flash('error', 'This page requires you to be logged in - please do so.');
@@ -394,6 +389,7 @@ function requiresLogin(req, res, next) {
     }
 }
 
+// Displays user profile page with posts, bio, and username
 app.get('/profile', async (req, res) => {
     const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
@@ -420,6 +416,7 @@ app.get('/signup', (req, res) => {
     return res.render('signUp.ejs');
 });
 
+// sign up new users
 app.post("/signup", async (req, res) => {
     try {
         const email = req.body.email;
@@ -427,6 +424,7 @@ app.post("/signup", async (req, res) => {
         const password = req.body.password;
         const db = await Connection.open(mongoUri, DB);
         var existingUser = await db.collection(ODYSSEY_USERS).findOne({ username: username });
+        // make sure user doesn't already have an account
         if (existingUser) {
             req.flash('error', "Login already exists - please try logging in instead.");
             return res.redirect('/')
@@ -454,6 +452,7 @@ app.post("/signup", async (req, res) => {
     }
 });
 
+//log in users
 app.post("/login", async (req, res) => {
     try {
         const username = req.body.username;
@@ -482,6 +481,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
+// log out users
 app.post('/logout', (req, res) => {
     if (req.session.username) {
         req.session.username = null;
@@ -494,6 +494,7 @@ app.post('/logout', (req, res) => {
     }
 });
 
+//allows users to edit their own profiles (edit username and bio)
 app.get('/editprofile', async (req, res) => {
     // return res.render('editProfile.ejs');
     const username = req.session.username;
@@ -508,7 +509,7 @@ app.get('/editprofile', async (req, res) => {
     }
 });
 
-
+// updates user's edited profile
 app.post("/editprofile", async (req, res) => {
     try {
         const username = req.session.username;
@@ -526,7 +527,6 @@ app.post("/editprofile", async (req, res) => {
         return res.redirect('/')
     }
 });
-
 
 
 // ================================================================

@@ -70,6 +70,19 @@ $(document).ready(function() {
     });
 });
 
+//follow button handler
+$(document).ready(function() {
+    $('.follow-button').click(function() {
+        var username = $(this).data('username');
+        console.log(username);
+        $.post('/follow/' + username, function(data) {
+            alert('Followed successfully!');
+        }).fail(function(response) {
+            alert('Error following user: ' + response.responseText);
+        });
+    });
+}); 
+
 //for converting time to user's clock
 document.addEventListener('DOMContentLoaded', function () {
     const dateTimeElements = document.querySelectorAll('.date-time');

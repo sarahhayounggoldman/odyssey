@@ -13,7 +13,15 @@
     <h1>Welcome!</h1>
     <h2>Here is a list of all of your followers</h2>
     
-    <p>Everything is fine.</p>
+    <div>
+        <% if (posts.length > 0) { %>
+            <% posts.forEach(post => { %>
+                <%- include('post', { post: post }) %>
+            <% }); %>
+        <% } else { %>
+            <p>No posts yet.</p>
+        <% } %>
+    </div>
 
     <%- include("partials/bottombar.ejs") %>
 

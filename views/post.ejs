@@ -20,7 +20,13 @@
     <button class="save-post-button" type = "button" data-post-id = "<%= post._id %>"> Save </button>
 
     </div>
-    <div class="username">@<%= post.username %></div>
+    <div class="username">
+        <% if (post.username === username) { %>
+            <a href="/profile">@<%= post.username %></a>
+        <% } else { %>
+            <a href="/user/<%= post.username %>">@<%= post.username %></a>
+        <% } %>
+    </div>
     <div class="image-container">
         <% if (post.content.images) { %>
             <img src="/uploads/<%= post.content.images %>" alt="Travel image of <%= post.location.city %>">

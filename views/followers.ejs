@@ -14,12 +14,12 @@
     <h2>Here is a list of all of your followers</h2>
     
     <div>
-        <% if (posts.length > 0) { %>
-            <% posts.forEach(post => { %>
-                <%- include('post', { post: post }) %>
+        <% if (followers.length > 0) { %>
+            <% followers.forEach(follower => { %>
+                <p><a href="/user/<%= follower %>">@<%= follower %></a></p>
             <% }); %>
         <% } else { %>
-            <p>No posts yet.</p>
+            <p>No followers yet.</p>
         <% } %>
     </div>
 

@@ -178,14 +178,8 @@ app.get('/followers', async (req, res) => {
     const userCollection = await db.collection(ODYSSEY_USERS).findOne({ username: user });
     const followers = userCollection.following;
     console.log(followers);
-    let allFollowerPosts = [];
 
-    for (const follower of followers) {
-        const followerPosts = await db.collection(ODYSSEY_POSTS).find({ username: follower }).toArray();
-        allFollowerPosts = allFollowerPosts.concat(followerPosts);
-    }
-
-    return res.render('followers.ejs', { posts: allFollowerPosts, username: req.session.username });
+    return res.render('followers.ejs', { followers: followers, username: req.session.username });
 });
 
 //Followers

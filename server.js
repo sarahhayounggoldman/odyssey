@@ -352,7 +352,6 @@ app.post('/likeAjax/:postId', async (req, res) => {
         console.log("User already liked this post.");
         return res.status(400).json({ error: true, message: 'You already liked this post!' });
     }
-
     // else like the post
     const doc = await likePost(postId);
     await db.collection(ODYSSEY_USERS).updateOne(

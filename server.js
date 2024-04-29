@@ -172,8 +172,21 @@ app.get('/explore', async (req, res) => {
 
 // renders followers page showing a user's followers
 app.get('/followers', async (req, res) => {
-    return res.render('followers.ejs', {username: req.session.username});
-});
+    const user = req.session.username;
+   
+    const db = await Connection.open(mongoUri, DB);
+    const userCollection = await db.collection(ODYSSEY_USERS).findOne({ username: user });
+    const followers = userCollection.following;
+    console.log(followers);
+    let allFollowerPosts = [];
+   
+    for (const follower of followers) {
+        const followerPosts = await db.collection(ODYSSEY_POSTS).find({ username: follower }).toArray();
+        allFollowerPosts = allFollowerPosts.concat(followerPosts);
+    }
+   
+    return res.render('followers.ejs', {posts: allFollowerPosts, username: req.session.username});
+ }); 
 
 // displays a user's saved posts
 app.get('/saved', requiresLogin, async (req, res) => {

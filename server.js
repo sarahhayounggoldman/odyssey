@@ -463,7 +463,6 @@ async function likePost(postId) {
     }
 }
 
-
 // middleware to check permissions and make sure users are logged in before accessing pages with other users' info
 function requiresLogin(req, res, next) {
     if (!req.session.loggedIn) {

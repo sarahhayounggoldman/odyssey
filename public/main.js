@@ -99,6 +99,51 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+//comments
+// $(document).ready(function() {
+//     $('body').on('click', '.sendComment', function() {
+//         var postId = $(this).closest("[data-post-id]").attr("data-post-id");
+//         addComment(postId);
+//     });
+// });
+
+// function addComment(postId) {
+//     $.post("/commentAjax/" + postId, { postId: postId }).then(processAction);
+// }
+
+// function processAction(resp) {
+//     console.log('response is ',resp);
+//     if (resp.error) {
+//         alert('Error: '+resp.error);
+//     }
+//     $(`[data-post-id=${String(resp.postId)}]`).closest(".post-container").find('.comment').text(resp.comments);
+// }
+
+//comments
+$(document).ready(function() {
+    $('body').on('click', '.sendComment', function() {
+        // var postId = $(this).closest("[data-post-id]").attr("data-post-id");
+        // var comment = $(this).closest('.comment-section').find('.comment').val(); 
+        // addComment(postId, comment);
+        var postId = $(this).closest("form").attr("data-post-id");
+        var commentText = $(this).closest("form").find('input[name="comment"]').val();  
+        addComment(postId, commentText);
+    });
+});
+
+function addComment(postId, comment) {
+    $.post("/commentAjax/" + postId, { comment: comment }).then(processAction);
+}
+
+function processAction(resp) {
+    console.log('response is ',resp);
+    if (resp.error) {
+        alert('Error: '+resp.error);
+    }
+    $(`[data-post-id=${String(resp.postId)}]`).closest(".post-container").find('.comment').text(resp.comments);
+}
+
+
 console.log('main.js loaded');
 
 //For managing the dropdown of editing and deleting a post. 

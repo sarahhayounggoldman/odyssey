@@ -422,8 +422,8 @@ app.post('/explore', upload.single('file'), async (req, res) => {
                 text: formData.caption,
                 images: req.file.filename
             },
-            likes: 0,
-            allComments: [] 
+            likes: 0
+            // allComments: [] 
         });
         res.redirect('/explore');
 

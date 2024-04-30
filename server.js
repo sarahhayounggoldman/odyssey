@@ -113,44 +113,49 @@ const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
 
 // main page; this get redirects to login page if not logged in, otherwise shows the home page
-app.get('/', requiresLogin, async(req, res) => {
+app.get('/', async(req, res) => {
     if (!req.session.loggedIn) {
         req.flash('error', 'You are not logged in - please do so.');
         return res.render('login.ejs');
-    } else {
-        const user = req.session.username;
-        console.log('user is', user)
-        const db = await Connection.open(mongoUri, DB);
-        const person= await db.collection(ODYSSEY_USERS).findOne({ username: user });
-        console.log('person is', person)
-        const following = person.following;
-        console.log('people following', following)
-        
-        const promises = [];
-        following.forEach(async (username) => {
-            // Add promise into the array
-            promises.push(db.collection(ODYSSEY_POSTS).find({ "username": username }).toArray());
-        });
-
-        // Promises need to resolve
-        Promise.all(promises)
-              // postsArray is an array of arrays of posts for each user
-            .then((postsArray) => {
-                // Flatten into a single array of posts
-                const posts = postsArray.flat();
-                console.log('posts from following', posts)
-                
-                // Sort posts by time posted
-                posts.sort((a, b) => b.timestamp - a.timestamp);
-
-                res.render('home.ejs', { username: req.session.username, following: following, posts: posts });
-            })
-            .catch((error) => {
-                console.error('Error fetching posts:', error);
-            });
-            }
-
+    }else{
+        return res.redirect("/home");
+    }
 });
+
+app.get('/home', requiresLogin, async(req, res) => {
+    const user = req.session.username;
+    console.log('user is', user)
+    const db = await Connection.open(mongoUri, DB);
+    const person= await db.collection(ODYSSEY_USERS).findOne({ username: user });
+    console.log('person is', person)
+    const following = person.following;
+    console.log('people following', following)
+    
+    const promises = [];
+    following.forEach(async (username) => {
+        // Add promise into the array
+        promises.push(db.collection(ODYSSEY_POSTS).find({ "username": username }).toArray());
+    });
+
+    // Promises need to resolve
+    Promise.all(promises)
+            // postsArray is an array of arrays of posts for each user
+        .then((postsArray) => {
+            // Flatten into a single array of posts
+            const posts = postsArray.flat();
+            console.log('posts from following', posts)
+            
+            // Sort posts by time posted
+            posts.sort((a, b) => b.timestamp - a.timestamp);
+
+            res.render('home.ejs', { username: req.session.username, following: following, posts: posts });
+        })
+        .catch((error) => {
+            console.error('Error fetching posts:', error);
+        });
+        }
+
+);
 
 // get request for our form 
 app.get('/form/', requiresLogin, (req, res) => {
@@ -504,36 +509,6 @@ async function addComment(postId, comment) {
 }
 
 
-// handles Ajax requests for posting a comment
-// app.post('/commentAjax/:postId', async (req, res) => {
-//     const postId = req.params.postId;
-//     console.log("post id is", postId);
-//     const username = req.session.username;
-//     console.log("username is", username)
-//     const commentText = req.body.comment;
-//     console.log("comment here", commentText);
-    
-//     const db = await Connection.open(mongoUri, DB);
-    
-//     const newComment = await addComment(postId, commentText);  
-//     res.json({ allComments: newComment.allComments, postId: postId });
-   
-// });
-
-//LATEST
-// app.post('/commentAjax/:postId', async (req, res) => {
-//     const postId = req.params.postId;
-//     const commentText = req.body.comment;
-//     const db = await Connection.open(mongoUri, DB);
-//     const post = await db.collection(ODYSSEY_POSTS).findOne({_id: new ObjectId(postId)});
-
-//     const comment = { text: commentText, timestamp: new Date() }; 
-//     const updatedComments = post.comments ? [...post.comments, comment] : [comment];
-//     await db.collection(ODYSSEY_POSTS).updateOne({_id: new ObjectId(postId)}, { $set: { comments: updatedComments } });
-//     res.json({ postId: postId, comment: comment });
-// });
-
-
 //NEW LATEST
 app.post('/commentAjax/:postId', async (req, res) => {
     const postId = req.params.postId;
@@ -596,6 +571,7 @@ app.post("/signup", async (req, res) => {
         // make sure user doesn't already have an account
         if (existingUser) {
             req.flash('error', "Login already exists - please try logging in instead.");
+            console.log('ITS ACTUALLY HERE 3')
             return res.redirect('/')
         }
         const hash = await bcrypt.hash(password, ROUNDS);
@@ -614,9 +590,11 @@ app.post("/signup", async (req, res) => {
         req.flash('info', 'successfully joined and logged in as ' + username);
         req.session.username = username;
         req.session.loggedIn = true;
+        console.log('ITS ACTUALLY HERE 4')
         return res.redirect('/');
     } catch (error) {
         req.flash('error', `Form submission error: ${error}`);
+        console.log('ITS ACTUALLY HERE 5')
         return res.redirect('/')
     }
 });
@@ -631,21 +609,25 @@ app.post("/login", async (req, res) => {
         console.log('user', existingUser);
         if (!existingUser) {
             req.flash('error', "Username does not exist - try again.");
+            console.log('ITS ACTUALLY HERE 6')
             return res.redirect('/')
         }
         const match = await bcrypt.compare(password, existingUser.hash);
         console.log('match', match);
         if (!match) {
             req.flash('error', "Username or password incorrect - try again.");
+            console.log('ITS ACTUALLY HERE 7')
             return res.redirect('/')
         }
         req.flash('info', 'successfully logged in as ' + username);
         req.session.username = username;
         req.session.loggedIn = true;
         console.log('login as', username);
+        console.log('ITS ACTUALLY HERE 8')
         return res.redirect('/');
     } catch (error) {
         req.flash('error', `Form submission error: ${error}`);
+        console.log('ITS ACTUALLY HERE 9')
         return res.redirect('/')
     }
 });
@@ -656,9 +638,11 @@ app.post('/logout', (req, res) => {
         req.session.username = null;
         req.session.loggedIn = false;
         req.flash('info', 'You are logged out.');
+        console.log('ITS HERE 10')
         return res.redirect('/');
     } else {
         req.flash('error', 'You are not logged in - please do so.');
+        console.log('ITS ACTUALLY HERE 11')
         return res.redirect('/');
     }
 });
@@ -693,6 +677,7 @@ app.post("/editprofile", async (req, res) => {
         }
     } catch (error) {
         req.flash('error', `Form submission error: ${error}`);
+        console.log('ITS ACTUALLY HERE 12')
         return res.redirect('/')
     }
 });

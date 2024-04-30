@@ -176,7 +176,7 @@ app.get('/followers', async (req, res) => {
 
     const db = await Connection.open(mongoUri, DB);
     const userCollection = await db.collection(ODYSSEY_USERS).findOne({ username: user });
-    const followers = userCollection.following;
+    const followers = userCollection.followers;
     console.log(followers);
 
     return res.render('followers.ejs', { followers: followers, username: req.session.username });

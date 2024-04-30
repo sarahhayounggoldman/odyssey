@@ -128,19 +128,21 @@ app.get('/', requiresLogin, async(req, res) => {
         
         const promises = [];
         following.forEach(async (username) => {
-            // Push the promise for fetching posts for the current user into the array
+            // Add promise into the array
             promises.push(db.collection(ODYSSEY_POSTS).find({ "username": username }).toArray());
         });
 
-        // Wait for all promises to resolve
+        // Promises need to resolve
         Promise.all(promises)
+              // postsArray is an array of arrays of posts for each user
             .then((postsArray) => {
-                // postsArray contains an array of arrays of posts for each user
-                // Flatten the array of arrays into a single array of posts
+                // Flatten into a single array of posts
                 const posts = postsArray.flat();
                 console.log('posts from following', posts)
                 
-                // Render the page with the posts
+                // Sort posts by time posted
+                posts.sort((a, b) => b.timestamp - a.timestamp);
+
                 res.render('home.ejs', { username: req.session.username, following: following, posts: posts });
             })
             .catch((error) => {

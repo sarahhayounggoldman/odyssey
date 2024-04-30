@@ -415,7 +415,8 @@ app.post('/explore', upload.single('file'), async (req, res) => {
                 text: formData.caption,
                 images: req.file.filename
             },
-            likes: 0
+            likes: 0,
+            allComments: [] 
         });
         res.redirect('/explore');
 
@@ -462,6 +463,41 @@ async function likePost(postId) {
         throw new Error('Post not found');
     }
 }
+
+
+async function addComment(postId, comment) {
+    console.log("Received postId:", postId);
+    const db = await Connection.open(mongoUri, DB);
+    const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
+    if (post) {
+        const updatedComments = post.allComments ? [...post.allComments, comment] : [comment]; // make sure that allComments exists or create a new array using spread
+        await db.collection(ODYSSEY_POSTS).updateOne(
+            { _id: new ObjectId(postId) },
+            { $set: { allComments: updatedComments } }
+        );
+        return { allComments: updatedComments, postId: postId }; 
+    } else {
+        throw new Error('Post not found');
+    }
+}
+
+
+// handles Ajax requests for posting a comment
+app.post('/commentAjax/:postId', async (req, res) => {
+    const postId = req.params.postId;
+    console.log("post id is", postId);
+    const username = req.session.username;
+    console.log("username is", username)
+    const commentText = req.body.comment;
+    console.log("comment here", commentText);
+    
+    const db = await Connection.open(mongoUri, DB);
+    
+    const newComment = await addComment(postId, commentText);  
+    res.json({ allComments: newComment.allComments, postId: postId });
+   
+});
+
 
 // middleware to check permissions and make sure users are logged in before accessing pages with other users' info
 function requiresLogin(req, res, next) {

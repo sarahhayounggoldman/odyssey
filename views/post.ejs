@@ -49,10 +49,20 @@
         <p class="likeCounter"><%= post.likes ? post.likes : '0' %></p>
         <button class="likeBtn" type="button" data-post-id="<%= post._id %>">❤️ like!</button>   
     </div>
-    <div class="comment-section"> 
-        <input type="text" name="comment" placeholder="Comment">
-        <button class="sendComment" type="button" data-post-id="<%= post._id %>">Send</button>
-    </div>
+    <!-- <form id="comment-form" method="POST" action="/commentAjax/">
+        <p class = "comment"><%= post.comments %></p>
+        <input type="text" name="comment" id="comment" placeholder="Comment">
+        <button class="sendComment" type="submit">
+            Send
+        </button>
+    </form> -->
+    <form id="comment-form" data-post-id="<%= post._id %>">
+        <p class = "comment"><%= post.comments %></p>
+        <input type="text" name="comment" id="comment" placeholder="Comment">
+        <button class="sendComment" type="button">
+            Send
+        </button>
+    </form>
 </div>
 
 <script>

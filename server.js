@@ -442,8 +442,8 @@ app.post('/explore', upload.single('file'), async (req, res) => {
                 text: formData.caption,
                 images: req.file.filename
             },
-            likes: 0,
-            allComments: [] 
+            likes: 0
+            // allComments: [] 
         });
         res.redirect('/explore');
 
@@ -486,23 +486,6 @@ async function likePost(postId) {
         const updatedLikes = post.likes ? post.likes + 1 : 1;
         await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(postId) }, { $set: { likes: updatedLikes } });
         return { likes: updatedLikes, postId: postId };
-    } else {
-        throw new Error('Post not found');
-    }
-}
-
-
-async function addComment(postId, comment) {
-    console.log("Received postId:", postId);
-    const db = await Connection.open(mongoUri, DB);
-    const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
-    if (post) {
-        const updatedComments = post.allComments ? [...post.allComments, comment] : [comment]; // make sure that allComments exists or create a new array using spread
-        await db.collection(ODYSSEY_POSTS).updateOne(
-            { _id: new ObjectId(postId) },
-            { $set: { allComments: updatedComments } }
-        );
-        return { allComments: updatedComments, postId: postId }; 
     } else {
         throw new Error('Post not found');
     }

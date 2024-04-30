@@ -22,7 +22,7 @@ const fs = require('node:fs/promises');
 const { ObjectId } = require('mongodb');
 
 
-// for logins
+// bcrypt for logins
 const bcrypt = require('bcrypt')
 const ROUNDS = 15;
 
@@ -82,6 +82,8 @@ function timeString(dateObj) {
     return hh + mm + ss
 }
 
+// configure Multer to write to a single, shared folder
+// by supplying an *absolute* pathname
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, '/students/odyssey/uploads')
@@ -106,10 +108,15 @@ var upload = multer({
 // ================================================================
 // custom routes here
 
+// Use these constants to access the database
 const DB = 'odyssey';
 const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
 
+/* 
+    Renders the login page or redirects to home if already logged into session
+    returns the login page to input login credentials or the home page
+*/
 // main page; this get redirects to login page if not logged in, otherwise shows the home page
 app.get('/', async(req, res) => {
     if (!req.session.loggedIn) {
@@ -120,6 +127,10 @@ app.get('/', async(req, res) => {
     }
 });
 
+/* 
+    Renders the home page
+    returns the home page with nav bar, welcome message, and posts of following
+*/
 app.get('/home', requiresLogin, async(req, res) => {
     const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
@@ -151,17 +162,28 @@ app.get('/home', requiresLogin, async(req, res) => {
 
 );
 
-// get request for our form 
+/* 
+    Renders the form, the get request
+    returns the form that allows users to create a new post
+*/
+//  for our form 
 app.get('/form/', requiresLogin, (req, res) => {
     return res.render('form.ejs', { action: '/form/', data: req.query });
 });
 
-// post for our form
+
+/* 
+    Renders the form, the post request
+    returns the form to create new post and to extract enterd information
+*/
 app.post('/form/', (req, res) => {
     return res.render('form.ejs', { action: '/form/', data: req.body });
 });
 
-// displays sorted posts based on what the user wants to sort by; ex) budget, rating, date/time posted
+/* 
+    Renders the explore page to recommend posts to users
+    returns the page and displays posts sorted by different measures
+*/
 app.get('/explore', requiresLogin, async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     let sortOptions = {};
@@ -195,7 +217,10 @@ app.get('/explore', requiresLogin, async (req, res) => {
     res.render('explore.ejs', { posts: allPosts, username: username, sort_option: sort_option });
 });
 
-// renders followers page showing a user's followers
+/* 
+    Renders followers page showing a user's followers
+    returns page of followers where each follower's profile is viewable
+*/
 app.get('/followers', requiresLogin, async (req, res) => {
     const user = req.session.username;
 
@@ -210,7 +235,6 @@ app.get('/followers', requiresLogin, async (req, res) => {
 app.post('/follow/:username', async (req, res) => {
     const user = req.session.username;
     const userToFollow = req.params.username;
-
 
     const doc = await follow(user, userToFollow);
     req.flash('info', `You followed ${doc.following}`);

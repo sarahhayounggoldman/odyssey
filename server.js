@@ -483,11 +483,28 @@ app.post('/likeAjax/:postId', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
 
+//for ref
+    // if (!req.session.loggedIn) {
+    //     req.flash('error', 'You are not logged in - please do so.');
+    //     return res.render('login.ejs');
+    // }else{
+    //     return res.redirect("/home");
+    // }
+
     // if user has already liked the post
     if (user.likedPosts && user.likedPosts.map(id => id.toString()).includes(postId.toString())) {
-        console.log("User already liked this post.");
-        return res.status(400).json({ error: true, message: 'You already liked this post!' });
+        const doc = await unlikePost(postId);
+        await db.collection(ODYSSEY_USERS).updateOne(
+            {id: user._id}, 
+            {$pull: {likedPosts: postId}}); //rm post
+
+        return res.json({ 
+            error: false, 
+            likes: doc.likes, 
+            postId: postId 
+        });
     }
+
     // else like the post
     const doc = await likePost(postId);
     await db.collection(ODYSSEY_USERS).updateOne(
@@ -508,6 +525,19 @@ async function likePost(postId) {
     const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
     if (post) {
         const updatedLikes = post.likes ? post.likes + 1 : 1;
+        await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(postId) }, { $set: { likes: updatedLikes } });
+        return { likes: updatedLikes, postId: postId };
+    } else {
+        throw new Error('Post not found');
+    }
+}
+
+//decrements the like count of a post in the database
+async function unlikePost(postId) {
+    const db = await Connection.open(mongoUri, DB);
+    const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
+    if (post) {
+        const updatedLikes = post.likes ? post.likes - 1 : 1;
         await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(postId) }, { $set: { likes: updatedLikes } });
         return { likes: updatedLikes, postId: postId };
     } else {

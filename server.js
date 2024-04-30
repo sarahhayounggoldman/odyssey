@@ -21,7 +21,6 @@ const multer = require('multer');
 const fs = require('node:fs/promises');
 const { ObjectId } = require('mongodb');
 
-
 // bcrypt for logins
 const bcrypt = require('bcrypt')
 const ROUNDS = 15;
@@ -47,7 +46,6 @@ app.use(bodyParser.json());
 
 app.use(cs304.logRequestData);  // tell the user about any request data
 app.use(flash());
-
 
 app.use(serveStatic('public'));
 app.set('view engine', 'ejs');
@@ -153,7 +151,11 @@ app.get('/home', requiresLogin, async(req, res) => {
             // Sort posts by time posted
             posts.sort((a, b) => b.timestamp - a.timestamp);
 
-            res.render('home.ejs', { username: req.session.username, following: following, posts: posts });
+            res.render('home.ejs', { 
+                username: req.session.username, 
+                following: following, 
+                posts: posts 
+            });
         })
         .catch((error) => {
             console.error('Error fetching posts:', error);
@@ -166,7 +168,6 @@ app.get('/home', requiresLogin, async(req, res) => {
     Renders the form, the get request
     returns the form that allows users to create a new post
 */
-//  for our form 
 app.get('/form/', requiresLogin, (req, res) => {
     return res.render('form.ejs', { action: '/form/', data: req.query });
 });
@@ -214,7 +215,11 @@ app.get('/explore', requiresLogin, async (req, res) => {
 
     const allPosts = await db.collection('odyssey_posts').find(queryFilter).sort(sortOptions).toArray();
     const username = req.session.username;  // Retrieve username from session
-    res.render('explore.ejs', { posts: allPosts, username: username, sort_option: sort_option });
+    res.render('explore.ejs', { 
+        posts: allPosts, 
+        username: username, 
+        sort_option: sort_option 
+    });
 });
 
 /* 
@@ -228,7 +233,10 @@ app.get('/followers', requiresLogin, async (req, res) => {
     const userCollection = await db.collection(ODYSSEY_USERS).findOne({ username: user });
     const followers = userCollection.followers;
 
-    return res.render('followers.ejs', { followers: followers, username: req.session.username });
+    return res.render('followers.ejs', { 
+        followers: followers, 
+        username: req.session.username 
+    });
 });
 
 //Followers
@@ -250,13 +258,15 @@ async function follow(currentUser, userToFollow) {
     await users.updateOne(
         { username: currentUser },
         { $addToSet: { following: userToFollow } },
-        { upsert: true });
+        { upsert: true }
+    );
 
     //update userToFollow to have currentUser as follower
     await users.updateOne(
         { username: userToFollow },
         { $addToSet: { followers: currentUser } },
-        { upsert: true });
+        { upsert: true }
+    );
 
     usersCollection = await db.collection(ODYSSEY_USERS).find({}).toArray();
 
@@ -299,7 +309,10 @@ app.get('/saved', requiresLogin, async (req, res) => {
     }
     const postIds = user.savedPosts.map(id => new ObjectId(id));
     const posts = await db.collection(ODYSSEY_POSTS).find({ _id: { $in: postIds } }).toArray();
-    res.render('saved.ejs', { posts: posts, username: username });
+    res.render('saved.ejs', { 
+        posts: posts, 
+        username: username 
+    });
 });
 
 // saves a post to the user's saved page
@@ -390,12 +403,18 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
     const existingPost = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
 
     let updateData = {
-        location: { country: formData.country, city: formData.city },
+        location: { 
+            country: formData.country, 
+            city: formData.city 
+        },
         categories: formData.categories,
         budget: formData.budget,
         travelType: formData.travelType,
         rating: formData.rating,
-        content: { text: formData.caption, images: existingPost.content.images }
+        content: { 
+            text: formData.caption, 
+            images: existingPost.content.images 
+        }
     };
 
     // update image only if a new file was uploaded
@@ -408,6 +427,7 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
     res.redirect('/explore');
 });
 
+// delete a post
 app.delete('/delete/:postId', async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
 
@@ -447,7 +467,6 @@ app.post('/explore', upload.single('file'), async (req, res) => {
                 images: req.file.filename
             },
             likes: 0
-            // allComments: [] 
         });
         res.redirect('/explore');
 
@@ -476,7 +495,11 @@ app.post('/likeAjax/:postId', async (req, res) => {
         { $addToSet: { likedPosts: postId } }
     );
 
-    return res.json({ error: false, likes: doc.likes, postId: postId });
+    return res.json({ 
+        error: false, 
+        likes: doc.likes, 
+        postId: postId 
+    });
 });
 
 // increments the like count of a post in the database
@@ -503,7 +526,10 @@ app.post('/commentAjax/:postId', async (req, res) => {
     const comment = { text: commentText, userId: username }; 
     const updatedComments = post.comments ? [...post.comments, comment] : [comment];
     await db.collection(ODYSSEY_POSTS).updateOne({_id: new ObjectId(postId)}, { $set: { comments: updatedComments } });
-    res.json({ postId: postId, comment: comment });
+    res.json({ 
+        postId: postId, 
+        comment: comment 
+    });
 });
 
 // middleware to check permissions and make sure users are logged in before accessing pages with other users' info
@@ -525,18 +551,16 @@ app.get('/profile', requiresLogin, async (req, res) => {
     let person = onePerson[0]
     const followers = person.followers;
     const following = person.following;
-    return res.render('profile.ejs',
-        {
-            username: req.session.username,
-            posts: posts,
-            bio: person.bio,
-            followers: followers.length,
-            following: following.length
-        }
-    );
+    return res.render('profile.ejs', {
+        username: req.session.username,
+        posts: posts,
+        bio: person.bio,
+        followers: followers.length,
+        following: following.length
+    });
 });
 
-
+// sign up page
 app.get('/signup', (req, res) => {
     return res.render('signUp.ejs');
 });
@@ -555,17 +579,15 @@ app.post("/signup", async (req, res) => {
             return res.redirect('/')
         }
         const hash = await bcrypt.hash(password, ROUNDS);
-        await db.collection(ODYSSEY_USERS).insertOne(
-            {
-                username: username,
-                email: email,
-                bio: '',
-                followers: [],
-                following: [],
-                postIDs: [],
-                hash: hash
-            }
-        );
+        await db.collection(ODYSSEY_USERS).insertOne({
+            username: username,
+            email: email,
+            bio: '',
+            followers: [],
+            following: [],
+            postIDs: [],
+            hash: hash
+        });
         console.log('successfully joined', username, password, hash);
         req.flash('info', 'successfully joined and logged in as ' + username);
         req.session.username = username;

@@ -63,8 +63,10 @@
         <% } %>
     </div>
 
-    <form id="comment-form" data-post-id="<%= post._id %>">
-        <input type="text" name="comment" id="comment" placeholder="Comment">
+    <form id="comment-form-<%= post._id %>" data-post-id="<%= post._id %>">
+        <label for="comment-<%= post._id %>">comment:
+        <input type="text" name="comment" id="comment-<%= post._id %>" placeholder="Comment">
+        </label>
         <button class="sendComment" type="button">Send</button>
     </form>
     

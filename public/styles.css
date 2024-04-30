@@ -73,7 +73,7 @@ main {
 .profile-button {
   right: 10px; /* Adjusted to be inside the search field */
   border: none;
-  background-color: #1b9ee9; /* Matching the logo color */
+  background-color: #166c9e; /* Matching the logo color */
   color: white;
   padding: 5px 10px;
   border-radius: 20px; /* Keeping the rounded edges */
@@ -96,7 +96,7 @@ main {
   position: absolute;
   right: 10px; /* Adjusted to be inside the search field */
   border: none;
-  background-color: #1b9ee9; /* Matching the logo color */
+  background-color: #166c9e; /* Matching the logo color */
   color: white;
   padding: 4px 8px; /* Adjusted padding */
   border-radius: 20px; /* Keeping the rounded edges */
@@ -142,7 +142,7 @@ button:hover {
 
 #post-button {
   border: none;
-  background-color: #1b9ee9;
+  background-color: #166c9e;
   color: white;
   padding: 3px 13px;
   border-radius: 10px; 
@@ -172,7 +172,7 @@ button:hover {
 }
 
 .likeBtn {
-  background-color: #1b9ee9; 
+  background-color: #166c9e; 
   color: white;
   border: none;
   border-radius: 5px;
@@ -186,7 +186,7 @@ button:hover {
 }
 
 .save-post-button{
-  background-color: #1b9ee9; 
+  background-color: #166c9e; 
   color: white;
   border: none;
   border-radius: 5px;
@@ -257,7 +257,7 @@ button:hover {
 
 .username {
   font-size: 14px;
-  color: #1b9ee9;
+  color: #166c9e;
   margin-bottom: 10px;
   font-weight: bold;
 }
@@ -294,8 +294,8 @@ button:hover {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 24px; /* Adjust size as needed */
-  color: #ccc; /* Adjust color as needed */
+  font-size: 24px; 
+  color: rgb(131, 130, 130); 
 }
 
 .settings-dropdown {

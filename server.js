@@ -503,21 +503,48 @@ async function addComment(postId, comment) {
 
 
 // handles Ajax requests for posting a comment
+// app.post('/commentAjax/:postId', async (req, res) => {
+//     const postId = req.params.postId;
+//     console.log("post id is", postId);
+//     const username = req.session.username;
+//     console.log("username is", username)
+//     const commentText = req.body.comment;
+//     console.log("comment here", commentText);
+    
+//     const db = await Connection.open(mongoUri, DB);
+    
+//     const newComment = await addComment(postId, commentText);  
+//     res.json({ allComments: newComment.allComments, postId: postId });
+   
+// });
+
+//LATEST
+// app.post('/commentAjax/:postId', async (req, res) => {
+//     const postId = req.params.postId;
+//     const commentText = req.body.comment;
+//     const db = await Connection.open(mongoUri, DB);
+//     const post = await db.collection(ODYSSEY_POSTS).findOne({_id: new ObjectId(postId)});
+
+//     const comment = { text: commentText, timestamp: new Date() }; 
+//     const updatedComments = post.comments ? [...post.comments, comment] : [comment];
+//     await db.collection(ODYSSEY_POSTS).updateOne({_id: new ObjectId(postId)}, { $set: { comments: updatedComments } });
+//     res.json({ postId: postId, comment: comment });
+// });
+
+
+//NEW LATEST
 app.post('/commentAjax/:postId', async (req, res) => {
     const postId = req.params.postId;
-    console.log("post id is", postId);
-    const username = req.session.username;
-    console.log("username is", username)
     const commentText = req.body.comment;
-    console.log("comment here", commentText);
-    
+    const username = req.session.username; 
     const db = await Connection.open(mongoUri, DB);
-    
-    const newComment = await addComment(postId, commentText);  
-    res.json({ allComments: newComment.allComments, postId: postId });
-   
-});
+    const post = await db.collection(ODYSSEY_POSTS).findOne({_id: new ObjectId(postId)});
 
+    const comment = { text: commentText, userId: username }; 
+    const updatedComments = post.comments ? [...post.comments, comment] : [comment];
+    await db.collection(ODYSSEY_POSTS).updateOne({_id: new ObjectId(postId)}, { $set: { comments: updatedComments } });
+    res.json({ postId: postId, comment: comment });
+});
 
 // middleware to check permissions and make sure users are logged in before accessing pages with other users' info
 function requiresLogin(req, res, next) {

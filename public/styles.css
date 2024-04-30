@@ -220,6 +220,16 @@ button:hover {
   }
 }
 
+.comments-section {
+  margin-top: 20px;
+}
+
+.comment {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+
 /* Styles for posts and forms */
 .post-container, .form-container {
   background-color: #fff;

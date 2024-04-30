@@ -49,20 +49,25 @@
         <p class="likeCounter"><%= post.likes ? post.likes : '0' %></p>
         <button class="likeBtn" type="button" data-post-id="<%= post._id %>">❤️ like!</button>   
     </div>
-    <!-- <form id="comment-form" method="POST" action="/commentAjax/">
-        <p class = "comment"><%= post.comments %></p>
-        <input type="text" name="comment" id="comment" placeholder="Comment">
-        <button class="sendComment" type="submit">
-            Send
-        </button>
-    </form> -->
+
+    <div class="comments-section">
+        <% if (post.comments && post.comments.length > 0) { %>
+            <% post.comments.forEach(function(comment) { %>
+                <div class="comment">
+                    <p><%= comment.text %></p>
+                    <small>Comment by: <%= comment.userId %></small>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No comments yet.</p>
+        <% } %>
+    </div>
+
     <form id="comment-form" data-post-id="<%= post._id %>">
-        <p class = "comment"><%= post.comments %></p>
         <input type="text" name="comment" id="comment" placeholder="Comment">
-        <button class="sendComment" type="button">
-            Send
-        </button>
+        <button class="sendComment" type="button">Send</button>
     </form>
+    
 </div>
 
 <script>

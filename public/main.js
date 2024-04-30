@@ -100,26 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 //comments
-// $(document).ready(function() {
-//     $('body').on('click', '.sendComment', function() {
-//         var postId = $(this).closest("[data-post-id]").attr("data-post-id");
-//         addComment(postId);
-//     });
-// });
-
-// function addComment(postId) {
-//     $.post("/commentAjax/" + postId, { postId: postId }).then(processAction);
-// }
-
-// function processAction(resp) {
-//     console.log('response is ',resp);
-//     if (resp.error) {
-//         alert('Error: '+resp.error);
-//     }
-//     $(`[data-post-id=${String(resp.postId)}]`).closest(".post-container").find('.comment').text(resp.comments);
-// }
-
-//comments
 $(document).ready(function() {
     $('body').on('click', '.sendComment', function() {
         // var postId = $(this).closest("[data-post-id]").attr("data-post-id");
@@ -136,11 +116,19 @@ function addComment(postId, comment) {
 }
 
 function processAction(resp) {
-    console.log('response is ',resp);
     if (resp.error) {
-        alert('Error: '+resp.error);
+        alert('Error: ' + resp.error);
+    } else {
+        const postContainer = $(`[data-post-id="${resp.postId}"]`).closest(".post-container");
+
+        const commentDiv = $('<div>').addClass('comment');
+        const commentP = $('<p>').text(resp.comment.text);
+        const commentUser = $('<small>').text(`Comment by: ${resp.comment.userId}`);
+
+        commentDiv.append(commentP).append(commentUser);
+        postContainer.find('.comments-section').append(commentDiv);
+        postContainer.find('input[name="comment"]').val(''); 
     }
-    $(`[data-post-id=${String(resp.postId)}]`).closest(".post-container").find('.comment').text(resp.comments);
 }
 
 

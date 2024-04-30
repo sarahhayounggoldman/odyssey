@@ -459,24 +459,6 @@ async function likePost(postId) {
 }
 
 
-
-
-// for posting comment
-// async function addComment(postId, commentText) {
-//     console.log("Received postId:", postId);
-//     const db = await Connection.open(mongoUri, DB);
-//     const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId)});
-//     if (post) {
-//         // const comment = req.body.comment; // Retrieve comment data here
-//         // console.log("the comment is", comment);
-//         const updatedComments = post.allComments.concat([commentText]);
-//         await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(postId) }, { $addToSet: { allComments: updatedComments } });
-//         return { allComments: allComments, postId: postId };
-//     } else {
-//         throw new Error('Post not found');
-//     }
-// }
-
 async function addComment(postId, comment) {
     console.log("Received postId:", postId);
     const db = await Connection.open(mongoUri, DB);
@@ -504,27 +486,11 @@ app.post('/commentAjax/:postId', async (req, res) => {
     console.log("comment here", commentText);
     
     const db = await Connection.open(mongoUri, DB);
-    //const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
-
-    // const newComment = await addComment(postId); 
-    // await db.collection(ODYSSEY_USERS).updateOne(
-    //     { _id: user._id },
-    //     { $addToSet: { allComments: newComment } }
-    // );
-    // const newComment = await addComment(postId, req.body.comment); // Pass comment text along with postId
+    
     const newComment = await addComment(postId, commentText);  
     res.json({ allComments: newComment.allComments, postId: postId });
-    // await db.collection(ODYSSEY_USERS).updateOne(
-    //     { username: username },
-    //     { $addToSet: { allComments: newComment.allComments } } // Correct the property to be updated
-    // );
-    // return { allComments: post.allComments.concat([commentText]), postId: postId };
-    //return res.json({ comments: newComment.comments, postId: postId });
-
+   
 });
-
-
-
 
 
 // middleware to check permissions and make sure users are logged in before accessing pages with other users' info

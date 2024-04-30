@@ -12,8 +12,8 @@
         <div class="location"><%= post.location.country %>, <%= post.location.city %></div>
         <div class="date-time" data-timestamp="<%= post.timestamp %>"></div>
         <div class="post-controls">
+            <button class="save-post-button" type="button" data-post-id="<%= post._id %>">Save</button>
             <% if (post.username === username) { %>
-                <button class="save-post-button" type="button" data-post-id="<%= post._id %>">Save</button>
                 <!-- Dropdown for edit and delete -->
                 <div class="post-settings">
                     <button class="settings-btn">⋮</button>

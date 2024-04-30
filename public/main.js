@@ -112,10 +112,10 @@ $(document).ready(function() {
 });
 
 function addComment(postId, comment) {
-    $.post("/commentAjax/" + postId, { comment: comment }).then(processAction);
+    $.post("/commentAjax/" + postId, { comment: comment }).then(processActionComments);
 }
 
-function processAction(resp) {
+function processActionComments(resp) {
     if (resp.error) {
         alert('Error: ' + resp.error);
     } else {

@@ -113,13 +113,19 @@ const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
 
 // main page; this get redirects to login page if not logged in, otherwise shows the home page
-app.get('/', (req, res) => {
+app.get('/', async(req, res) => {
     if (!req.session.loggedIn) {
-        console.log('0');
         req.flash('error', 'You are not logged in - please do so.');
         return res.render('login.ejs');
     } else {
-        return res.render('home.ejs', { username: req.session.username });
+        const user = req.session.username;
+        console.log('user is', user)
+        const db = await Connection.open(mongoUri, DB);
+        const person= await db.collection(ODYSSEY_USERS).findOne({ username: user });
+        console.log('person is', person)
+        const following = person.following;
+        return res.render('home.ejs', { username: req.session.username, following:following });
+        // return res.render('home.ejs', { username: req.session.username });
     }
 
 });

@@ -11,14 +11,18 @@
 <body>
     <%- include("partials/navbar.ejs") %>
     <%- include("partials/flashes.ejs") %>
-    <h1>Welcome!</h1>
-    <h2>You are logged in as  <%= username %> and this is the home page</h2>
+    <h1>Welcome, <%= username %>!</h1>
 
-    <p>
-        <form action="/logout" method="POST">
-          <button class="profile-button">Logout</button>
-        </form>
-    </p>
+    <div>
+        <% if (following.length > 0) { %>
+            <% if (posts.length > 0) { %>
+                <% posts.forEach(post => { %>
+                    <%- include('post', { post: post, username: username }) %>
+                <% }); %>
+        <% } else { %>
+            <p>You are not following anyone yet.</p>
+        <% } %>
+    </div>
 
     <%- include("partials/bottombar.ejs") %>
 

@@ -12,14 +12,6 @@
     <%- include("partials/navbar.ejs") %>
     <h1>Welcome!</h1>
     <h2>You can find your saved posts here</h2>
-    
-    <p>Everything is fine.</p>
-
-    <!-- <h2>Links</h2>
-
-    <p><a href="/form/">a pizza form</a></p>
-    
-    <p><a href="/staffList/">staff listing</a></p> -->
 
     <div>
         <% if (posts.length > 0) { %>
@@ -27,7 +19,7 @@
                 <%- include('post', { post: post, username: username }) %>
             <% }); %>
         <% } else { %>
-            <p>No posts yet.</p>
+            <p>No posts saved yet.</p>
         <% } %>
     </div>
 

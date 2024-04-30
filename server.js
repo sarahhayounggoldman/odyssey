@@ -482,67 +482,55 @@ app.post('/likeAjax/:postId', async (req, res) => {
 
     const db = await Connection.open(mongoUri, DB);
     const user = await db.collection(ODYSSEY_USERS).findOne({ username: username });
+    const postIdStr = postId.toString();
 
-//for ref
-    // if (!req.session.loggedIn) {
-    //     req.flash('error', 'You are not logged in - please do so.');
-    //     return res.render('login.ejs');
-    // }else{
-    //     return res.redirect("/home");
-    // }
-
-    // if user has already liked the post
-    if (user.likedPosts && user.likedPosts.map(id => id.toString()).includes(postId.toString())) {
-        const doc = await unlikePost(postId);
+    // check if user already liked the post
+    if (user.likedPosts && user.likedPosts.includes(postIdStr)) {
+        // user already liked this post, so we unlike it
+        const updatedPost = await unlikePost(postId);
         await db.collection(ODYSSEY_USERS).updateOne(
-            {id: user._id}, 
-            {$pull: {likedPosts: postId}}); //rm post
-
-        return res.json({ 
-            error: false, 
-            likes: doc.likes, 
-            postId: postId 
-        });
+            { _id: user._id },
+            { $pull: { likedPosts: postIdStr } }
+        );
+        res.json({ error: false, likes: updatedPost.likes, liked: false, postId: postId });
+    } else {
+        // user has not liked this post, so we like it
+        const updatedPost = await likePost(postId);
+        await db.collection(ODYSSEY_USERS).updateOne(
+            { _id: user._id },
+            { $addToSet: { likedPosts: postIdStr } }
+        );
+        res.json({ error: false, likes: updatedPost.likes, liked: true, postId: postId });
     }
-
-    // else like the post
-    const doc = await likePost(postId);
-    await db.collection(ODYSSEY_USERS).updateOne(
-        { _id: user._id },
-        { $addToSet: { likedPosts: postId } }
-    );
-
-    return res.json({ 
-        error: false, 
-        likes: doc.likes, 
-        postId: postId 
-    });
 });
 
-// increments the like count of a post in the database
+// atomically increments the like count of a post in the database
 async function likePost(postId) {
     const db = await Connection.open(mongoUri, DB);
-    const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
-    if (post) {
-        const updatedLikes = post.likes ? post.likes + 1 : 1;
-        await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(postId) }, { $set: { likes: updatedLikes } });
-        return { likes: updatedLikes, postId: postId };
-    } else {
+    const updateResult = await db.collection(ODYSSEY_POSTS).updateOne(
+        { _id: new ObjectId(postId) },
+        { $inc: { likes: 1 } }  
+    );
+    if (updateResult.matchedCount === 0) {
         throw new Error('Post not found');
     }
+    const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
+    return { likes: post.likes, postId: postId };
 }
 
-//decrements the like count of a post in the database
+// atomically decrements the like count of a post in the database
 async function unlikePost(postId) {
     const db = await Connection.open(mongoUri, DB);
     const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
-    if (post) {
-        const updatedLikes = post.likes ? post.likes - 1 : 1;
-        await db.collection(ODYSSEY_POSTS).updateOne({ _id: new ObjectId(postId) }, { $set: { likes: updatedLikes } });
-        return { likes: updatedLikes, postId: postId };
-    } else {
-        throw new Error('Post not found');
+    if (!post) throw new Error('Post not found');
+    if (post.likes > 0) {
+        await db.collection(ODYSSEY_POSTS).updateOne(
+            { _id: new ObjectId(postId) },
+            { $inc: { likes: -1 } }  
+        );
     }
+    const updatedPost = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
+    return { likes: updatedPost.likes, postId: postId };
 }
 
 // Commenting

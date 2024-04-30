@@ -113,7 +113,7 @@ const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
 
 // main page; this get redirects to login page if not logged in, otherwise shows the home page
-app.get('/', async(req, res) => {
+app.get('/', requiresLogin, async(req, res) => {
     if (!req.session.loggedIn) {
         req.flash('error', 'You are not logged in - please do so.');
         return res.render('login.ejs');
@@ -151,7 +151,7 @@ app.get('/', async(req, res) => {
 });
 
 // get request for our form 
-app.get('/form/', (req, res) => {
+app.get('/form/', requiresLogin, (req, res) => {
     console.log('get form');
     return res.render('form.ejs', { action: '/form/', data: req.query });
 });
@@ -163,7 +163,7 @@ app.post('/form/', (req, res) => {
 });
 
 // displays sorted posts based on what the user wants to sort by; ex) budget, rating, date/time posted
-app.get('/explore', async (req, res) => {
+app.get('/explore', requiresLogin, async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     let sortOptions = {};
     let queryFilter = {};
@@ -197,7 +197,7 @@ app.get('/explore', async (req, res) => {
 });
 
 // renders followers page showing a user's followers
-app.get('/followers', async (req, res) => {
+app.get('/followers', requiresLogin, async (req, res) => {
     const user = req.session.username;
 
     const db = await Connection.open(mongoUri, DB);
@@ -244,7 +244,7 @@ async function follow(currentUser, userToFollow) {
 };
 
 //shows the posts of a single user
-app.get('/user/:username', async (req, res) => {
+app.get('/user/:username', requiresLogin, async (req, res) => {
     const user = req.params.username;
     const db = await Connection.open(mongoUri, DB);
     const userPosts = await db.collection(ODYSSEY_POSTS).find({ username: user }).toArray();
@@ -311,7 +311,7 @@ app.post('/save-post/:postId', requiresLogin, async (req, res) => {
 });
 
 // searches posts based on user's selected search criteria
-app.get('/search', async (req, res) => {
+app.get('/search', requiresLogin, async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     let sortOptions = {};
     let sort_option = req.query.sort_option || 'recent'; // Default to 'recent' if not specified
@@ -350,7 +350,7 @@ app.get('/search', async (req, res) => {
 });
 
 // allows users to edit their own posts
-app.get('/edit/:postId', async (req, res) => {
+app.get('/edit/:postId', requiresLogin, async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     try {
         const post = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(req.params.postId) });
@@ -557,7 +557,7 @@ function requiresLogin(req, res, next) {
 }
 
 // Displays user profile page with posts, bio, and username
-app.get('/profile', async (req, res) => {
+app.get('/profile', requiresLogin, async (req, res) => {
     const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
     const posts = await db.collection(ODYSSEY_POSTS).find({ "username": user }).toArray();
@@ -662,7 +662,7 @@ app.post('/logout', (req, res) => {
 });
 
 //allows users to edit their own profiles (edit username and bio)
-app.get('/editprofile', async (req, res) => {
+app.get('/editprofile', requiresLogin, async (req, res) => {
     // return res.render('editProfile.ejs');
     const username = req.session.username;
     const db = await Connection.open(mongoUri, DB);

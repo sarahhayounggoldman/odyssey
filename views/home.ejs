@@ -18,7 +18,6 @@
             <% posts.forEach(post => { %>
                 <%- include('post', { post: post, username: username }) %> <!-- Pass the username to post template -->
             <% }); %>
-            <p>hiiiii.</p>
         <% } else { %>
             <p>You are not following anyone yet.</p>
         <% } %>

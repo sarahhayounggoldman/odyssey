@@ -284,25 +284,7 @@
   ];
 %>
 
-  <form id="post-form" method="POST" action="/explore" enctype='multipart/form-data'>
-    <!-- <p><label>Customer name: <input name="customer" value="<%= data.customer %>"></label></p>
-  <p><label>Telephone: <input type=tel name="phone" value="<%= data.phone %>"></label></p>
-  <p><label>E-mail address: <input type=email name="addr" value="<%= data.addr %>"></label></p> -->
-
-<!-- <p>
-   <label>Country:
-     <select name="country">
-      <option value="">select country</option>
-       <% countryList.forEach(country => { %>
-        <% if( data.country=="solo" ) { %>
-          <option id="country" value="<%= country %>" selected><%= country %></option>
-          <% } else { %>
-            <option value="<%= country %>"><%= country %></option>
-            <% } %>
-       <% }); %>
-     </select>
-   </label>
-</p> -->
+<form id="post-form" method="POST" action="/explore" enctype='multipart/form-data'>
 
 <p>
   <label>Country:
@@ -398,27 +380,6 @@
       </select>
 </label></p>
 
-<!-- <p><label> Rate your experience on a scale from 1 (worst) to 5 (best):
-  <label><input type="radio" name="rating" value="1">1 </label>
-  <label><input type="radio" name="rating" value="2">2</label>
-  <label><input type="radio" name="rating" value="3">3</label>
-  <label><input type="radio" name="rating" value="4">4</label>
-  <label><input type="radio" name="rating" value="5">5</label>
-</label></p> -->
-
-<!-- <p>
-  <label> Rate your experience on a scale from 1 (worst) to 5 (best):</label>
-  <select name="rating">
-    <option value="">select rating</option>
-    <% for (let i = 1; i <= 5; i++) { %>
-      <% if (data.rating && data.rating == i.toString()) { %>
-        <option id = "rating" value="<%= i %>" selected><%= i %></option>
-      <% } else { %>
-        <option value="<%= i %>"><%= i %></option>
-      <% } %>
-    <% } %>
-  </select>
-</p> -->
 
 <p>
   <label> Rate your experience on a scale from 1 (worst) to 5 (best):</label>

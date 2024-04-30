@@ -12,7 +12,7 @@
     <h2>This is the explore page</h2>
 
     <form id="filter-form">
-        <select name="sort_option" onchange="this.form.submit()">
+        <select name="sort_option" class = "sort-class" onchange="this.form.submit()">
             <option value="recent" <%= sort_option === 'recent' ? 'selected' : '' %>>Most Recent</option>
             <option value="oldest" <%= sort_option === 'oldest' ? 'selected' : '' %>>Least Recent</option>
             <option value="budget_high" <%= sort_option === 'budget_high' ? 'selected' : '' %>>Highest Budget</option>

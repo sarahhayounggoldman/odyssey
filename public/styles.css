@@ -195,6 +195,13 @@ button:hover {
   font-size: 14px;
 }
 
+.sort-class {
+  
+  border-radius: 30px;
+  /* padding: 5px 10px; */
+  font-size: 20px;
+}
+
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
   .navigation-links, .navigation-search-container {

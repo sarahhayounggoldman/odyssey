@@ -407,8 +407,10 @@ app.post('/explore', upload.single('file'), async (req, res) => {
             },
             likes: 0
         });
-        const posts = await db.collection(ODYSSEY_POSTS).find({}).toArray();
-        return res.render('explore.ejs', { posts, username: req.session.username });
+        res.redirect('/explore');
+        // const posts = await db.collection(ODYSSEY_POSTS).find({}).sort({timestamp: -1}).toArray();;
+        // let sort_option = req.body.sort_option || 'recent'; 
+        // res.redirect('/explore', { posts, username: req.session.username, sort_option: sort_option });
 
     } catch (error) {
         console.error('Error uploading files:', error);

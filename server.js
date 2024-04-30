@@ -124,9 +124,29 @@ app.get('/', async(req, res) => {
         const person= await db.collection(ODYSSEY_USERS).findOne({ username: user });
         console.log('person is', person)
         const following = person.following;
-        return res.render('home.ejs', { username: req.session.username, following:following });
-        // return res.render('home.ejs', { username: req.session.username });
-    }
+        console.log('people following', following)
+        
+        const promises = [];
+        following.forEach(async (username) => {
+            // Push the promise for fetching posts for the current user into the array
+            promises.push(db.collection(ODYSSEY_POSTS).find({ "username": username }).toArray());
+        });
+
+        // Wait for all promises to resolve
+        Promise.all(promises)
+            .then((postsArray) => {
+                // postsArray contains an array of arrays of posts for each user
+                // Flatten the array of arrays into a single array of posts
+                const posts = postsArray.flat();
+                console.log('posts from following', posts)
+                
+                // Render the page with the posts
+                res.render('home.ejs', { username: req.session.username, following: following, posts: posts });
+            })
+            .catch((error) => {
+                console.error('Error fetching posts:', error);
+            });
+            }
 
 });
 

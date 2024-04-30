@@ -344,15 +344,19 @@ app.get('/edit/:postId', async (req, res) => {
 app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     const formData = req.body;
+    const postId = req.params.postId; 
+    const existingPost = await db.collection(ODYSSEY_POSTS).findOne({ _id: new ObjectId(postId) });
+
     let updateData = {
         location: { country: formData.country, city: formData.city },
         categories: formData.categories,
         budget: formData.budget,
         travelType: formData.travelType,
         rating: formData.rating,
-        content: { text: formData.caption, images: formData.images }
+        content: { text: formData.caption, images: existingPost.content.images }
     };
 
+    // update image only if a new file was uploaded
     if (req.file) {
         updateData.content.images = req.file.filename; // handle file upload
     }

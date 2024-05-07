@@ -137,27 +137,25 @@ button:hover {
   right: 0;
   width: 100%;
   z-index: 1000;
-  height: 25px;
+  height: 60px;
 }
 
 #post-button {
+  right: 10px; /* Adjusted to be inside the search field */
   border: none;
-  background-color: #166c9e;
+  background-color: #1b9ee9; /* Matching the logo color */
   color: white;
-  padding: 3px 13px;
-  border-radius: 10px; 
+  padding: 10px 20px;
+  border-radius: 20px; /* Keeping the rounded edges */
   cursor: pointer;
-  font-size: 15px;
+  font-size: 18px;
   text-align: center;
   outline: none;
-  position: absolute;
   top: 50%;
   left: 50%;
+  float: none;
+  position: absolute;
   transform: translate(-50%, -50%);
-  white-space: nowrap;
-  box-sizing: border-box;
-  display: inline-block; 
-  min-width: 0; 
 }
 
 .like-section {

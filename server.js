@@ -745,10 +745,9 @@ app.post("/editprofile", async (req, res) => {
         const newUsername = req.body.newUsername;
         const bio = req.body.bio;
         const db = await Connection.open(mongoUri, DB);
-        var existingUser = await db.collection(ODYSSEY_USERS).updateOne({ username: username }, { $set: { bio: bio, username: newUsername } });
+        var existingUser = await db.collection(ODYSSEY_USERS).updateOne({ username: username }, { $set: { bio: bio} });
         if (existingUser) {
             req.flash('info', "Updated succesfully.");
-            req.session.username = newUsername;
             return res.redirect('/profile')
         }
     } catch (error) {

@@ -82,6 +82,15 @@ main {
   outline: none;
 }
 
+#profile-pic img {
+  width: 200px;           
+  height: 200px;        
+  border-radius: 50%;   
+  object-fit: cover;     
+  border: 2px solid #ddd; 
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); 
+}
+
 /* footer */
 .footer {
   color: #565656;

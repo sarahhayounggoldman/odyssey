@@ -13,6 +13,13 @@
     <%- include("partials/flashes.ejs") %>
 
     <h1>My Profile</h1>
+    <div id="profile-pic">
+    <% if (user.profilePic) { %>
+        <img src="/uploads/<%= user.profilePic %>" alt="Profile Picture">
+    <% } else { %>
+        <img src="/path/to/default/image.png" alt="Default Profile Picture">
+    <% } %>
+    </div>
     <h2>@<%= username %></h2>
     <p><%= bio %></p>
     <p><%= followers %> Followers</p>

@@ -618,6 +618,7 @@ app.get('/profile', requiresLogin, async (req, res) => {
     const following = person.following;
     return res.render('profile.ejs', {
         username: req.session.username,
+        user: person,
         posts: posts,
         bio: person.bio,
         followers: followers.length,
@@ -656,7 +657,8 @@ app.post("/signup", async (req, res) => {
             followers: [],
             following: [],
             postIDs: [],
-            hash: hash
+            hash: hash,
+            profilePic: null
         });
         console.log('successfully joined', username, password, hash);
         req.flash('info', 'successfully joined and logged in as ' + username);
@@ -739,13 +741,18 @@ app.get('/editprofile', requiresLogin, async (req, res) => {
  * (POST) Processes a user's edited profile
  * Updates user's edited profile and redirects to the profile page
  */
-app.post("/editprofile", async (req, res) => {
+app.post("/editprofile", upload.single('profilePic'), async (req, res) => {
     try {
         const username = req.session.username;
-        const newUsername = req.body.newUsername;
         const bio = req.body.bio;
         const db = await Connection.open(mongoUri, DB);
-        var existingUser = await db.collection(ODYSSEY_USERS).updateOne({ username: username }, { $set: { bio: bio} });
+
+        let updateData = {bio: bio} 
+        if (req.file) {
+            updateData.profilePic = req.file.filename; 
+        }
+    
+        var existingUser = await db.collection(ODYSSEY_USERS).updateOne({ username: username }, { $set: updateData });
         if (existingUser) {
             req.flash('info', "Updated succesfully.");
             return res.redirect('/profile')

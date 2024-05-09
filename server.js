@@ -514,6 +514,14 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
         .findOne({ _id: new ObjectId(postId) });
     
     const categories = formData.categories || [];  
+    let budgetValue = 0;
+    if (formData.budget === 'low') {
+        budgetValue = 1;
+    } else if (formData.budget === 'medium') {
+        budgetValue = 2;
+    } else if (formData.budget === 'high') {
+        budgetValue = 3;
+    }
 
     let updateData = {
         location: { 
@@ -521,7 +529,7 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
             city: formData.city 
         },
         categories: categories,
-        budget: formData.budget,
+        budget: budgetValue,
         travelType: formData.travelType,
         rating: formData.rating,
         content: { 

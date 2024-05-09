@@ -56,9 +56,18 @@ function processAction(resp) {
     if (resp.error) {
         alert('Error: '+resp.error);
     }
-    console.log("Liked post "+resp.postId+". Total likes: "+resp.likes);
-    console.log(resp.postId);
-    $(`[data-post-id=${String(resp.postId)}]`).closest(".post-container").find('.likeCounter').text(resp.likes);
+    const postId = resp.postId;
+    const postContainer = $(`[data-post-id="${postId}"]`).closest(".post-container");
+    const likeBtn = postContainer.find('.likeBtn');
+
+    if (likeBtn.text() === "❤️ like!") {
+        likeBtn.text("❤️ unlike");
+    } else {
+        likeBtn.text("❤️ like!");
+    }
+
+    console.log("Liked post " + postId + ". Total likes: " + resp.likes);
+    postContainer.find('.likeCounter').text(resp.likes);
 }
 
 // Save button handler, saving a post to the saved page when "save" button clicked

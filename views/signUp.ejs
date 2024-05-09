@@ -1,42 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>Sign Up</title>
     <!-- load local stylesheet (css) -->
     <link rel="stylesheet" href="/styles.css" />
     <!-- loading jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/
+    libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
+
 <body>
     <%- include("partials/flashes.ejs") %>
-    <h1>Welcome! Please sign up</h1>
-    
-    <h2>Sign Up:</h2>
-  <p>
-    <form id="signup-form" action="/signup" method="POST">
-        <label> Email: 
-            <input type="text" name="email" placeholder="og102@wellesley.edu">
-        </label>
-        <label> Username: 
-            <input type="text" name="username" placeholder="og102">
-        </label>
-        <label> Password: 
-            <input type="text" name="password" placeholder="********">
-        </label>
-        <button type="submit" class="profile-button">Sign up</button>
-    </form>
-  </p>
-  
-  <h3>Have an account?  <a href="/">Login</a></h3>
- 
+        <h1>Welcome! Please sign up</h1>
 
-    <footer class="footer">
-        <p>Copyright © The Odyssey Team 2024 all rights reserved.</p>
-    </footer>
+        <h2>Sign Up:</h2>
+        <p>
+        <form id="signup-form" action="/signup" method="POST">
+            <label> Email:
+                <input type="text" name="email" 
+                    placeholder="og102@wellesley.edu">
+            </label>
+            <label> Username:
+                <input type="text" name="username" 
+                    placeholder="og102">
+            </label>
+            <label> Password:
+                <input type="text" name="password" 
+                    placeholder="********">
+            </label>
+            <button type="submit" class="profile-button">
+                Sign up</button>
+        </form>
+        </p>
 
-    <!-- load local js -->
-    <script src="/main.js"></script>
-<!-- uid script -->
+        <h3>Have an account? <a href="/">Login</a></h3>
+
+
+        <footer class="footer">
+            <p>Copyright © The Odyssey
+                Team 2024 all rights reserved.</p>
+        </footer>
+
+        <!-- load local js -->
+        <script src="/main.js"></script>
+        <!-- uid script -->
 </body>
+
 </html>

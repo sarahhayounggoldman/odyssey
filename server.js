@@ -12,7 +12,10 @@
 
 // standard modules, loaded from node_modules
 const path = require('path');
-require("dotenv").config({ path: path.join(process.env.HOME, '.cs304env') });
+require("dotenv").config({
+    path: path.join(process.env.HOME,
+        '.cs304env')
+});
 const express = require('express');
 const morgan = require('morgan');
 const serveStatic = require('serve-static');
@@ -117,17 +120,18 @@ const ODYSSEY_POSTS = 'odyssey_posts';
 function convertBudgetToString(budget) {
     if (budget === 1) return 'low';
     if (budget === 2) return 'medium';
-    if (budget === 3) return 'high'; }
+    if (budget === 3) return 'high';
+}
 
 /**
  * (GET) Renders the login page to input login credentials
  * Redirects to home if already logged into session
  */
-app.get('/', async(req, res) => {
+app.get('/', async (req, res) => {
     if (!req.session.loggedIn) {
         req.flash('error', 'You are not logged in - please do so.');
         return res.render('login.ejs');
-    }else{
+    } else {
         return res.redirect("/home");
     }
 });
@@ -137,13 +141,13 @@ app.get('/', async(req, res) => {
  * Home page contains nav bar, welcome message, and 
  * posts of users you are following
  */
-app.get('/home', requiresLogin, async(req, res) => {
+app.get('/home', requiresLogin, async (req, res) => {
     const user = req.session.username;
     const db = await Connection.open(mongoUri, DB);
-    const person= await db.collection(ODYSSEY_USERS)
+    const person = await db.collection(ODYSSEY_USERS)
         .findOne({ username: user });
     const following = person.following;
-    
+
     const promises = [];
     following.forEach(async (username) => {
         // Add promise into the array
@@ -153,11 +157,11 @@ app.get('/home', requiresLogin, async(req, res) => {
 
     // Promises need to resolve
     Promise.all(promises)
-            // postsArray is an array of arrays of posts for each user
+        // postsArray is an array of arrays of posts for each user
         .then((postsArray) => {
             // Flatten into a single array of posts
             const posts = postsArray.flat();
-            
+
             // Sort posts by time posted
             posts.sort((a, b) => b.timestamp - a.timestamp);
 
@@ -166,16 +170,16 @@ app.get('/home', requiresLogin, async(req, res) => {
                 post.budget = convertBudgetToString(post.budget);
             });
 
-            res.render('home.ejs', { 
-                username: req.session.username, 
-                following: following, 
-                posts: posts 
+            res.render('home.ejs', {
+                username: req.session.username,
+                following: following,
+                posts: posts
             });
         })
         .catch((error) => {
             console.error('Error fetching posts:', error);
         });
-        }
+}
 
 );
 
@@ -185,10 +189,10 @@ app.get('/home', requiresLogin, async(req, res) => {
 app.get('/form/', requiresLogin, (req, res) => {
     // Get the referer from the request headers
     const referer = req.get('referer');
-    return res.render('form.ejs', { 
-        action: '/form/', 
-        data: req.query, 
-        referer:referer 
+    return res.render('form.ejs', {
+        action: '/form/',
+        data: req.query,
+        referer: referer
     });
 });
 
@@ -198,8 +202,8 @@ app.get('/form/', requiresLogin, (req, res) => {
  * renders the form page again, passing back the data.
  */
 app.post('/form/', (req, res) => {
-    return res.render('form.ejs', { 
-        action: '/form/', 
+    return res.render('form.ejs', {
+        action: '/form/',
         data: req.body
     });
 });
@@ -213,7 +217,7 @@ app.get('/explore', requiresLogin, async (req, res) => {
     let sortOptions = {};
     let queryFilter = {};
     // Default to 'recent' if not specified
-    let sort_option = req.query.sort_option || 'recent';  
+    let sort_option = req.query.sort_option || 'recent';
 
     // const categories = []; // Your categories array
     // // Retrieve selected category and sort option from query parameters
@@ -240,32 +244,20 @@ app.get('/explore', requiresLogin, async (req, res) => {
         sortOptions.likes = -1;
     } else if (sort_option === 'likes_low') {
         sortOptions.likes = 1;
-    // } else if (sort_option === 'food') {
-    //     queryFilter.categories == 'food';
-    // } else if (sort_option === 'culture') {
-    //     queryFilter.categories == 'culture';
-    // } else if (sort_option === 'art') {
-    //     queryFilter.categories == 'art';
-    // } else if (sort_option === 'nature') {
-    //     queryFilter.categories == 'nature';
-    // } else if (sort_option === 'history') {
-    //     queryFilter.categories == 'history';
-    // } else if (sort_option === 'other') {
-    //     queryFilter.categories == 'other';
     }
 
     const allPosts = await db.collection('odyssey_posts')
         .find(queryFilter).sort(sortOptions).toArray();
-    
+
     // convert number back to string for display
     allPosts.forEach(post => {
         post.budget = convertBudgetToString(post.budget);
     });
 
     const username = req.session.username;  // Retrieve username from session
-    res.render('explore.ejs', { 
-        posts: allPosts, 
-        username: username, 
+    res.render('explore.ejs', {
+        posts: allPosts,
+        username: username,
         sort_option: sort_option
     });
 });
@@ -282,9 +274,9 @@ app.get('/followers', requiresLogin, async (req, res) => {
         .findOne({ username: user });
     const followers = userCollection.followers;
 
-    return res.render('followers.ejs', { 
-        followers: followers, 
-        username: req.session.username 
+    return res.render('followers.ejs', {
+        followers: followers,
+        username: req.session.username
     });
 });
 
@@ -325,7 +317,8 @@ async function follow(currentUser, userToFollow) {
         { upsert: true }
     );
 
-    usersCollection = await db.collection(ODYSSEY_USERS).find({}).toArray();
+    usersCollection = await db.collection(ODYSSEY_USERS)
+        .find({}).toArray();
 
     return { following: userToFollow };
 };
@@ -366,28 +359,30 @@ app.get('/saved', requiresLogin, async (req, res) => {
         .findOne({ username: username });
     if (!user) {
         console.error("No user found with username:", username);
-        return res.status(404).render('error.ejs', 
-        { message: "User not found." });
+        return res.status(404).render('error.ejs',
+            { message: "User not found." });
     }
 
     // handle case with no saved posts
     if (!user.savedPosts || user.savedPosts.length === 0) {
-        return res.render('saved.ejs', 
-        { posts: [], message: "You haven't saved any posts yet." });
+        return res.render('saved.ejs',
+            { posts: [], message: "You haven't saved any posts yet." });
     }
     const postIds = user.savedPosts.map(id => new ObjectId(id));
     const posts = await db.collection(ODYSSEY_POSTS)
-        .find({ _id: { $in: postIds } }).toArray();
+        .find({ _id: { $in: postIds } })
+        .sort({ timestamp: -1 })
+        .toArray();
 
     // convert budget numbers to string
     posts.forEach(post => {
         post.budget = convertBudgetToString(post.budget);
     });
-    
 
-    res.render('saved.ejs', { 
-        posts: posts, 
-        username: username 
+
+    res.render('saved.ejs', {
+        posts: posts,
+        username: username
     });
 });
 
@@ -399,30 +394,31 @@ app.get('/saved', requiresLogin, async (req, res) => {
  * It sends a response back to the client that is used 
  * to update the front end dynamically.
  */
-app.post('/save-post/:postId', requiresLogin, async (req, res) => {
-    const postId = req.params.postId;
-    const username = req.session.username;
-    const db = await Connection.open(mongoUri, DB);
+app.post('/save-post/:postId',
+    requiresLogin, async (req, res) => {
+        const postId = req.params.postId;
+        const username = req.session.username;
+        const db = await Connection.open(mongoUri, DB);
 
-    try {
-        const user = await db.collection(ODYSSEY_USERS)
-            .findOne({ username: username });
-        if (user.savedPosts && user.savedPosts.includes(postId)) {
-            return res.status(400).send('Post already saved');
-        }
+        try {
+            const user = await db.collection(ODYSSEY_USERS)
+                .findOne({ username: username });
+            if (user.savedPosts && user.savedPosts.includes(postId)) {
+                return res.status(400).send('Post already saved');
+            }
 
-        // Using $addToSet to avoid duplicates
-        await db.collection(ODYSSEY_USERS).updateOne(
-            { username: username },
-            { $addToSet: { savedPosts: postId } }  
-        );
-        res.send('Post saved successfully');
-    } catch (error) {
-        if (!res.headersSent) {
-            res.status(500).send("Server error: " + error.message);
+            // Using $addToSet to avoid duplicates
+            await db.collection(ODYSSEY_USERS).updateOne(
+                { username: username },
+                { $addToSet: { savedPosts: postId } }
+            );
+            res.send('Post saved successfully');
+        } catch (error) {
+            if (!res.headersSent) {
+                res.status(500).send("Server error: " + error.message);
+            }
         }
-    }
-});
+    });
 
 /**
  * (GET) Searches posts based on user's selected search criteria
@@ -432,7 +428,7 @@ app.get('/search', requiresLogin, async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     let sortOptions = {};
     // default to 'recent' if not specified
-    let sort_option = req.query.sort_option || 'recent'; 
+    let sort_option = req.query.sort_option || 'recent';
     const searchedCountry = req.query.country;
 
     if (sort_option === 'recent') {
@@ -485,12 +481,14 @@ app.get('/edit/:postId', requiresLogin, async (req, res) => {
             .findOne({ _id: new ObjectId(req.params.postId) });
 
         if (post.username !== req.session.username) {
-            req.flash('error', 'You are not authorized to edit this post.');
+            req.flash('error',
+                'You are not authorized to edit this post.');
             return res.redirect('/explore');
         }
         res.render('editPost', { post: post });
     } catch (error) {
-        req.flash('error', 'Error fetching post data: ' + error.message);
+        req.flash('error',
+            'Error fetching post data: ' + error.message);
         res.redirect('/explore');
     }
 });
@@ -500,41 +498,43 @@ app.get('/edit/:postId', requiresLogin, async (req, res) => {
  * (POST) Processes the edit and redirects to the explore page
  * Updates a post in the database
  */
-app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
-    const db = await Connection.open(mongoUri, DB);
-    const formData = req.body;
-    const postId = req.params.postId; 
-    const existingPost = await db.collection(ODYSSEY_POSTS)
-        .findOne({ _id: new ObjectId(postId) });
-    
-    const categories = formData.categories || [];  
+app.post('/update-post/:postId', upload.single('file'),
+    async (req, res) => {
+        const db = await Connection.open(mongoUri, DB);
+        const formData = req.body;
+        const postId = req.params.postId;
+        const existingPost = await db.collection(ODYSSEY_POSTS)
+            .findOne({ _id: new ObjectId(postId) });
 
-    let updateData = {
-        location: { 
-            country: formData.country, 
-            city: formData.city 
-        },
-        categories: categories,
-        budget: formData.budget,
-        travelType: formData.travelType,
-        rating: formData.rating,
-        content: { 
-            text: formData.caption, 
-            images: existingPost.content.images 
+        const categories = formData.categories || [];
+
+        let updateData = {
+            location: {
+                country: formData.country,
+                city: formData.city
+            },
+            categories: categories,
+            budget: formData.budget,
+            travelType: formData.travelType,
+            rating: formData.rating,
+            content: {
+                text: formData.caption,
+                images: existingPost.content.images
+            }
+        };
+
+        // update image only if a new file was uploaded
+        if (req.file && req.file.filename) {
+            updateData.content.images = req.file.filename; // handle file upload
         }
-    };
 
-    // update image only if a new file was uploaded
-    if (req.file && req.file.filename) {
-        updateData.content.images = req.file.filename; // handle file upload
-    }
+        await db.collection(ODYSSEY_POSTS).updateOne(
+            { _id: new ObjectId(req.params.postId) },
+            { $set: updateData });
 
-    await db.collection(ODYSSEY_POSTS).updateOne(
-        { _id: new ObjectId(req.params.postId) }, { $set: updateData });
-
-    req.flash('info', 'Post updated successfully.');
-    res.redirect('/explore');
-});
+        req.flash('info', 'Post updated successfully.');
+        res.redirect('/explore');
+    });
 
 /**
  * (DELETE) Deletes a post
@@ -544,7 +544,7 @@ app.delete('/delete/:postId', async (req, res) => {
 
     const post = await db.collection(ODYSSEY_POSTS).findOne(
         { _id: new ObjectId(req.params.postId) });
-        
+
     if (post.username !== req.session.username) {
         return res.status(403)
             .send('You are not authorized to delete this post.');
@@ -559,47 +559,50 @@ app.delete('/delete/:postId', async (req, res) => {
 /**
  * (POST) Processes a post and redirects to the explore page
  */
-app.post('/explore', upload.single('file'), async (req, res) => {
-    try {
-        const formData = req.body;
-        const db = await Connection.open(mongoUri, DB);
+app.post('/explore', upload.single('file'),
+    async (req, res) => {
+        try {
+            const formData = req.body;
+            const db = await Connection.open(mongoUri, DB);
 
-        //change file perms
-        let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
+            //change file perms
+            let val = await fs.chmod('/students/odyssey/uploads/'
+                + req.file.filename, 0o664);
+            let budgetValue = 0;
+            if (formData.budget === 'low') {
+                budgetValue = 1;
+            } else if (formData.budget === 'medium') {
+                budgetValue = 2;
+            } else if (formData.budget === 'high') {
+                budgetValue = 3;
+            }
 
-        let budgetValue = 0;
-        if (formData.budget === 'low') {
-            budgetValue = 1;
-        } else if (formData.budget === 'medium') {
-            budgetValue = 2;
-        } else if (formData.budget === 'high') {
-            budgetValue = 3;
+            const result = await db.collection(ODYSSEY_POSTS)
+                .insertOne({
+                    username: req.session.username,
+                    timestamp: new Date(),
+                    location: {
+                        country: formData.country,
+                        city: formData.city,
+                    },
+                    categories: formData.categories,
+
+                    budget: budgetValue,
+                    travelType: formData.travelType,
+                    rating: formData.rating,
+                    content: {
+                        text: formData.caption,
+                        images: req.file.filename
+                    },
+                    likes: 0
+                });
+            res.redirect('/explore');
+
+        } catch (error) {
+            return res.status(500)
+                .send("Server error: " + error.message);
         }
-
-        const result = await db.collection(ODYSSEY_POSTS).insertOne({
-            username: req.session.username,
-            timestamp: new Date(),
-            location: {
-                country: formData.country,
-                city: formData.city,
-            },
-            categories: formData.categories,
-
-            budget: budgetValue,
-            travelType: formData.travelType,
-            rating: formData.rating,
-            content: {
-                text: formData.caption,
-                images: req.file.filename
-            },
-            likes: 0
-        });
-        res.redirect('/explore');
-
-    } catch (error) {
-        return res.status(500).send("Server error: " + error.message);
-    }
-});
+    });
 
 /**
  * (POST) Handles Ajax requests for liking a post
@@ -615,15 +618,18 @@ app.post('/likeAjax/:postId', async (req, res) => {
     const postIdStr = postId.toString();
 
     // check if user already liked the post
-    if (user.likedPosts && user.likedPosts.includes(postIdStr)) {
+    if (user.likedPosts && user.likedPosts
+        .includes(postIdStr)) {
         // user already liked this post, so we unlike it
         const updatedPost = await unlikePost(postId);
         await db.collection(ODYSSEY_USERS).updateOne(
             { _id: user._id },
             { $pull: { likedPosts: postIdStr } }
         );
-        res.json({ error: false, likes: updatedPost.likes, 
-            liked: false, postId: postId });
+        res.json({
+            error: false, likes: updatedPost.likes,
+            liked: false, postId: postId
+        });
     } else {
         // user has not liked this post, so we like it
         const updatedPost = await likePost(postId);
@@ -631,8 +637,10 @@ app.post('/likeAjax/:postId', async (req, res) => {
             { _id: user._id },
             { $addToSet: { likedPosts: postIdStr } }
         );
-        res.json({ error: false, likes: updatedPost.likes, 
-            liked: true, postId: postId });
+        res.json({
+            error: false, likes: updatedPost.likes,
+            liked: true, postId: postId
+        });
     }
 });
 
@@ -644,10 +652,11 @@ app.post('/likeAjax/:postId', async (req, res) => {
  */
 async function likePost(postId) {
     const db = await Connection.open(mongoUri, DB);
-    const updateResult = await db.collection(ODYSSEY_POSTS).updateOne(
-        { _id: new ObjectId(postId) },
-        { $inc: { likes: 1 } }  
-    );
+    const updateResult = await db.collection(ODYSSEY_POSTS)
+        .updateOne(
+            { _id: new ObjectId(postId) },
+            { $inc: { likes: 1 } }
+        );
     if (updateResult.matchedCount === 0) {
         throw new Error('Post not found');
     }
@@ -670,7 +679,7 @@ async function unlikePost(postId) {
     if (post.likes > 0) {
         await db.collection(ODYSSEY_POSTS).updateOne(
             { _id: new ObjectId(postId) },
-            { $inc: { likes: -1 } }  
+            { $inc: { likes: -1 } }
         );
     }
     const updatedPost = await db.collection(ODYSSEY_POSTS)
@@ -684,19 +693,20 @@ async function unlikePost(postId) {
 app.post('/commentAjax/:postId', async (req, res) => {
     const postId = req.params.postId;
     const commentText = req.body.comment;
-    const username = req.session.username; 
+    const username = req.session.username;
     const db = await Connection.open(mongoUri, DB);
     const post = await db.collection(ODYSSEY_POSTS)
-        .findOne({_id: new ObjectId(postId)});
+        .findOne({ _id: new ObjectId(postId) });
 
-    const comment = { text: commentText, userId: username }; 
-    const updatedComments = post.comments 
-    ? [...post.comments, comment] : [comment];
-    await db.collection(ODYSSEY_POSTS).updateOne({_id: new ObjectId(postId)}, 
-    { $set: { comments: updatedComments } });
-    res.json({ 
-        postId: postId, 
-        comment: comment 
+    const comment = { text: commentText, userId: username };
+    const updatedComments = post.comments
+        ? [...post.comments, comment] : [comment];
+    await db.collection(ODYSSEY_POSTS)
+        .updateOne({ _id: new ObjectId(postId) },
+            { $set: { comments: updatedComments } });
+    res.json({
+        postId: postId,
+        comment: comment
     });
 });
 
@@ -707,8 +717,8 @@ app.post('/commentAjax/:postId', async (req, res) => {
  */
 function requiresLogin(req, res, next) {
     if (!req.session.loggedIn) {
-        req.flash('error', 
-        'This page requires you to be logged in - please do so.');
+        req.flash('error',
+            'This page requires you to be logged in - please do so.');
         return res.redirect("/");
     } else {
         next();
@@ -729,9 +739,11 @@ app.get('/profile', requiresLogin, async (req, res) => {
     posts.forEach(post => {
         post.budget = convertBudgetToString(post.budget);
     });
-        
+
     const onePerson = await db.collection(ODYSSEY_USERS)
-        .find({ "username": user }).toArray();
+        .find({ "username": user })
+        .sort({ timestamp: -1 })
+        .toArray();
     let person = onePerson[0]
     const followers = person.followers;
     const following = person.following;
@@ -766,8 +778,8 @@ app.post("/signup", async (req, res) => {
             .findOne({ username: username });
         // make sure user doesn't already have an account
         if (existingUser) {
-            req.flash('error', 
-            "Login already exists - please try logging in instead.");
+            req.flash('error',
+                "Login already exists - please try logging in instead.");
             return res.redirect('/')
         }
         const hash = await bcrypt.hash(password, ROUNDS);
@@ -782,7 +794,8 @@ app.post("/signup", async (req, res) => {
             profilePic: null
         });
         console.log('successfully joined', username, password, hash);
-        req.flash('info', 'successfully joined and logged in as ' + username);
+        req.flash('info',
+            'successfully joined and logged in as ' + username);
         req.session.username = username;
         req.session.loggedIn = true;
         return res.redirect('/');
@@ -809,10 +822,12 @@ app.post("/login", async (req, res) => {
             req.flash('error', "Username does not exist - try again.");
             return res.redirect('/')
         }
-        const match = await bcrypt.compare(password, existingUser.hash);
+        const match = await bcrypt
+            .compare(password, existingUser.hash);
         console.log('match', match);
         if (!match) {
-            req.flash('error', "Username or password incorrect - try again.");
+            req.flash('error',
+                "Username or password incorrect - try again.");
             return res.redirect('/')
         }
         req.flash('info', 'successfully logged in as ' + username);
@@ -846,50 +861,56 @@ app.post('/logout', (req, res) => {
  * (GET) Renders the editProfile page
  * Allows users to edit their own profiles (username and bio)
  */
-app.get('/editprofile', requiresLogin, async (req, res) => {
-    // return res.render('editProfile.ejs');
-    const username = req.session.username;
-    const db = await Connection.open(mongoUri, DB);
-    try {
-        const person = await db.collection(ODYSSEY_USERS)
-            .findOne({ username: username });
-        const bio = person.bio;
-        res.render('editProfile.ejs', { username: username, bio: bio });
-    } catch (error) {
-        req.flash('error', 'Error fetching profile data: ' + error.message);
-        res.redirect('/explore');
-    }
-});
+app.get('/editprofile',
+    requiresLogin, async (req, res) => {
+        // return res.render('editProfile.ejs');
+        const username = req.session.username;
+        const db = await Connection.open(mongoUri, DB);
+        try {
+            const person = await db.collection(ODYSSEY_USERS)
+                .findOne({ username: username });
+            const bio = person.bio;
+            res.render('editProfile.ejs',
+                { username: username, bio: bio });
+        } catch (error) {
+            req.flash('error',
+                'Error fetching profile data: ' + error.message);
+            res.redirect('/explore');
+        }
+    });
 
 /**
  * (POST) Processes a user's edited profile
  * Updates user's edited profile and redirects to the profile page
  */
-app.post("/editprofile", upload.single('profilePic'), async (req, res) => {
-    try {
-        let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
-        console.log('chmod val', val);
-        const username = req.session.username;
-        const bio = req.body.bio;
-        const db = await Connection.open(mongoUri, DB);
+app.post("/editprofile",
+    upload.single('profilePic'), async (req, res) => {
+        try {
+            let val = await fs.chmod('/students/odyssey/uploads/'
+                + req.file.filename, 0o664);
+            console.log('chmod val', val);
+            const username = req.session.username;
+            const bio = req.body.bio;
+            const db = await Connection.open(mongoUri, DB);
 
-        let updateData = {bio: bio} 
-        if (req.file) {
-            updateData.profilePic = req.file.filename; 
+            let updateData = { bio: bio }
+            if (req.file) {
+                updateData.profilePic = req.file.filename;
+            }
+
+            var existingUser = await db.collection(ODYSSEY_USERS)
+                .updateOne(
+                    { username: username }, { $set: updateData });
+
+            if (existingUser) {
+                req.flash('info', "Updated succesfully.");
+                return res.redirect('/profile')
+            }
+        } catch (error) {
+            req.flash('error', `Form submission error: ${error}`);
+            return res.redirect('/')
         }
-    
-        var existingUser = await db.collection(ODYSSEY_USERS).updateOne(
-        { username: username }, { $set: updateData });
-        
-        if (existingUser) {
-            req.flash('info', "Updated succesfully.");
-            return res.redirect('/profile')
-        }
-    } catch (error) {
-        req.flash('error', `Form submission error: ${error}`);
-        return res.redirect('/')
-    }
-});
+    });
 
 
 // ================================================================

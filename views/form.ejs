@@ -7,7 +7,8 @@
   <!-- load local stylesheet (css) -->
   <link rel="stylesheet" href="/styles.css" />
   <!-- loading jquery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com
+    /ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
 <body>
@@ -284,7 +285,8 @@
   ];
 %>
 
-<form id="post-form" method="POST" action="/explore" enctype='multipart/form-data'>
+<form id="post-form" method="POST" 
+action="/explore" enctype='multipart/form-data'>
 
 <p>
   <label>Country:
@@ -302,38 +304,57 @@
 </p>
 
 <p><label> City:
-<textarea required="" rows="1" cols="40" name="city" id="city"><%= data.city %></textarea>
+<textarea required="" rows="1" cols="40" 
+name="city" id="city"><%= data.city %></textarea>
 </label></p>
 
 <p>
   <label> Categories (must select at least one):</label>
   <div>
-    <input type="checkbox" id="food" name="categories[]" value="food" <% if (data.categories && data.categories.includes("food")) { %> checked <% } %> />
+    <input type="checkbox" id="food" 
+      name="categories[]" value="food" 
+      <% if (data.categories && 
+      data.categories.includes("food")) { %> checked <% } %> />
     <label for="food">food</label>
   </div>
 
   <div>
-    <input type="checkbox" id="culture" name="categories[]" value="culture" <% if (data.categories && data.categories.includes("culture")) { %> checked <% } %> />
+    <input type="checkbox" id="culture" 
+      name="categories[]" value="culture" 
+      <% if (data.categories && data.categories
+      .includes("culture")) { %> checked <% } %> />
     <label for="culture">culture</label>
   </div>
 
   <div>
-    <input type="checkbox" id="art" name="categories[]" value="art" <% if (data.categories && data.categories.includes("art")) { %> checked <% } %> />
+    <input type="checkbox" id="art" 
+      name="categories[]" value="art" 
+      <% if (data.categories && 
+      data.categories.includes("art")) { %> checked <% } %> />
     <label for="art">art</label>
   </div>
 
   <div>
-    <input type="checkbox" id="nature" name="categories[]" value="nature" <% if (data.categories && data.categories.includes("nature")) { %> checked <% } %> />
+    <input type="checkbox" 
+      id="nature" name="categories[]" 
+      value="nature" <% if (data.categories 
+      && data.categories.includes("nature")) { %> checked <% } %> />
     <label for="nature">nature</label>
   </div>
 
   <div>
-    <input type="checkbox" id="history" name="categories[]" value="history" <% if (data.categories && data.categories.includes("history")) { %> checked <% } %> />
+    <input type="checkbox" id="history" 
+      name="categories[]" value="history" 
+      <% if (data.categories && data.categories
+      .includes("history")) { %> checked <% } %> />
     <label for="history">history</label>
   </div>
 
   <div>
-    <input type="checkbox" id="other" name="categories[]" value="other" <% if (data.categories && data.categories.includes("other")) { %> checked <% } %> />
+    <input type="checkbox" id="other" 
+      name="categories[]" value="other" 
+      <% if (data.categories && 
+      data.categories.includes("other")) { %> checked <% } %> />
     <label for="other">other</label>
   </div>
 </p>
@@ -382,7 +403,8 @@
 
 
 <p>
-  <label> Rate your experience on a scale from 1 (worst) to 5 (best):</label>
+  <label> Rate your experience on 
+    a scale from 1 (worst) to 5 (best):</label>
   <select required="" name="rating">
     <option value="">select rating</option>
     <% for (let i = 1; i <= 5; i++) { %>
@@ -398,13 +420,16 @@
 <p><label>
   <div class="input-group">
     <label for='file'>Upload images:</label>
-    <input required="" id='file' type="file" accept="image/*" name="file">
+    <input required="" id='file' 
+      type="file" accept="image/*" name="file">
   </div>
 </label></p>
 
 
 <p><label>Caption:
-      <textarea required="" rows="5" cols="50" name="caption" id="caption"><%= data.caption %></textarea>
+      <textarea required="" rows="5" 
+        cols="50" name="caption" id="caption">
+        <%= data.caption %></textarea>
 </label></p>
 
   <p><button type="submit">Post</button></p>

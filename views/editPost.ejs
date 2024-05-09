@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <title>Edit Post</title>
     <link rel="stylesheet" href="/styles.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src=
+    "https://ajax.googleapis.com/ajax/
+    libs/jquery/3.6.0/jquery.min.js">
+</script>
 </head>
 
 <%
@@ -242,7 +245,8 @@
   "Uganda",
   "Ukraine",
   "United Arab Emirates (the)",
-  "United Kingdom of Great Britain and Northern Ireland (the)",
+  "United Kingdom of Great Britain and 
+  Northern Ireland (the)",
   "United States Minor Outlying Islands (the)",
   "United States of America (the)",
   "Uruguay",
@@ -263,24 +267,32 @@
 <body>
     <a href="/profile"> &lt; Back </a>
     <h1>Edit Your Post</h1>
-    <form id="edit-post-form" method="POST" action="/update-post/<%= post._id %>" enctype="multipart/form-data">
+    <form id="edit-post-form" method="POST" 
+    action="/update-post/<%= post._id %>" 
+    enctype="multipart/form-data">
         <p><label>Country:
             <select name="country">
                 <% countryList.forEach(function(country) { %>
-                <option value="<%= country %>" <%= post.location.country === country ? 'selected' : '' %>><%= country %></option>
+                <option value="<%= country %>" 
+                    <%= post.location.country === country ? 
+                    'selected' : '' %>><%= country %></option>
                 <% }); %>
             </select>
         </label></p>
         
         <p><label>City:
-            <input type="text" name="city" value="<%= post.location.city %>">
+            <input type="text" name="city" 
+            value="<%= post.location.city %>">
         </label></p>
         
         <p><label>Categories:</label>
             <div>
-                <% ['food', 'culture', 'art', 'nature', 'history', 'other'].forEach(function(category) { %>
-                <input type="checkbox" id="<%= category %>" name="categories" value="<%= category %>"
-                       <%= post.categories.includes(category) ? 'checked' : '' %> />
+                <% ['food', 'culture', 'art', 'nature', 'history', 'other']
+                .forEach(function(category) { %>
+                <input type="checkbox" id="<%= category %>" 
+                name="categories" value="<%= category %>"
+                       <%= post.categories
+                       .includes(category) ? 'checked' : '' %> />
                 <label for="<%= category %>"><%= category %></label>
                 <% }); %>
             </div>
@@ -289,7 +301,9 @@
         <p><label>Budget:
             <select name="budget">
                 <% ['low', 'medium', 'high'].forEach(function(budget) { %>
-                <option value="<%= budget %>" <%= post.budget === budget ? 'selected' : '' %>><%= budget %></option>
+                <option value="<%= budget %>" 
+                    <%= post.budget === budget ? 'selected' : '' %>>
+                    <%= budget %></option>
                 <% }); %>
             </select>
         </label></p>
@@ -297,7 +311,9 @@
         <p><label>Travel Type:
             <select name="travelType">
                 <% ['solo', 'group'].forEach(function(travelType) { %>
-                <option value="<%= travelType %>" <%= post.travelType === travelType ? 'selected' : '' %>><%= travelType %></option>
+                <option value="<%= travelType %>" 
+                    <%= post.travelType === travelType ? 'selected' : '' %>>
+                    <%= travelType %></option>
                 <% }); %>
             </select>
         </label></p>
@@ -305,20 +321,25 @@
         <p><label>Rating:
             <select name="rating">
                 <% for (let i = 1; i <= 5; i++) { %>
-                <option value="<%= i %>" <%= post.rating == i ? 'selected' : '' %>><%= i %></option>
+                <option value="<%= i %>" 
+                    <%= post.rating == i ? 'selected' : '' %>>
+                    <%= i %></option>
                 <% } %>
             </select>
         </label></p>
         
         <p><label>Upload Image:
             <input type="file" id="file" name="file" accept="image/*">
-            <% if (post.content.images && post.content.images.length > 0) { %>
-                <img src="<%= '/uploads/' + post.content.images %>" alt="Post Image" style="max-width: 200px;">
+            <% if (post.content.images && 
+            post.content.images.length > 0) { %>
+                <img src="<%= '/uploads/' + post.content.images %>" 
+                alt="Post Image" style="max-width: 200px;">
             <% } %>
         </label></p>
         
         <p><label>Caption:
-            <textarea name="caption" id="caption" rows="5" cols="50"><%= post.content.text %></textarea>
+            <textarea name="caption" id="caption" rows="5" cols="50">
+                <%= post.content.text %></textarea>
         </label></p>
         
         <p><button type="submit">Update Post</button></p>

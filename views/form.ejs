@@ -288,7 +288,7 @@
 
 <p>
   <label>Country:
-    <select name="country">
+    <select required="" name="country">
      <option value="">select country</option>
       <% countryList.forEach(country => { %>
        <% if( data.country == country ) { %> <!-- Check if data.country matches the current country -->
@@ -302,11 +302,11 @@
 </p>
 
 <p><label> City:
-<textarea rows="1" cols="40" name="city" id="city"><%= data.city %></textarea>
+<textarea required="" rows="1" cols="40" name="city" id="city"><%= data.city %></textarea>
 </label></p>
 
 <p>
-  <label> Categories:</label>
+  <label> Categories (must select at least one):</label>
   <div>
     <input type="checkbox" id="food" name="categories" value="food" <% if (data.categories && data.categories.includes("food")) { %> checked <% } %> />
     <label for="food">food</label>
@@ -339,7 +339,7 @@
 </p>
 
 <p><label>What was your budget for this trip?
-    <select name="budget">
+    <select required="" name="budget">
       <option value="">choose budget</option>
 
       <% if( data.budget=="low" ) { %>
@@ -363,7 +363,7 @@
 </label></p>
 
   <p><label>Did you travel solo or with a friend?
-      <select name="travelType">
+      <select required="" name="travelType">
         <option value="">select solo or group</option>
 
         <% if( data.travelType=="solo" ) { %>
@@ -383,7 +383,7 @@
 
 <p>
   <label> Rate your experience on a scale from 1 (worst) to 5 (best):</label>
-  <select name="rating">
+  <select required="" name="rating">
     <option value="">select rating</option>
     <% for (let i = 1; i <= 5; i++) { %>
       <% if (data.rating && data.rating === i.toString()) { %>
@@ -398,13 +398,13 @@
 <p><label>
   <div class="input-group">
     <label for='file'>Upload images:</label>
-    <input id='file' type="file" accept="image/*" name="file">
+    <input required="" id='file' type="file" accept="image/*" name="file">
   </div>
 </label></p>
 
 
 <p><label>Caption:
-      <textarea rows="5" cols="50" name="caption" id="caption"><%= data.caption %></textarea>
+      <textarea required="" rows="5" cols="50" name="caption" id="caption"><%= data.caption %></textarea>
 </label></p>
 
   <p><button type="submit">Post</button></p>

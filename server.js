@@ -867,6 +867,8 @@ app.get('/editprofile', requiresLogin, async (req, res) => {
  */
 app.post("/editprofile", upload.single('profilePic'), async (req, res) => {
     try {
+        let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
+        console.log('chmod val', val);
         const username = req.session.username;
         const bio = req.body.bio;
         const db = await Connection.open(mongoUri, DB);

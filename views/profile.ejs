@@ -13,25 +13,30 @@
     <%- include("partials/flashes.ejs") %>
 
     <h1>My Profile</h1>
-    <div id="profile-pic">
-    <% if (user.profilePic) { %>
-        <img src="/uploads/<%= user.profilePic %>" alt="Profile Picture">
-    <% } else { %>
-        <img src="/path/to/default/image.png" alt="Default Profile Picture">
-    <% } %>
+    <div class="profile-container"> 
+
+        <div id="profile-pic">
+            <% if (user.profilePic) { %>
+                <img src="/uploads/<%= user.profilePic %>" alt="Profile Picture">
+            <% } else { %>
+                <img src="/path/to/default/image.png" alt="Default Profile Picture">
+            <% } %>
+        </div>
+
+        <div class="profile-info"> 
+            <h2>@<%= username %></h2>
+            <p><%= bio %></p>
+            <p><%= followers %> Followers</p>
+            <p><%= following %> Following</p>
+
+            <a href="/editprofile">Edit Profile</a>
+            <p>
+                <form action="/logout" method="POST">
+                    <button class="profile-button">Logout</button>
+                </form>
+            </p>
+        </div>
     </div>
-    <h2>@<%= username %></h2>
-    <p><%= bio %></p>
-    <p><%= followers %> Followers</p>
-    <p><%= following %> Following</p>
-
-    <a href="/editprofile">Edit Profile</a>
-    <p>
-        <form action="/logout" method="POST">
-            <button class="profile-button">Logout</button>
-        </form>
-    </p>
-
     <% if (posts.length > 0) { %>
         <% posts.forEach(post => { %>
             <%- include('post', { post: post, username: username }) %> <!-- Pass the username to post template -->

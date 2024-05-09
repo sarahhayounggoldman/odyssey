@@ -70,6 +70,20 @@ main {
   margin-bottom: 20px;
 }
 
+/* profile section */
+
+.profile-container {
+  display: flex;
+  align-items: start; 
+  justify-content: start;
+  gap: 20px; 
+  padding: 30px;
+}
+
+.profile-info {
+  flex-grow: 1; 
+}
+
 .profile-button {
   right: 10px; /* Adjusted to be inside the search field */
   border: none;

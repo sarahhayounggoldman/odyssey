@@ -142,6 +142,12 @@ app.get('/home', requiresLogin, async(req, res) => {
     const db = await Connection.open(mongoUri, DB);
     const person= await db.collection(ODYSSEY_USERS)
         .findOne({ username: user });
+
+    if (!person) {
+        req.flash('error', 'User not found.');
+        return res.redirect('/signUp');
+    }
+
     const following = person.following;
     
     const promises = [];

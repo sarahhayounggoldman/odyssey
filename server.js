@@ -113,6 +113,12 @@ const DB = 'odyssey';
 const ODYSSEY_USERS = 'odyssey_users';
 const ODYSSEY_POSTS = 'odyssey_posts';
 
+// Helper function 
+function convertBudgetToString(budget) {
+    if (budget === 1) return 'low';
+    if (budget === 2) return 'medium';
+    if (budget === 3) return 'high'; }
+
 /**
  * (GET) Renders the login page to input login credentials
  * Redirects to home if already logged into session
@@ -154,6 +160,11 @@ app.get('/home', requiresLogin, async(req, res) => {
             
             // Sort posts by time posted
             posts.sort((a, b) => b.timestamp - a.timestamp);
+
+            // convert number to string for budget
+            posts.forEach(post => {
+                post.budget = convertBudgetToString(post.budget);
+            });
 
             res.render('home.ejs', { 
                 username: req.session.username, 
@@ -245,6 +256,11 @@ app.get('/explore', requiresLogin, async (req, res) => {
 
     const allPosts = await db.collection('odyssey_posts')
         .find(queryFilter).sort(sortOptions).toArray();
+    
+    // convert number back to string for display
+    allPosts.forEach(post => {
+        post.budget = convertBudgetToString(post.budget);
+    });
 
     const username = req.session.username;  // Retrieve username from session
     res.render('explore.ejs', { 
@@ -362,6 +378,13 @@ app.get('/saved', requiresLogin, async (req, res) => {
     const postIds = user.savedPosts.map(id => new ObjectId(id));
     const posts = await db.collection(ODYSSEY_POSTS)
         .find({ _id: { $in: postIds } }).toArray();
+
+    // convert budget numbers to string
+    posts.forEach(post => {
+        post.budget = convertBudgetToString(post.budget);
+    });
+    
+
     res.render('saved.ejs', { 
         posts: posts, 
         username: username 
@@ -537,6 +560,15 @@ app.post('/explore', upload.single('file'), async (req, res) => {
         //change file perms
         let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
 
+        let budgetValue = 0;
+        if (formData.budget === 'low') {
+            budgetValue = 1;
+        } else if (formData.budget === 'medium') {
+            budgetValue = 2;
+        } else if (formData.budget === 'high') {
+            budgetValue = 3;
+        }
+
         const result = await db.collection(ODYSSEY_POSTS).insertOne({
             username: req.session.username,
             timestamp: new Date(),
@@ -546,7 +578,7 @@ app.post('/explore', upload.single('file'), async (req, res) => {
             },
             categories: formData.categories,
 
-            budget: formData.budget,
+            budget: budgetValue,
             travelType: formData.travelType,
             rating: formData.rating,
             content: {
@@ -685,6 +717,12 @@ app.get('/profile', requiresLogin, async (req, res) => {
     const db = await Connection.open(mongoUri, DB);
     const posts = await db.collection(ODYSSEY_POSTS)
         .find({ "username": user }).toArray();
+
+    //convert budget to string
+    posts.forEach(post => {
+        post.budget = convertBudgetToString(post.budget);
+    });
+        
     const onePerson = await db.collection(ODYSSEY_USERS)
         .find({ "username": user }).toArray();
     let person = onePerson[0]

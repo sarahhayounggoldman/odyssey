@@ -2,6 +2,7 @@
 
 var g;
 
+// Function to handle the AJAX response, checking if it's okay (status 200)
 function nextIfOk(resp) {
     g = resp;
     console.log('response received');
@@ -12,6 +13,7 @@ function nextIfOk(resp) {
     }
 }
 
+// Handles login using Ajax, getting user ID from login form input
 function loginAjax() {
     let uid = $('[name=uid]').val();
     let form = document.getElementById('login_form');
@@ -34,7 +36,7 @@ function loginAjax() {
 $("#login-ajax").click(loginAjax);
 
 
-//likes 
+// Likes handler (when a like button on a post is clicked)
 $(document).ready(function() {
     $('body').on('click', '.likeBtn', function() {
         var postId = $(this).closest("[data-post-id]").attr("data-post-id");
@@ -48,6 +50,7 @@ function likePost(postId) {
     $.post("/likeAjax/" + postId, { postId: postId }).then(processAction);
 }
 
+// Processes like action response
 function processAction(resp) {
     console.log('response is ',resp);
     if (resp.error) {
@@ -58,7 +61,7 @@ function processAction(resp) {
     $(`[data-post-id=${String(resp.postId)}]`).closest(".post-container").find('.likeCounter').text(resp.likes);
 }
 
-//save button handler
+// Save button handler, saving a post to the saved page when "save" button clicked
 $(document).ready(function() {
     $('.save-post-button').click(function() {
         var postId = $(this).data('post-id');
@@ -70,7 +73,7 @@ $(document).ready(function() {
     });
 });
 
-//follow button handler
+// Follow button handling: follow a user when the follow button is clicked
 $(document).ready(function() {
     $('.follow-button').click(function() {
         var username = $(this).data('username');
@@ -83,7 +86,7 @@ $(document).ready(function() {
     });
 }); 
 
-//for converting time to user's clock
+// Converting time to user's clock for each post on load
 document.addEventListener('DOMContentLoaded', function () {
     const dateTimeElements = document.querySelectorAll('.date-time');
 
@@ -99,12 +102,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-//comments
+// Add a comment using Ajax
 $(document).ready(function() {
     $('body').on('click', '.sendComment', function() {
-        // var postId = $(this).closest("[data-post-id]").attr("data-post-id");
-        // var comment = $(this).closest('.comment-section').find('.comment').val(); 
-        // addComment(postId, comment);
         var postId = $(this).closest("form").attr("data-post-id");
         var commentText = $(this).closest("form").find('input[name="comment"]').val();  
         addComment(postId, commentText);
@@ -131,10 +131,9 @@ function processActionComments(resp) {
     }
 }
 
-
 console.log('main.js loaded');
 
-//For managing the dropdown of editing and deleting a post. 
+// Manages the dropdown for editing and deleting posts: show/hide on click
 document.addEventListener('DOMContentLoaded', function() {
     var settingsButtons = document.querySelectorAll('.settings-btn');
     settingsButtons.forEach(function(btn) {
@@ -145,10 +144,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 dropdown.style.display = 'block';
             }
-            event.stopPropagation();
+            event.stopPropagation(); // Prevent the click from propagating to other elements
         });
     });
 
+    // Close all dropdowns when clicking anywhere else on the page
     window.addEventListener('click', function() {
         var dropdowns = document.querySelectorAll('.settings-dropdown');
         dropdowns.forEach(function(dropdown) {

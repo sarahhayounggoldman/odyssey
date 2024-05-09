@@ -793,6 +793,8 @@ app.post("/signup", async (req, res) => {
         req.session.loggedIn = true;
         return res.redirect('/');
     } catch (error) {
+        //WISH
+        console.log('1')
         req.flash('error', `Form submission error: ${error}`);
         return res.redirect('/')
     }
@@ -827,6 +829,8 @@ app.post("/login", async (req, res) => {
         console.log('login as', username);
         return res.redirect('/');
     } catch (error) {
+        //WISH
+        console.log('2')
         req.flash('error', `Form submission error: ${error}`);
         return res.redirect('/')
     }
@@ -873,6 +877,8 @@ app.get('/editprofile', requiresLogin, async (req, res) => {
  */
 app.post("/editprofile", upload.single('profilePic'), async (req, res) => {
     try {
+        let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
+        console.log('chmod val', val);
         const username = req.session.username;
         const bio = req.body.bio;
         const db = await Connection.open(mongoUri, DB);
@@ -887,24 +893,17 @@ app.post("/editprofile", upload.single('profilePic'), async (req, res) => {
         }
     
         var existingUser = await db.collection(ODYSSEY_USERS).updateOne(
-            { username: username }, { $set: updateData });
-
-        if (existingUser.matchedCount === 0) {
-            req.flash('error', 'No such user found.');
-            return res.redirect('/explore');
-        }
+        { username: username }, { $set: updateData });
         
-        if (existingUser.modifiedCount > 0) {
-            req.flash('info', "Profile updated successfully.");
-            return res.redirect('/profile')
-        } else {
-            req.flash('info', "No changes were made to your profile.");
+        if (existingUser) {
+            req.flash('info', "Updated succesfully.");
             return res.redirect('/profile')
         }
 
     } catch (error) {
-        req.flash('error', `Form submission error: ${error}`);
-        return res.redirect('/')
+        console.log('Database error:', error);
+        req.flash('error', `Database error: ${error}`);
+        return res.redirect('/');
     }
 });
 

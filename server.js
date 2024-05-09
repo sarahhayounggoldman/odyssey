@@ -460,6 +460,11 @@ app.get('/search', requiresLogin, async (req, res) => {
     const posts = await db.collection('odyssey_posts')
         .find(query).sort(sortOptions).toArray();
 
+    // convert budget numbers to strings
+    posts.forEach(post => {
+        post.budget = convertBudgetToString(post.budget);
+    });
+
     const username = req.session.username;
     res.render('searchResults.ejs', {
         posts: posts,

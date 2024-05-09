@@ -793,6 +793,8 @@ app.post("/signup", async (req, res) => {
         req.session.loggedIn = true;
         return res.redirect('/');
     } catch (error) {
+        //WISH
+        console.log('1')
         req.flash('error', `Form submission error: ${error}`);
         return res.redirect('/')
     }
@@ -827,6 +829,8 @@ app.post("/login", async (req, res) => {
         console.log('login as', username);
         return res.redirect('/');
     } catch (error) {
+        //WISH
+        console.log('2')
         req.flash('error', `Form submission error: ${error}`);
         return res.redirect('/')
     }
@@ -872,28 +876,81 @@ app.get('/editprofile', requiresLogin, async (req, res) => {
  * Updates user's edited profile and redirects to the profile page
  */
 app.post("/editprofile", upload.single('profilePic'), async (req, res) => {
-    try {
-        let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
-        console.log('chmod val', val);
-        const username = req.session.username;
-        const bio = req.body.bio;
-        const db = await Connection.open(mongoUri, DB);
+    // try {
+    //     let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
+    //     console.log('chmod val', val);
+    //     const username = req.session.username;
+    //     const bio = req.body.bio;
+    //     const db = await Connection.open(mongoUri, DB);
 
-        let updateData = {bio: bio} 
-        if (req.file) {
-            updateData.profilePic = req.file.filename; 
-        }
+    //     let updateData = {bio: bio} 
+    //     if (req.file) {
+    //     updateData.profilePic = req.file.filename; 
+
+    //     } else {
+    //         console.log('default profile pic');
+    //         updateData.profilePic = '/uploads/defaultprofile.jpg'
+    //         // Handle the case where no file is uploaded
+    //     }
     
-        var existingUser = await db.collection(ODYSSEY_USERS).updateOne(
-        { username: username }, { $set: updateData });
+    //     var existingUser = await db.collection(ODYSSEY_USERS).updateOne(
+    //     { username: username }, { $set: updateData });
         
-        if (existingUser) {
-            req.flash('info', "Updated succesfully.");
-            return res.redirect('/profile')
+    //     if (existingUser) {
+    //         req.flash('info', "Updated succesfully.");
+    //         return res.redirect('/profile')
+    //     }
+    // } catch (error) {
+    //     //WISH
+    //     console.log('3')
+    //     req.flash('error', `Form submission error: ${error}`);
+    //     return res.redirect('/')
+    // }
+   
+    let val; // Declare val outside the if-else block
+    const username = req.session.username;
+    const bio = req.body.bio;
+    const db = await Connection.open(mongoUri, DB);
+    let updateData = { bio: bio };
+
+    if (req.file) {
+        try {
+            val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
+            console.log('chmod val', val);
+        } catch (error) {
+            console.log('Error changing file permissions:', error);
+            req.flash('error', `Error changing file permissions: ${error}`);
+            return res.redirect('/');
+        }
+    } else {
+        console.log('No file uploaded, using default profile picture');
+        // Use default profile picture
+        updateData.profilePic = '/uploads/defaultprofile.jpg';
+    }
+
+    
+
+    if (req.file) {
+        updateData.profilePic = req.file.profilePic;
+    }
+
+    try {
+        var existingUser = await db.collection(ODYSSEY_USERS).updateOne(
+            { username: username },
+            { $set: updateData }
+        );
+
+        if (existingUser.modifiedCount > 0) {
+            req.flash('info', "Updated successfully.");
+            return res.redirect('/profile');
+        } else {
+            req.flash('error', "Failed to update profile.");
+            return res.redirect('/');
         }
     } catch (error) {
-        req.flash('error', `Form submission error: ${error}`);
-        return res.redirect('/')
+        console.log('Database error:', error);
+        req.flash('error', `Database error: ${error}`);
+        return res.redirect('/');
     }
 });
 

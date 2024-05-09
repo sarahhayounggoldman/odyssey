@@ -204,6 +204,11 @@ app.get('/explore', requiresLogin, async (req, res) => {
     // Default to 'recent' if not specified
     let sort_option = req.query.sort_option || 'recent';  
 
+    // const categories = []; // Your categories array
+    // // Retrieve selected category and sort option from query parameters
+    // const selectedCategory = req.query.category || '';
+    // const sortOption = req.query.sort_option || 'recent';
+
     if (sort_option === 'recent') {
         sortOptions.timestamp = -1;
     } else if (sort_option === 'oldest') {
@@ -224,6 +229,18 @@ app.get('/explore', requiresLogin, async (req, res) => {
         sortOptions.likes = -1;
     } else if (sort_option === 'likes_low') {
         sortOptions.likes = 1;
+    // } else if (sort_option === 'food') {
+    //     queryFilter.categories == 'food';
+    // } else if (sort_option === 'culture') {
+    //     queryFilter.categories == 'culture';
+    // } else if (sort_option === 'art') {
+    //     queryFilter.categories == 'art';
+    // } else if (sort_option === 'nature') {
+    //     queryFilter.categories == 'nature';
+    // } else if (sort_option === 'history') {
+    //     queryFilter.categories == 'history';
+    // } else if (sort_option === 'other') {
+    //     queryFilter.categories == 'other';
     }
 
     const allPosts = await db.collection('odyssey_posts')
@@ -233,7 +250,7 @@ app.get('/explore', requiresLogin, async (req, res) => {
     res.render('explore.ejs', { 
         posts: allPosts, 
         username: username, 
-        sort_option: sort_option 
+        sort_option: sort_option
     });
 });
 

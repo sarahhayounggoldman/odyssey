@@ -107,7 +107,7 @@ main {
   border: none;
   background-color: #166c9e; /* Matching the logo color */
   color: white;
-  padding: 4px 8px; /* Adjusted padding */
+  padding: 9px 15px; /* Adjusted padding */
   border-radius: 20px; /* Keeping the rounded edges */
   cursor: pointer;
   font-size: 12px; /* Smaller font size */
@@ -150,7 +150,7 @@ button:hover {
 }
 
 #post-button {
-  right: 10px; /* Adjusted to be inside the search field */
+  right: 10px;
   border: none;
   background-color: #1b9ee9; /* Matching the logo color */
   color: white;

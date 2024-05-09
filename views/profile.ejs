@@ -26,6 +26,11 @@
     <p><%= following %> Following</p>
 
     <a href="/editprofile">Edit Profile</a>
+    <p>
+        <form action="/logout" method="POST">
+            <button class="profile-button">Logout</button>
+        </form>
+    </p>
 
     <% if (posts.length > 0) { %>
         <% posts.forEach(post => { %>
@@ -34,12 +39,6 @@
     <% } else { %>
         <p>No posts yet.</p>
     <% } %>
-
-    <p>
-        <form action="/logout" method="POST">
-            <button class="profile-button">Logout</button>
-        </form>
-    </p>
 
     <%- include("partials/bottombar.ejs") %>
 

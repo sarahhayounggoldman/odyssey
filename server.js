@@ -172,7 +172,13 @@ app.get('/home', requiresLogin, async(req, res) => {
  * (GET) Renders the blank form for a user to post a post
  */
 app.get('/form/', requiresLogin, (req, res) => {
-    return res.render('form.ejs', { action: '/form/', data: req.query });
+    // Get the referer from the request headers
+    const referer = req.get('referer');
+    return res.render('form.ejs', { 
+        action: '/form/', 
+        data: req.query, 
+        referer:referer 
+    });
 });
 
 /**
@@ -181,7 +187,10 @@ app.get('/form/', requiresLogin, (req, res) => {
  * renders the form page again, passing back the data.
  */
 app.post('/form/', (req, res) => {
-    return res.render('form.ejs', { action: '/form/', data: req.body });
+    return res.render('form.ejs', { 
+        action: '/form/', 
+        data: req.body
+    });
 });
 
 /**

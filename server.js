@@ -877,8 +877,6 @@ app.get('/editprofile', requiresLogin, async (req, res) => {
  */
 app.post("/editprofile", upload.single('profilePic'), async (req, res) => {
     try {
-        let val = await fs.chmod('/students/odyssey/uploads/' + req.file.filename, 0o664);
-        console.log('chmod val', val);
         const username = req.session.username;
         const bio = req.body.bio;
         const db = await Connection.open(mongoUri, DB);
@@ -893,20 +891,26 @@ app.post("/editprofile", upload.single('profilePic'), async (req, res) => {
         }
     
         var existingUser = await db.collection(ODYSSEY_USERS).updateOne(
-        { username: username }, { $set: updateData });
+            { username: username }, { $set: updateData });
+
+        if (existingUser.matchedCount === 0) {
+            req.flash('error', 'No such user found.');
+            return res.redirect('/explore');
+        }
         
-        if (existingUser) {
-            req.flash('info', "Updated succesfully.");
+        if (existingUser.modifiedCount > 0) {
+            req.flash('info', "Profile updated successfully.");
+            return res.redirect('/profile')
+        } else {
+            req.flash('info', "No changes were made to your profile.");
             return res.redirect('/profile')
         }
 
     } catch (error) {
-        console.log('Database error:', error);
-        req.flash('error', `Database error: ${error}`);
-        return res.redirect('/');
+        req.flash('error', `Form submission error: ${error}`);
+        return res.redirect('/')
     }
 });
-
 
 
 // ================================================================

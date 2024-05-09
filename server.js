@@ -506,13 +506,15 @@ app.post('/update-post/:postId', upload.single('file'), async (req, res) => {
     const postId = req.params.postId; 
     const existingPost = await db.collection(ODYSSEY_POSTS)
         .findOne({ _id: new ObjectId(postId) });
+    
+    const categories = formData.categories || [];  
 
     let updateData = {
         location: { 
             country: formData.country, 
             city: formData.city 
         },
-        categories: formData.categories,
+        categories: categories,
         budget: formData.budget,
         travelType: formData.travelType,
         rating: formData.rating,

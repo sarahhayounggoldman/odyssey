@@ -308,32 +308,32 @@
 <p>
   <label> Categories (must select at least one):</label>
   <div>
-    <input type="checkbox" id="food" name="categories" value="food" <% if (data.categories && data.categories.includes("food")) { %> checked <% } %> />
+    <input type="checkbox" id="food" name="categories[]" value="food" <% if (data.categories && data.categories.includes("food")) { %> checked <% } %> />
     <label for="food">food</label>
   </div>
 
   <div>
-    <input type="checkbox" id="culture" name="categories" value="culture" <% if (data.categories && data.categories.includes("culture")) { %> checked <% } %> />
+    <input type="checkbox" id="culture" name="categories[]" value="culture" <% if (data.categories && data.categories.includes("culture")) { %> checked <% } %> />
     <label for="culture">culture</label>
   </div>
 
   <div>
-    <input type="checkbox" id="art" name="categories" value="art" <% if (data.categories && data.categories.includes("art")) { %> checked <% } %> />
+    <input type="checkbox" id="art" name="categories[]" value="art" <% if (data.categories && data.categories.includes("art")) { %> checked <% } %> />
     <label for="art">art</label>
   </div>
 
   <div>
-    <input type="checkbox" id="nature" name="categories" value="nature" <% if (data.categories && data.categories.includes("nature")) { %> checked <% } %> />
+    <input type="checkbox" id="nature" name="categories[]" value="nature" <% if (data.categories && data.categories.includes("nature")) { %> checked <% } %> />
     <label for="nature">nature</label>
   </div>
 
   <div>
-    <input type="checkbox" id="history" name="categories" value="history" <% if (data.categories && data.categories.includes("history")) { %> checked <% } %> />
+    <input type="checkbox" id="history" name="categories[]" value="history" <% if (data.categories && data.categories.includes("history")) { %> checked <% } %> />
     <label for="history">history</label>
   </div>
 
   <div>
-    <input type="checkbox" id="other" name="categories" value="other" <% if (data.categories && data.categories.includes("other")) { %> checked <% } %> />
+    <input type="checkbox" id="other" name="categories[]" value="other" <% if (data.categories && data.categories.includes("other")) { %> checked <% } %> />
     <label for="other">other</label>
   </div>
 </p>

@@ -43,6 +43,15 @@
         <span class="tag">Budget: <%= post.budget %></span>
         <span class="tag">Travel Type: <%= post.travelType %></span>
         <span class="tag">Rating: <%= post.rating %></span>
+        <% 
+        let categories = post.categories;
+        if (!Array.isArray(categories)) {
+            categories = categories ? [categories] : [];
+        }
+        categories.forEach(function(category) { 
+        %>
+            <span class="tag"><%= category %></span>
+        <% }); %>
     </div>
     <div class="caption"><%= post.content.text %></div>
     <div class="like-section"> 

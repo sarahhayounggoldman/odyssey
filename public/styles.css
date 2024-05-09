@@ -1,6 +1,5 @@
 /* Importing Google Font 'Fredoka' */
-@import url(
-  'https://fonts.googleapis.com/css?family=Fredoka');
+@import url('https://fonts.googleapis.com/css?family=Fredoka');
 
 /* Global styles */
 body {
@@ -342,8 +341,7 @@ button:hover {
 }
 
 
-.settings-btn:hover .settings-dropdown, 
-.settings-dropdown:hover {
+.settings-btn:hover .settings-dropdown, .settings-dropdown:hover {
   display: block;
 }
 

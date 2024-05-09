@@ -7,8 +7,7 @@
   <!-- load local stylesheet (css) -->
   <link rel="stylesheet" href="/styles.css" />
   <!-- loading jquery -->
-  <script src="https://ajax.googleapis.com/
-    ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
 <body>
@@ -16,26 +15,22 @@
 
   <h1>Edit Profile</h1>
 
-  <form id="edit-profile-form" method="POST" 
-    action="/editprofile" enctype='multipart/form-data'>
+  <form id="edit-profile-form" method="POST" action="/editprofile" enctype='multipart/form-data'>
   
     <p>Username: <%= username %></p>
 
     <p><label>Bio:
-          <textarea rows="5" cols="50" 
-            name="bio" id="bio"><%= bio %></textarea>
+          <textarea rows="5" cols="50" name="bio" id="bio"><%= bio %></textarea>
     </label></p>
 
     <p><label>
       
         <label for='file'>Upload profile picture:</label>
-        <input id='profile-file' 
-          type="file" accept="image/*" name="profilePic">
+        <input id='profile-file' type="file" accept="image/*" name="profilePic">
      
     </label></p>
 
-    <p><button type="submit" 
-        class="profile-button">Update</button></p>
+    <p><button type="submit" class="profile-button">Update</button></p>
 </form>
 
   <!-- load local js -->

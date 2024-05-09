@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" 
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles.css">
     <title>Search Results</title>
 </head>
@@ -12,33 +11,17 @@
     <%- include("partials/flashes.ejs") %>
 
     <form id="filter-form">
-        <select name="sort_option" class = "sort-class" 
-            onchange="this.form.submit()">
-            <option value="recent" <%= sort_option === 'recent' 
-                ? 'selected' : '' %>>Most Recent</option>
-            <option value="oldest" <%= sort_option === 'oldest' 
-                ? 'selected' : '' %>>Least Recent</option>
-            <option value="budget_high" 
-                <%= sort_option === 'budget_high' ? 
-                'selected' : '' %>>Highest Budget</option>
-            <option value="budget_low" 
-                <%= sort_option === 'budget_low' ? 
-                'selected' : '' %>>Lowest Budget</option>
-            <option value="rating_high" 
-                <%= sort_option === 'rating_high' ? 
-                'selected' : '' %>>Highest Rating</option>
-            <option value="rating_low" 
-                <%= sort_option === 'rating_low' ? 
-                'selected' : '' %>>Lowest Rating</option>
-            <option value="likes_high" 
-                <%= sort_option === 'likes_high' ? 
-                'selected' : '' %>>Most Likes</option>
-            <option value="likes_low" 
-                <%= sort_option === 'likes_low' ? 
-                'selected' : '' %>>Least Likes</option>
+        <select name="sort_option" class = "sort-class" onchange="this.form.submit()">
+            <option value="recent" <%= sort_option === 'recent' ? 'selected' : '' %>>Most Recent</option>
+            <option value="oldest" <%= sort_option === 'oldest' ? 'selected' : '' %>>Least Recent</option>
+            <option value="budget_high" <%= sort_option === 'budget_high' ? 'selected' : '' %>>Highest Budget</option>
+            <option value="budget_low" <%= sort_option === 'budget_low' ? 'selected' : '' %>>Lowest Budget</option>
+            <option value="rating_high" <%= sort_option === 'rating_high' ? 'selected' : '' %>>Highest Rating</option>
+            <option value="rating_low" <%= sort_option === 'rating_low' ? 'selected' : '' %>>Lowest Rating</option>
+            <option value="likes_high" <%= sort_option === 'likes_high' ? 'selected' : '' %>>Most Likes</option>
+            <option value="likes_low" <%= sort_option === 'likes_low' ? 'selected' : '' %>>Least Likes</option>
         </select>
-        <input type="hidden" name="country" 
-            value="<%= searchedCountry %>">
+        <input type="hidden" name="country" value="<%= searchedCountry %>">
     </form>
     
     <% if (posts.length > 0) { %>

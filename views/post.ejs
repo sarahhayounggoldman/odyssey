@@ -1,23 +1,25 @@
+<head>
+    <meta charset="UTF-8" />
+    <title>Post</title>
+    <!-- load local stylesheet (css) -->
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- loading jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
 <div class="post-container">
     <div class="header">
-        <div class="location">
-            <%= post.location.country %>, 
-            <%= post.location.city %></div>
-        <div class="date-time" data-timestamp="
-            <%= post.timestamp %>"></div>
+        <div class="location"><%= post.location.country %>, <%= post.location.city %></div>
+        <div class="date-time" data-timestamp="<%= post.timestamp %>"></div>
         <div class="post-controls">
-            <button class="save-post-button" 
-                type="button" data-post-id="<%= post._id %>">Save</button>
+            <button class="save-post-button" type="button" data-post-id="<%= post._id %>">Save</button>
             <% if (post.username === username) { %>
                 <!-- Dropdown for edit and delete -->
                 <div class="post-settings">
                     <button class="settings-btn">⋮</button>
                     <div class="settings-dropdown">
-                        <a href="/edit/<%= post._id %>" 
-                                class="edit-post-button">Edit</a>
-                        <button type="button" 
-                            class="delete-post-button" 
-                            onclick="deletePost('<%= post._id %>')">Delete</button>
+                        <a href="/edit/<%= post._id %>" class="edit-post-button">Edit</a>
+                        <button type="button" class="delete-post-button" onclick="deletePost('<%= post._id %>')">Delete</button>
                     </div>
                 </div>
             <% } %>
@@ -27,14 +29,12 @@
         <% if (post.username === username) { %>
             <a href="/profile">@<%= post.username %></a>
         <% } else { %>
-            <a href="/user/<%= post.username %>">
-                @<%= post.username %></a>
+            <a href="/user/<%= post.username %>">@<%= post.username %></a>
         <% } %>
     </div>
     <div class="image-container">
         <% if (post.content.images) { %>
-            <img src="/uploads/<%= post.content.images %>" 
-            alt="Travel image of <%= post.location.city %>">
+            <img src="/uploads/<%= post.content.images %>" alt="Travel image of <%= post.location.city %>">
         <% } else { %>
             <img src="/path/to/default-image.jpg" alt="Default Image">
         <% } %>
@@ -55,10 +55,8 @@
     </div>
     <div class="caption"><%= post.content.text %></div>
     <div class="like-section"> 
-        <p class="likeCounter">
-            <%= post.likes ? post.likes : '0' %></p>
-        <button class="likeBtn" type="button" 
-            data-post-id="<%= post._id %>">❤️ like!</button>   
+        <p class="likeCounter"><%= post.likes ? post.likes : '0' %></p>
+        <button class="likeBtn" type="button" data-post-id="<%= post._id %>">❤️ like!</button>   
     </div>
 
     <div class="comments-section">
@@ -74,11 +72,9 @@
         <% } %>
     </div>
 
-    <form id="comment-form-<%= post._id %>" 
-            data-post-id="<%= post._id %>">
+    <form id="comment-form-<%= post._id %>" data-post-id="<%= post._id %>">
         <label for="comment-<%= post._id %>">comment:
-        <input type="text" name="comment" 
-            id="comment-<%= post._id %>" placeholder="Comment">
+        <input type="text" name="comment" id="comment-<%= post._id %>" placeholder="Comment">
         </label>
         <button class="sendComment" type="button">Send</button>
     </form>
